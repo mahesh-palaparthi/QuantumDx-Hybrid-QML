@@ -1,0 +1,29 @@
+dataset: early_stage_diabetes
+test_size: 0.20
+random_state: 42
+
+preprocessing:
+  n_components: 4
+
+models:
+  - type: classical_logreg
+  - type: classical_svm
+  - type: classical_rf
+  - type: classical_nn
+  - type: quantum_vqc
+    n_layers: 2
+    epochs: 20
+    batch_size: 32
+    lr: 0.15
+  - type: quantum_qsvm
+    reps: 2
+    max_train_samples: 80
+  - type: quantum_qnn
+    n_layers: 2
+    epochs: 10
+    batch_size: 32
+    lr: 0.1
+
+explain: true
+explain_samples: 15
+output: results/early_stage_diabetes.json
