@@ -380,8 +380,29 @@ export default function App() {
       const qPred = Number(data.prediction);
       const cProb = Number(classicalData.probability) || 0.85;
       const qProb = Number(data.probability) || 0.85;
-      const outcome = (cPred === 1 && qPred === 1) ? "Positive" : (cPred === 0 && qPred === 0) ? "Negative" : "Inconclusive";
-      const overallConf = Math.round(((cProb + qProb) / 2) * 100);
+      const cWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : 0.509;
+      const qWeight = 1 - cWeight;
+      const hScore = Number((cWeight * cProb + qWeight * qProb).toFixed(4));
+      const delta = Number(Math.abs(cProb - qProb).toFixed(4));
+
+      // Multi-tier Clinical Consensus Verdict
+      const isHighDivergenceSave = delta >= 0.45 && cPred !== qPred;
+      let outcome = "Negative";
+      if (cPred === 1 && qPred === 1) {
+        outcome = "Positive";
+      } else if (cPred === 0 && qPred === 0) {
+        outcome = "Negative";
+      } else if (isHighDivergenceSave) {
+        outcome = "Inconclusive";
+      } else {
+        outcome = hScore >= 0.50 ? "Positive" : "Negative";
+      }
+
+      const overallConf = outcome === "Positive"
+        ? Math.max(51, Math.min(99, Math.round(hScore * 100)))
+        : outcome === "Negative"
+        ? Math.max(51, Math.min(99, Math.round((1 - hScore) * 100)))
+        : Math.max(50, Math.min(75, Math.round((1 - delta) * 100)));
 
       const patientRecord = {
         patientId: `PT-${Math.floor(10000 + Math.random() * 90000)}`,
@@ -436,13 +457,40 @@ export default function App() {
   const hybridScore = classicalResult && result ? Number((classicalWeight * pClassical + quantumWeight * pQuantum).toFixed(4)) : null;
   const confidenceDelta = classicalResult && result ? Number(Math.abs(pClassical - pQuantum).toFixed(4)) : 0;
 
+  // True divergence occurs when models disagree AND have significant probability conflict
+  const isHighDivergence = confidenceDelta >= 0.45 && classicalPred !== null && quantumPred !== null && classicalPred !== quantumPred;
+
   const isBothPositive = classicalPred === 1 && quantumPred === 1;
   const isBothNegative = classicalPred === 0 && quantumPred === 0;
-  const isDisagreement = classicalPred !== null && quantumPred !== null && classicalPred !== quantumPred;
 
-  // Single Active Outcome
-  const finalOutcome = isBothPositive ? "Positive" : isBothNegative ? "Negative" : "Inconclusive";
-  const overallConfidence = hybridScore !== null ? Math.round(hybridScore * 100) : 87;
+  // Multi-tier Clinical Consensus Verdict
+  let finalOutcome = "Negative";
+  if (isBothPositive) {
+    finalOutcome = "Positive";
+  } else if (isBothNegative) {
+    finalOutcome = "Negative";
+  } else if (isHighDivergence) {
+    finalOutcome = "Inconclusive";
+  } else if (hybridScore !== null) {
+    finalOutcome = hybridScore >= 0.50 ? "Positive" : "Negative";
+  }
+
+  const isDisagreement = finalOutcome === "Inconclusive";
+
+  // Calibrated Confidence Percentage:
+  // - Positive: Confidence = hybridScore (probability of elevated risk)
+  // - Negative: Confidence = (1 - hybridScore) (confidence in healthy/normal baseline)
+  // - Inconclusive: Classifier agreement index
+  let overallConfidence = 87;
+  if (hybridScore !== null) {
+    if (finalOutcome === "Positive") {
+      overallConfidence = Math.max(51, Math.min(99, Math.round(hybridScore * 100)));
+    } else if (finalOutcome === "Negative") {
+      overallConfidence = Math.max(51, Math.min(99, Math.round((1 - hybridScore) * 100)));
+    } else {
+      overallConfidence = Math.max(50, Math.min(75, Math.round((1 - confidenceDelta) * 100)));
+    }
+  }
 
   // DYNAMIC CONNECTED EXPLAINABLE AI (XAI) CALCULATION
   const calculateConnectedXaiBars = () => {
@@ -1401,8 +1449,26 @@ export default function App() {
                               />
                               <defs>
                                 <linearGradient id="confGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" stopColor="#00d2ff" />
-                                  <stop offset="100%" stopColor="#9333ea" />
+                                  <stop
+                                    offset="0%"
+                                    stopColor={
+                                      finalOutcome === "Positive"
+                                        ? "#f43f5e"
+                                        : finalOutcome === "Negative"
+                                        ? "#10b981"
+                                        : "#f59e0b"
+                                    }
+                                  />
+                                  <stop
+                                    offset="100%"
+                                    stopColor={
+                                      finalOutcome === "Positive"
+                                        ? "#9333ea"
+                                        : finalOutcome === "Negative"
+                                        ? "#06b6d4"
+                                        : "#a855f7"
+                                    }
+                                  />
                                 </linearGradient>
                               </defs>
                             </svg>
@@ -1429,19 +1495,28 @@ export default function App() {
                               </span>
                             </div>
                             <div className="qdx-model-conf-line">
-                              <span>Output Probability:</span>
-                              <span className="qdx-conf-bold">{(pClassical * 100).toFixed(1)}%</span>
+                              <span>Model Confidence:</span>
+                              <span className="qdx-conf-bold" style={{ color: classicalPred === 1 ? "#f43f5e" : "#10b981" }}>
+                                {classicalPred === 1
+                                  ? `${(pClassical * 100).toFixed(1)}%`
+                                  : `${((1 - pClassical) * 100).toFixed(1)}%`}
+                              </span>
                             </div>
                             <div className="qdx-progress-bar-bg">
                               <div
                                 className="qdx-progress-bar-fill classical"
-                                style={{ width: `${Math.round(pClassical * 100)}%` }}
+                                style={{
+                                  width: `${Math.round(
+                                    classicalPred === 1 ? pClassical * 100 : (1 - pClassical) * 100
+                                  )}%`,
+                                  background: classicalPred === 1 ? "linear-gradient(90deg, #f43f5e, #e11d48)" : "linear-gradient(90deg, #10b981, #059669)",
+                                }}
                               />
                             </div>
-                            <div style={{ marginTop: 6, fontSize: 10.5, color: "#94a3b8", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 }}>
+                            <div style={{ marginTop: 5, fontSize: 10.5, color: "#94a3b8", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 }}>
+                              <span>Risk: <strong style={{ color: classicalPred === 1 ? "#f87171" : "#e2e8f0" }}>{(pClassical * 100).toFixed(1)}%</strong></span>
                               <span>CV Acc: <strong style={{ color: "#60a5fa" }}>{currentTopInfo.classicalAcc}</strong></span>
                               <span>Sensitivity: <strong style={{ color: "#86efac" }}>{currentTopInfo.classicalSensitivity || "98.57%"}</strong></span>
-                              <span>Latency: <strong style={{ color: "#ffffff" }}>&lt; 10 ms</strong></span>
                             </div>
                           </div>
 
@@ -1458,19 +1533,28 @@ export default function App() {
                               </span>
                             </div>
                             <div className="qdx-model-conf-line">
-                              <span>State Probability:</span>
-                              <span className="qdx-conf-bold">{(pQuantum * 100).toFixed(1)}%</span>
+                              <span>Model Confidence:</span>
+                              <span className="qdx-conf-bold" style={{ color: quantumPred === 1 ? "#f43f5e" : "#10b981" }}>
+                                {quantumPred === 1
+                                  ? `${(pQuantum * 100).toFixed(1)}%`
+                                  : `${((1 - pQuantum) * 100).toFixed(1)}%`}
+                              </span>
                             </div>
                             <div className="qdx-progress-bar-bg">
                               <div
                                 className="qdx-progress-bar-fill quantum"
-                                style={{ width: `${Math.round(pQuantum * 100)}%` }}
+                                style={{
+                                  width: `${Math.round(
+                                    quantumPred === 1 ? pQuantum * 100 : (1 - pQuantum) * 100
+                                  )}%`,
+                                  background: quantumPred === 1 ? "linear-gradient(90deg, #ec4899, #d946ef)" : "linear-gradient(90deg, #06b6d4, #0284c7)",
+                                }}
                               />
                             </div>
-                            <div style={{ marginTop: 6, fontSize: 10.5, color: "#94a3b8", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 }}>
+                            <div style={{ marginTop: 5, fontSize: 10.5, color: "#94a3b8", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 }}>
+                              <span>State Risk: <strong style={{ color: quantumPred === 1 ? "#f87171" : "#e2e8f0" }}>{(pQuantum * 100).toFixed(1)}%</strong></span>
                               <span>CV Acc: <strong style={{ color: "#c084fc" }}>{currentTopInfo.quantumAcc}</strong></span>
                               <span>ROC-AUC: <strong style={{ color: "#38bdf8" }}>{currentTopInfo.quantumRocAuc || "91.43%"}</strong></span>
-                              <span>Latency: <strong style={{ color: "#ffffff" }}>&lt; 185 ms</strong></span>
                             </div>
                           </div>
                         </div>
@@ -1486,7 +1570,9 @@ export default function App() {
                             <p className="qdx-xai-subtitle">
                               {finalOutcome === "Positive"
                                 ? "Calculated from patient's actively present clinical symptoms and quantum feature sensitivity:"
-                                : "Calculated from the absence of core diabetic risk markers (Protective Factor Analysis):"}
+                                : finalOutcome === "Negative"
+                                ? "Calculated from the absence of core diabetic risk markers (Protective Factor Analysis):"
+                                : "Feature divergence analysis — conflicting symptom signals between Classical SVM and Quantum QNN:"}
                             </p>
                           </div>
                         </div>
@@ -1522,7 +1608,9 @@ export default function App() {
                           <span>
                             {finalOutcome === "Positive"
                               ? `Early Stage Diabetes prediction is driven by ${dynamicXaiBars[0]?.name || "hallmark symptoms"} (${dynamicXaiBars[0]?.pct || 28}%) combined with ${dynamicXaiBars[1]?.name || "secondary indicators"}. The quantum model (QNN) exhibits enhanced non-linear sensitivity to multi-symptom clusters.`
-                              : "This patient profile is free from hallmark diabetic indicators (Polyuria, Polydipsia, and Sudden Weight Loss are absent). Dual-model consensus confirms healthy metabolic baselines."}
+                              : finalOutcome === "Negative"
+                              ? "This patient profile is free from hallmark diabetic indicators (Polyuria, Polydipsia, and Sudden Weight Loss are absent). Dual-model consensus confirms healthy metabolic baselines."
+                              : "Safety Gate Active: The Classical SVM and Quantum QNN diverged on borderline symptom presentation. Confirmatory venous plasma fasting glucose / HbA1c testing is advised before diagnostic determination."}
                           </span>
                         </div>
 
