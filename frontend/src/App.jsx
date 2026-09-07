@@ -5,7 +5,6 @@ import AiExplainabilityPanel from "./AiExplainabilityPanel";
 import AuthModal from "./AuthModal";
 import Quantum3DLanding from "./Quantum3DLanding";
 import QuantumCircuitExplorer from "./QuantumCircuitExplorer";
-import RiskStratificationMeter from "./RiskStratificationMeter";
 import VerifiedPatientPicker from "./VerifiedPatientPicker";
 import "./QuantumDx.css";
 import {
@@ -1345,18 +1344,7 @@ export default function App() {
                   {/* Result Rendered (Single Active Outcome Card!) */}
                   {result && !loading && (
                     <>
-                      {/* Row 1: Semicircular Risk-Stratification Gauge */}
-                      <RiskStratificationMeter
-                        riskScore={overallConfidence}
-                        isDisagreement={isDisagreement}
-                        finalOutcome={finalOutcome}
-                        classicalProb={pClassical}
-                        quantumProb={pQuantum}
-                        diseaseName={currentTopInfo.diseaseTitle}
-                        groundTruth={selectedCohortCase?.groundTruth}
-                      />
-
-                      {/* Row 1b: Single Active Outcome Card + Circular Confidence Gauge */}
+                      {/* Active Outcome Top Row: Single Outcome Card (Positive/Negative/Inconclusive) + Circular Overall Confidence Ring */}
                       <div className="qdx-outcome-top-row">
                         {finalOutcome === "Positive" ? (
                           <div className="qdx-outcome-card outcome-positive">
