@@ -759,6 +759,16 @@ export default function App() {
                 </button>
               </li>
               <li>
+                <button
+                  type="button"
+                  className={`qdx-nav-item ${activeSidebarTab === "streamlit" ? "active" : ""}`}
+                  onClick={() => setActiveSidebarTab("streamlit")}
+                >
+                  <span className="qdx-nav-icon">📊</span>
+                  <span>CSV Research Hub</span>
+                </button>
+              </li>
+              <li>
                 {currentUser ? (
                   <button type="button" className="qdx-nav-item" onClick={handleLogout}>
                     <span className="qdx-nav-icon">🚪</span>
@@ -2049,6 +2059,65 @@ export default function App() {
               cancerFeatures={cancerFeatures}
               activePatientRow={selectedCohortCase}
             />
+          )}
+
+          {/* ==========================================================================
+              TAB 7: STREAMLIT RESEARCH & CSV BENCHMARK HUB
+              ========================================================================== */}
+          {activeSidebarTab === "streamlit" && (
+            <div className="qdx-streamlit-view">
+              <div className="qdx-banner" style={{ marginBottom: 20 }}>
+                <div className="qdx-banner-left">
+                  <div className="qdx-banner-icon">📊</div>
+                  <div className="qdx-banner-titles">
+                    <h1 className="qdx-banner-main-title">
+                      CSV Dataset &amp; <span className="qdx-gradient-text">QML Benchmark Studio</span>
+                    </h1>
+                    <p className="qdx-banner-desc">
+                      Upload arbitrary biomedical CSV datasets, configure missing value imputations, and benchmark classical vs. quantum models in real time via Streamlit.
+                    </p>
+                  </div>
+                </div>
+                <div className="qdx-banner-right" style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <a
+                    href="http://localhost:8501"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="qdx-preset-btn"
+                    style={{ background: "rgba(56, 189, 248, 0.15)", borderColor: "rgba(56, 189, 248, 0.4)", textDecoration: "none", color: "#38bdf8", padding: "8px 16px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 600 }}
+                  >
+                    <span>↗ Open in Full Window</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Guide Card */}
+              <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(56, 189, 248, 0.2)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+                  <div>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: "#f8fafc", margin: "0 0 6px" }}>
+                      ⚡ Streamlit Interactive Benchmark Server
+                    </h3>
+                    <p style={{ fontSize: 13, color: "var(--qdx-text-muted)", margin: 0 }}>
+                      If the embedded frame below shows a connection prompt, start the Streamlit server in your terminal:
+                    </p>
+                  </div>
+                  <div style={{ background: "rgba(0, 0, 0, 0.5)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: 8, padding: "8px 14px", fontFamily: "monospace", fontSize: 13, color: "#38bdf8", display: "flex", alignItems: "center", gap: 8 }}>
+                    <span>streamlit run dashboard/app.py</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Embedded Frame */}
+              <div style={{ width: "100%", height: "850px", borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255, 255, 255, 0.1)", background: "#0b1120", position: "relative" }}>
+                <iframe
+                  src="http://localhost:8501"
+                  title="QuantumDx Streamlit Benchmark Studio"
+                  style={{ width: "100%", height: "100%", border: "none" }}
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                />
+              </div>
+            </div>
           )}
 
           {/* Platform Footer */}

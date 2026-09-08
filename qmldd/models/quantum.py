@@ -191,9 +191,14 @@ class QuantumKernelSVM(BaseModel):
 
         def feature_map(x):
             for _ in range(reps):
-                qml.AngleEmbedding(x, wires=range(n_qubits), rotation="Y")
-                for i in range(n_qubits - 1):
-                    qml.CNOT(wires=[i, i + 1])
+                for i in range(n_qubits):
+                    qml.Hadamard(wires=i)
+                    qml.RZ(2.0 * x[i], wires=i)
+                for i in range(n_qubits):
+                    j = (i + 1) % n_qubits
+                    qml.CNOT(wires=[i, j])
+                    qml.RZ(2.0 * (np.pi - x[i]) * (np.pi - x[j]), wires=j)
+                    qml.CNOT(wires=[i, j])
 
         @qml.qnode(self.device)
         def kernel_circuit(x1, x2):
