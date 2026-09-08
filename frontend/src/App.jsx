@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import QuantumBioCanvas from "./QuantumBioCanvas";
 import JudgeComparisonStudio from "./JudgeComparisonStudio";
-import AiExplainabilityPanel from "./AiExplainabilityPanel";
 import AuthModal from "./AuthModal";
 import Quantum3DLanding from "./Quantum3DLanding";
 import QuantumCircuitExplorer from "./QuantumCircuitExplorer";
@@ -194,7 +193,6 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showFullDecisionMatrix, setShowFullDecisionMatrix] = useState(false);
-  const [showDeepXai, setShowDeepXai] = useState(false);
 
   // Screening History State
   const [screeningHistory, setScreeningHistory] = useState([]);
@@ -1624,22 +1622,7 @@ export default function App() {
                           </span>
                         </div>
 
-                        {/* Deep SHAP Panel Toggle */}
-                        <div style={{ marginTop: 6 }}>
-                          <button
-                            type="button"
-                            className="qdx-preset-btn"
-                            style={{ width: "100%", justifyContent: "center", padding: "8px 14px", fontSize: 12, borderColor: "rgba(168, 85, 247, 0.4)", color: "#c084fc" }}
-                            onClick={() => setShowDeepXai((prev) => !prev)}
-                          >
-                            {showDeepXai ? "▲ Close Deep SHAP & Permutation Sensitivity Lab" : "▼ 🔬 Open Deep SHAP & Multi-Model Feature Attribution Matrix"}
-                          </button>
-                          {showDeepXai && (
-                            <div style={{ marginTop: 14 }}>
-                              <AiExplainabilityPanel />
-                            </div>
-                          )}
-                        </div>
+
                       </div>
 
                       {/* Collapsible Full Decision Matrix Accordion for Judges */}
