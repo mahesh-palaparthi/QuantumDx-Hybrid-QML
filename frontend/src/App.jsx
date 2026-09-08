@@ -1640,39 +1640,43 @@ export default function App() {
                         {showFullDecisionMatrix && (
                           <div className="qdx-accordion-body">
                             <div className="qdx-matrix-3col">
-                              {/* Col 1: Both Positive */}
-                              <div className={`qdx-mat-col col-pos ${isBothPositive ? "active" : ""}`}>
+                              {/* Col 1: Positive */}
+                              <div className={`qdx-mat-col col-pos ${finalOutcome === "Positive" ? "active" : ""}`}>
                                 <div className="qdx-col-head">
-                                  <span>Both +ve</span>
-                                  {isBothPositive && <span style={{ color: "#ef4444" }}>● Active</span>}
+                                  <span>{isBothPositive ? "Both +ve (Consensus)" : "Positive Verdict"}</span>
+                                  {finalOutcome === "Positive" && <span className="qdx-active-dot-badge" style={{ color: "#ef4444" }}>● Active Decision</span>}
                                 </div>
                                 <div className="qdx-col-title" style={{ color: "#ef4444" }}>Positive</div>
                                 <p className="qdx-col-desc">
-                                  Both Classical Tuned SVM &amp; Quantum QNN independently detect disease biomarkers with high confidence (H ≥ 58%).
+                                  {isBothPositive
+                                    ? "Both Classical Tuned SVM & Quantum QNN independently detect disease biomarkers with high confidence."
+                                    : "Hybrid weighted decision indicates elevated disease risk based on clinical biomarker presentation."}
                                 </p>
                               </div>
 
-                              {/* Col 2: Both Negative */}
-                              <div className={`qdx-mat-col col-neg ${isBothNegative ? "active" : ""}`}>
+                              {/* Col 2: Negative */}
+                              <div className={`qdx-mat-col col-neg ${finalOutcome === "Negative" ? "active" : ""}`}>
                                 <div className="qdx-col-head">
-                                  <span>Both -ve</span>
-                                  {isBothNegative && <span style={{ color: "#10b981" }}>● Active</span>}
+                                  <span>{isBothNegative ? "Both -ve (Consensus)" : "Negative Verdict"}</span>
+                                  {finalOutcome === "Negative" && <span className="qdx-active-dot-badge" style={{ color: "#10b981" }}>● Active Decision</span>}
                                 </div>
                                 <div className="qdx-col-title" style={{ color: "#10b981" }}>Negative</div>
                                 <p className="qdx-col-desc">
-                                  Both Classical &amp; Quantum models agree on a normal biomarker profile with high confidence (H ≤ 42%). Safely rules out acute risk.
+                                  {isBothNegative
+                                    ? "Both Classical & Quantum models agree on a normal biomarker profile with high confidence. Safely rules out acute risk."
+                                    : "Consensus evaluation confirms healthy baseline values. Low probability of disease markers."}
                                 </p>
                               </div>
 
-                              {/* Col 3: Disagreement */}
-                              <div className={`qdx-mat-col col-inconc ${isDisagreement ? "active" : ""}`}>
+                              {/* Col 3: Inconclusive */}
+                              <div className={`qdx-mat-col col-inconc ${finalOutcome === "Inconclusive" ? "active" : ""}`}>
                                 <div className="qdx-col-head">
-                                  <span>Divergence</span>
-                                  {isDisagreement && <span style={{ color: "#f59e0b" }}>● Active</span>}
+                                  <span>{isHighDivergence ? "Divergence" : "Inconclusive"}</span>
+                                  {finalOutcome === "Inconclusive" && <span className="qdx-active-dot-badge" style={{ color: "#f59e0b" }}>● Active Decision</span>}
                                 </div>
                                 <div className="qdx-col-title" style={{ color: "#f59e0b" }}>Inconclusive</div>
                                 <p className="qdx-col-desc">
-                                  Models diverged in confidence (Δ ≥ 0.45) or fell into the uncertainty deadband. Automated safety gating orders confirmatory lab testing.
+                                  Models diverged in confidence or fell into the uncertainty deadband. Automated safety gating orders confirmatory lab testing.
                                 </p>
                               </div>
                             </div>
@@ -1682,7 +1686,7 @@ export default function App() {
                               <strong style={{ color: "#38bdf8", display: "block", marginBottom: 4 }}>
                                 Recommended Clinical Protocol:
                               </strong>
-                              {isBothPositive ? currentTopInfo.actionPositive : isBothNegative ? currentTopInfo.actionNegative : currentTopInfo.actionDisagreement}
+                              {finalOutcome === "Positive" ? currentTopInfo.actionPositive : finalOutcome === "Negative" ? currentTopInfo.actionNegative : currentTopInfo.actionDisagreement}
                             </div>
                           </div>
                         )}
