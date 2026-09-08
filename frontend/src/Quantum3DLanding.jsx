@@ -232,7 +232,7 @@ export default function Quantum3DLanding({ onLaunchPrediction, onOpenAuth, onOpe
               className="qdx-btn-landing-ghost"
               onClick={onOpenStudio}
             >
-              ⚖️ Judge Studio Benchmarks
+              ⚖️ Benchmarks
             </button>
           </div>
 

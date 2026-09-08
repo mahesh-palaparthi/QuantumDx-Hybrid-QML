@@ -191,7 +191,7 @@ export default function JudgeComparisonStudio({ benchmarks = {} }) {
       {/* 1. TOP HEADER & DATASET SELECTOR */}
       <div className="studio-header">
         <div>
-          <div className="studio-eyebrow">Judge & Evaluation Studio</div>
+          <div className="studio-eyebrow">Benchmark &amp; Evaluation Studio</div>
           <h2 className="studio-title">Classical vs Quantum Multi-Metric Benchmark Suite</h2>
           <p className="studio-desc">
             Rigorous evaluation of 4 Classical vs 3 Quantum machine learning architectures across identical stratified test splits.

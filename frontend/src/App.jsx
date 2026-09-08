@@ -770,7 +770,7 @@ export default function App() {
                 </button>
               </li>
 
-              {/* 4. Judge Studio Benchmarks */}
+              {/* 4. Benchmarks */}
               <li>
                 <button
                   type="button"
@@ -778,7 +778,7 @@ export default function App() {
                   onClick={() => setActiveSidebarTab("studio")}
                 >
                   <span className="qdx-nav-icon">⚖️</span>
-                  <span>Judge Studio</span>
+                  <span>Benchmarks</span>
                 </button>
               </li>
 
@@ -2091,7 +2091,7 @@ export default function App() {
           )}
 
           {/* ==========================================================================
-              TAB 5: JUDGE STUDIO VIEW
+              TAB 5: STATISTICAL BENCHMARKS VIEW
               ========================================================================== */}
           {activeSidebarTab === "studio" && (
             <div>
@@ -2100,7 +2100,7 @@ export default function App() {
                   <div className="qdx-banner-icon">⚖️</div>
                   <div className="qdx-banner-titles">
                     <h1 className="qdx-banner-main-title">
-                      Judge Studio &amp; <span className="qdx-gradient-text">Statistical Benchmarks</span>
+                      Performance &amp; <span className="qdx-gradient-text">Statistical Benchmarks</span>
                     </h1>
                     <p className="qdx-banner-desc">
                       Examine comprehensive 5-fold cross-validation metrics, QSVM vs QNN tradeoffs, SHAP feature attributions, and PennyLane quantum circuit mechanics.
