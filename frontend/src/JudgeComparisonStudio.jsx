@@ -351,24 +351,58 @@ export default function JudgeComparisonStudio({ benchmarks = {} }) {
             </p>
           </div>
 
-          <div className="leaderboard-sorter">
-            <span className="sort-label">Rank by Metric:</span>
-            <select
-              className="select-metric"
-              value={rankingMetric}
-              onChange={(e) => setRankingMetric(e.target.value)}
-            >
-              {Object.entries(METRIC_DEFINITIONS).map(([key, def]) => (
-                <option key={key} value={key}>
-                  {def.label}
-                </option>
-              ))}
-            </select>
+          <div className="leaderboard-sorter-wrap">
+            <div className="sorter-label-pill">
+              <span className="sorter-icon">🎯</span>
+              <span className="sorter-text">Rank by Metric</span>
+            </div>
+            <div className="custom-select-container">
+              <select
+                className="custom-select-metric"
+                value={rankingMetric}
+                onChange={(e) => setRankingMetric(e.target.value)}
+              >
+                {Object.entries(METRIC_DEFINITIONS).map(([key, def]) => (
+                  <option key={key} value={key}>
+                    {def.label}
+                  </option>
+                ))}
+              </select>
+              <span className="custom-select-arrow">▼</span>
+            </div>
           </div>
         </div>
 
+        {/* Quick-select pills for clinical metrics */}
+        <div className="metric-pills-bar">
+          {Object.entries(METRIC_DEFINITIONS).map(([key, def]) => {
+            const isActive = rankingMetric === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                className={`metric-filter-pill ${isActive ? "active" : ""}`}
+                onClick={() => setRankingMetric(key)}
+              >
+                {key === "accuracy" && "🎯 "}
+                {key === "sensitivity" && "🩺 "}
+                {key === "specificity" && "🛡️ "}
+                {key === "precision" && "⚖️ "}
+                {key === "f1" && "📊 "}
+                {key === "roc_auc" && "📈 "}
+                {key === "training_time_seconds" && "⏱️ "}
+                {key === "inference_time_seconds" && "⚡ "}
+                {def.label}
+              </button>
+            );
+          })}
+        </div>
+
         <div className="metric-explanation-chip">
-          <strong>Selected Metric Focus ({metricConfig.label}):</strong> {metricConfig.whyItMatters}
+          <span className="chip-icon">💡</span>
+          <div>
+            <strong>Selected Metric Focus ({metricConfig.label}):</strong> {metricConfig.whyItMatters}
+          </div>
         </div>
 
         <div className="leaderboard-list">
@@ -384,19 +418,27 @@ export default function JudgeComparisonStudio({ benchmarks = {} }) {
 
             return (
               <div key={model.model_name} className={`leaderboard-row ${isFirst ? "rank-gold" : ""}`}>
-                <div className="rank-badge">
+                <div className={`rank-badge ${idx === 0 ? "rank-1" : idx === 1 ? "rank-2" : idx === 2 ? "rank-3" : ""}`}>
                   {idx === 0 ? "🥇 #1" : idx === 1 ? "🥈 #2" : idx === 2 ? "🥉 #3" : `#${idx + 1}`}
                 </div>
 
                 <div className="model-main-info">
                   <div className="model-name-title">
-                    {model.model_name.replace("classical_", "").replace("quantum_", "").toUpperCase()}
+                    <span className="model-title-text">
+                      {model.model_name.replace("classical_", "").replace("quantum_", "").toUpperCase()}
+                    </span>
                     <span className={`type-tag ${model.is_quantum ? "quantum" : "classical"}`}>
-                      {model.is_quantum ? "QUANTUM VQC / KERNEL" : "CLASSICAL ML"}
+                      {model.is_quantum ? "⚛️ QUANTUM" : "💻 CLASSICAL"}
                     </span>
                   </div>
                   <div className="model-sub-meta">
-                    Acc: {(model.accuracy * 100).toFixed(1)}% │ Sensitivity: {(model.sensitivity * 100).toFixed(1)}% │ F1: {(model.f1 * 100).toFixed(1)}% │ Train: {model.training_time_seconds ? `${model.training_time_seconds.toFixed(2)}s` : "0.01s"}
+                    <span className="meta-tag">Acc: <b>{(model.accuracy * 100).toFixed(1)}%</b></span>
+                    <span className="meta-sep">•</span>
+                    <span className="meta-tag">Sensitivity: <b>{(model.sensitivity * 100).toFixed(1)}%</b></span>
+                    <span className="meta-sep">•</span>
+                    <span className="meta-tag">F1: <b>{(model.f1 * 100).toFixed(1)}%</b></span>
+                    <span className="meta-sep">•</span>
+                    <span className="meta-tag">Train: <b>{model.training_time_seconds ? `${model.training_time_seconds.toFixed(2)}s` : "0.01s"}</b></span>
                   </div>
                 </div>
 
@@ -404,7 +446,7 @@ export default function JudgeComparisonStudio({ benchmarks = {} }) {
                   <span className="score-label">{metricConfig.label}</span>
                   <span className="score-value">{formattedVal}</span>
                   {delta !== null && Number(delta) !== 0 && (
-                    <span className="score-delta">{delta}% vs top</span>
+                    <span className="score-delta">{delta}% vs #1</span>
                   )}
                 </div>
               </div>
@@ -953,99 +995,314 @@ export default function JudgeComparisonStudio({ benchmarks = {} }) {
         .bar-fill.vqc, .bar-fill.vqc-fill { background: linear-gradient(90deg, #db2777, #f472b6); }
         .bar-label.quantum-qnn { color: #34d399; font-weight: 750; }
 
-        .leaderboard-select {
-          background: rgba(15, 23, 42, 0.9);
-          border: 1px solid #38bdf8;
-          color: #ffffff;
-          padding: 8px 14px;
-          border-radius: 8px;
-          font-size: 13px;
-          font-weight: 800;
-          cursor: pointer;
-        }
-
-        .leaderboard-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 12px;
-        }
-
-        .rank-card {
-          background: rgba(15, 28, 48, 0.85);
-          border: 1px solid rgba(56, 189, 248, 0.25);
-          border-radius: 12px;
-          padding: 14px 18px;
+        /* ==========================================================================
+           LEADERBOARD & METRIC SORTER (High-End Design)
+           ========================================================================== */
+        .leaderboard-sorter-wrap {
           display: flex;
           align-items: center;
-          gap: 14px;
+          gap: 12px;
+          background: rgba(10, 20, 36, 0.85);
+          border: 1px solid rgba(56, 189, 248, 0.3);
+          border-radius: 12px;
+          padding: 6px 10px 6px 14px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+          backdrop-filter: blur(12px);
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .leaderboard-sorter-wrap:hover {
+          border-color: #38bdf8;
+          box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+        }
+
+        .sorter-label-pill {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          white-space: nowrap;
+        }
+
+        .sorter-icon {
+          font-size: 14px;
+        }
+
+        .sorter-text {
+          font-size: 11.5px;
+          font-weight: 800;
+          color: #7dd3fc;
+          letter-spacing: 0.6px;
+          text-transform: uppercase;
+        }
+
+        .custom-select-container {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .custom-select-metric {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          background: linear-gradient(135deg, rgba(15, 28, 48, 0.95), rgba(10, 20, 36, 0.95));
+          border: 1px solid rgba(56, 189, 248, 0.35);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 13px;
+          font-weight: 750;
+          padding: 7px 32px 7px 12px;
+          cursor: pointer;
+          outline: none;
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .custom-select-metric:hover {
+          border-color: #38bdf8;
+          box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+          color: #38bdf8;
+        }
+
+        .custom-select-metric:focus {
+          border-color: #38bdf8;
+          box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+        }
+
+        .custom-select-metric option {
+          background: #0b1526;
+          color: #f1f5f9;
+          font-weight: 600;
+          padding: 10px;
+        }
+
+        .custom-select-arrow {
+          position: absolute;
+          right: 10px;
+          pointer-events: none;
+          font-size: 9px;
+          color: #38bdf8;
           transition: transform 0.2s ease;
         }
 
-        .rank-card:hover {
-          transform: translateY(-2px);
-          border-color: #38bdf8;
-        }
-
-        .rank-medal {
-          font-size: 24px;
-          line-height: 1;
-        }
-
-        .rank-info {
-          flex: 1;
-        }
-
-        .rank-model-name {
-          font-size: 14px;
-          font-weight: 850;
-          color: #ffffff;
+        .metric-pills-bar {
           display: flex;
           align-items: center;
           gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 16px;
+          padding: 4px 0;
         }
 
-        .badge-pill {
-          padding: 2px 8px;
+        .metric-filter-pill {
+          background: rgba(15, 28, 48, 0.6);
+          border: 1px solid rgba(56, 189, 248, 0.2);
+          color: #94a3b8;
+          font-size: 11.5px;
+          font-weight: 700;
+          padding: 6px 12px;
+          border-radius: 20px;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .metric-filter-pill:hover {
+          background: rgba(14, 165, 233, 0.15);
+          color: #e2e8f0;
+          border-color: rgba(56, 189, 248, 0.4);
+          transform: translateY(-1px);
+        }
+
+        .metric-filter-pill.active {
+          background: linear-gradient(135deg, rgba(2, 132, 199, 0.35), rgba(14, 165, 233, 0.2));
+          border-color: #38bdf8;
+          color: #ffffff;
+          font-weight: 800;
+          box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .metric-explanation-chip {
+          background: rgba(14, 165, 233, 0.08);
+          border: 1px solid rgba(56, 189, 248, 0.25);
+          border-left: 4px solid #38bdf8;
+          border-radius: 8px;
+          padding: 12px 16px;
+          font-size: 12.5px;
+          color: #cbd5e1;
+          margin-bottom: 18px;
+          line-height: 1.5;
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .metric-explanation-chip .chip-icon {
+          font-size: 16px;
+          flex-shrink: 0;
+          margin-top: 1px;
+        }
+
+        .metric-explanation-chip strong {
+          color: #38bdf8;
+          font-weight: 800;
+        }
+
+        .leaderboard-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .leaderboard-row {
+          background: rgba(15, 28, 48, 0.7);
+          border: 1px solid rgba(56, 189, 248, 0.2);
           border-radius: 12px;
+          padding: 14px 20px;
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .leaderboard-row:hover {
+          background: rgba(18, 34, 58, 0.85);
+          border-color: rgba(56, 189, 248, 0.45);
+          transform: translateX(4px);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .leaderboard-row.rank-gold {
+          background: linear-gradient(90deg, rgba(234, 179, 8, 0.12), rgba(15, 28, 48, 0.85));
+          border-color: rgba(234, 179, 8, 0.5);
+          box-shadow: 0 4px 24px rgba(234, 179, 8, 0.12);
+        }
+
+        .leaderboard-row.rank-gold:hover {
+          border-color: rgba(234, 179, 8, 0.75);
+          box-shadow: 0 4px 28px rgba(234, 179, 8, 0.25);
+        }
+
+        .rank-badge {
+          font-size: 15px;
+          font-weight: 900;
+          color: #94a3b8;
+          min-width: 60px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .rank-badge.rank-1 {
+          color: #fbbf24;
+          text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .rank-badge.rank-2 {
+          color: #e2e8f0;
+          text-shadow: 0 0 8px rgba(226, 232, 240, 0.3);
+        }
+
+        .rank-badge.rank-3 {
+          color: #fb923c;
+          text-shadow: 0 0 8px rgba(251, 146, 60, 0.3);
+        }
+
+        .model-main-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .model-name-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .model-title-text {
+          font-size: 15px;
+          font-weight: 850;
+          color: #ffffff;
+          letter-spacing: 0.4px;
+        }
+
+        .type-tag {
           font-size: 10px;
           font-weight: 800;
+          padding: 2.5px 10px;
+          border-radius: 12px;
+          letter-spacing: 0.5px;
           text-transform: uppercase;
         }
-        .badge-pill.cyan {
+
+        .type-tag.classical {
           background: rgba(14, 165, 233, 0.15);
-          border: 1px solid #0ea5e9;
+          border: 1px solid rgba(14, 165, 233, 0.45);
           color: #38bdf8;
         }
-        .badge-pill.purple {
+
+        .type-tag.quantum {
           background: rgba(168, 85, 247, 0.15);
-          border: 1px solid #a855f7;
+          border: 1px solid rgba(168, 85, 247, 0.45);
           color: #c084fc;
+        }
+
+        .model-sub-meta {
+          font-size: 12px;
+          font-weight: 600;
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .meta-tag b {
+          color: #e2e8f0;
+        }
+
+        .meta-sep {
+          color: rgba(148, 163, 184, 0.4);
+          font-size: 10px;
         }
 
         .rank-score-box {
           text-align: right;
+          min-width: 110px;
         }
 
         .score-label {
           display: block;
           font-size: 10px;
-          font-weight: 750;
-          color: #94a3b8;
+          font-weight: 800;
+          color: #7dd3fc;
           text-transform: uppercase;
+          letter-spacing: 0.6px;
         }
 
         .score-value {
           display: block;
-          font-size: 18px;
+          font-size: 20px;
           font-weight: 900;
           color: #ffffff;
+          margin-top: 1px;
+          letter-spacing: -0.5px;
         }
 
         .score-delta {
-          display: block;
+          display: inline-block;
           font-size: 10px;
           font-weight: 700;
-          color: #38bdf8;
+          color: #f87171;
+          margin-top: 2px;
+          background: rgba(239, 68, 68, 0.12);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          border-radius: 4px;
+          padding: 1px 6px;
         }
 
         .table-wrapper {
