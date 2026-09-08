@@ -691,9 +691,9 @@ export default function App() {
                   type="button"
                   className={`qdx-nav-item ${activeSidebarTab === "landing" ? "active" : ""}`}
                   onClick={() => setActiveSidebarTab("landing")}
+                  title="3D Portal"
                 >
                   <span className="qdx-nav-icon">🌐</span>
-                  <span>3D Portal</span>
                 </button>
               </li>
               <li>
