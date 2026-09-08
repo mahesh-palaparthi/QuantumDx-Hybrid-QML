@@ -1426,9 +1426,9 @@ export default function App() {
                           <div className="qdx-outcome-card outcome-inconclusive">
                             <div className="qdx-outcome-icon-box">🔬</div>
                             <div className="qdx-outcome-content">
-                              <div className="qdx-outcome-title">Inconclusive</div>
+                              <div className="qdx-outcome-title">Uncertainty</div>
                               <div className="qdx-outcome-subtitle">
-                                Clinical Review Advised - Classifier Divergence
+                                Clinical Review Advised — Uncertainty Deadband
                               </div>
                             </div>
                           </div>
@@ -1668,13 +1668,13 @@ export default function App() {
                                 </p>
                               </div>
 
-                              {/* Col 3: Inconclusive */}
+                              {/* Col 3: Uncertainty */}
                               <div className={`qdx-mat-col col-inconc ${finalOutcome === "Inconclusive" ? "active" : ""}`}>
                                 <div className="qdx-col-head">
-                                  <span>{isHighDivergence ? "Divergence" : "Inconclusive"}</span>
+                                  <span>{isHighDivergence ? "Divergence" : "Uncertainty"}</span>
                                   {finalOutcome === "Inconclusive" && <span className="qdx-active-dot-badge" style={{ color: "#f59e0b" }}>● Active Decision</span>}
                                 </div>
-                                <div className="qdx-col-title" style={{ color: "#f59e0b" }}>Inconclusive</div>
+                                <div className="qdx-col-title" style={{ color: "#f59e0b" }}>Uncertainty</div>
                                 <p className="qdx-col-desc">
                                   Models diverged in confidence or fell into the uncertainty deadband. Automated safety gating orders confirmatory lab testing.
                                 </p>
