@@ -180,4 +180,25 @@ router.get("/screenings", (req, res) => {
   }
 });
 
+// 7. CLEAR SCREENING HISTORY
+router.delete("/screenings", (req, res) => {
+  try {
+    let userId = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const payload = db.verifyToken(authHeader.split(" ")[1]);
+      if (payload) userId = payload.userId;
+    }
+
+    db.clearScreeningHistory(userId);
+    res.json({
+      status: "success",
+      message: "Screening history cleared successfully",
+    });
+  } catch (err) {
+    console.error("Clear screenings error:", err);
+    res.status(500).json({ status: "error", message: "Failed to clear screening history" });
+  }
+});
+
 module.exports = router;

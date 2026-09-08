@@ -224,6 +224,17 @@ const db = {
       .slice(0, limit);
   },
 
+  clearScreeningHistory(userId = null) {
+    const data = loadDb();
+    if (!userId) {
+      data.screenings = [];
+    } else {
+      data.screenings = data.screenings.filter((s) => s.userId && s.userId !== userId);
+    }
+    saveDb(data);
+    return true;
+  },
+
   generateToken,
   verifyToken,
 };

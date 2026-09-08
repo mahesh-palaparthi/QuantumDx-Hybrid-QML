@@ -232,6 +232,22 @@ export default function App() {
     }
   };
 
+  const handleClearHistory = async () => {
+    if (!window.confirm("Are you sure you want to delete all saved screening records? This cannot be undone.")) return;
+    try {
+      const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+      const res = await fetch("http://localhost:5000/api/auth/screenings", {
+        method: "DELETE",
+        headers,
+      });
+      if (res.ok) {
+        setScreeningHistory([]);
+      }
+    } catch (err) {
+      console.warn("Could not clear screening history:", err);
+    }
+  };
+
   const handleLoginSuccess = (user, token) => {
     setCurrentUser(user);
     setAuthToken(token);
@@ -1758,8 +1774,23 @@ export default function App() {
                   </p>
                 </div>
                 <div className="qdx-history-actions">
-                  <button type="button" className="qdx-btn-action" onClick={fetchScreeningHistory}>
+                  <button type="button" className="qdx-btn-action" onClick={fetchScreeningHistory} title="Refresh records from database">
                     🔄 Refresh
+                  </button>
+                  <button
+                    type="button"
+                    className="qdx-btn-action"
+                    onClick={handleClearHistory}
+                    disabled={screeningHistory.length === 0}
+                    style={{
+                      borderColor: screeningHistory.length > 0 ? "rgba(239, 68, 68, 0.4)" : "rgba(255, 255, 255, 0.1)",
+                      color: screeningHistory.length > 0 ? "#f87171" : "var(--qdx-text-muted)",
+                      opacity: screeningHistory.length === 0 ? 0.5 : 1,
+                      cursor: screeningHistory.length === 0 ? "not-allowed" : "pointer",
+                    }}
+                    title={screeningHistory.length > 0 ? "Delete all saved screening records" : "No screening records to clear"}
+                  >
+                    🗑️ Clear History
                   </button>
                   <button
                     type="button"
