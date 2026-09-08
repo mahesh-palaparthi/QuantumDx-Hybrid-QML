@@ -677,7 +677,38 @@ export default function App() {
           <div>
             {/* Top Brand Logo */}
             <div className="qdx-brand">
-              <div className="qdx-brand-icon">⚛️</div>
+              <div className="qdx-brand-icon">
+                <svg viewBox="0 0 44 44" width="30" height="30" fill="none">
+                  {/* Outer glow aura */}
+                  <circle cx="22" cy="22" r="18" fill="url(#qdx-core-glow)" opacity="0.3" />
+                  
+                  {/* Quantum orbital rings */}
+                  <ellipse cx="22" cy="22" rx="17" ry="6.5" stroke="#00f2fe" strokeWidth="1.8" transform="rotate(-30 22 22)" />
+                  <ellipse cx="22" cy="22" rx="17" ry="6.5" stroke="#d946ef" strokeWidth="1.8" transform="rotate(30 22 22)" />
+                  <ellipse cx="22" cy="22" rx="17" ry="6.5" stroke="#38bdf8" strokeWidth="1.6" transform="rotate(90 22 22)" strokeDasharray="18 4" />
+                  
+                  {/* Orbiting Qubit nodes */}
+                  <circle cx="8" cy="14" r="2.2" fill="#00f2fe" filter="drop-shadow(0 0 4px #00f2fe)" />
+                  <circle cx="36" cy="14" r="2.2" fill="#d946ef" filter="drop-shadow(0 0 4px #d946ef)" />
+                  <circle cx="22" cy="39" r="2.2" fill="#38bdf8" filter="drop-shadow(0 0 4px #38bdf8)" />
+                  
+                  {/* Central glowing quantum nucleus */}
+                  <circle cx="22" cy="22" r="5" fill="url(#qdx-nucleus-grad)" filter="drop-shadow(0 0 8px #00f2fe)" />
+                  <circle cx="22" cy="22" r="2" fill="#ffffff" />
+                  
+                  <defs>
+                    <radialGradient id="qdx-core-glow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#00f2fe" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="#7928ca" stopOpacity="0" />
+                    </radialGradient>
+                    <linearGradient id="qdx-nucleus-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="50%" stopColor="#00f2fe" />
+                      <stop offset="100%" stopColor="#7928ca" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
               <div className="qdx-brand-text">
                 <span className="qdx-brand-title">QuantumDx</span>
                 <span className="qdx-brand-sub">Disease Risk Prediction</span>
@@ -686,16 +717,20 @@ export default function App() {
 
             {/* Navigation Menu */}
             <ul className="qdx-nav-list">
+              {/* 1. Portal */}
               <li>
                 <button
                   type="button"
                   className={`qdx-nav-item ${activeSidebarTab === "landing" ? "active" : ""}`}
                   onClick={() => setActiveSidebarTab("landing")}
-                  title="3D Portal"
+                  title="3D Portal Experience"
                 >
                   <span className="qdx-nav-icon">🌐</span>
+                  <span>Portal</span>
                 </button>
               </li>
+
+              {/* 2. Clinical Prediction */}
               <li>
                 <button
                   type="button"
@@ -706,6 +741,8 @@ export default function App() {
                   <span>Prediction Studio</span>
                 </button>
               </li>
+
+              {/* 3. Quantum Circuit Explorer */}
               <li>
                 <button
                   type="button"
@@ -716,36 +753,8 @@ export default function App() {
                   <span>Quantum Circuit</span>
                 </button>
               </li>
-              <li>
-                <button
-                  type="button"
-                  className={`qdx-nav-item ${activeSidebarTab === "dashboard" ? "active" : ""}`}
-                  onClick={() => setActiveSidebarTab("dashboard")}
-                >
-                  <span className="qdx-nav-icon">🏠</span>
-                  <span>Dashboard</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  className={`qdx-nav-item ${activeSidebarTab === "history" ? "active" : ""}`}
-                  onClick={() => setActiveSidebarTab("history")}
-                >
-                  <span className="qdx-nav-icon">🕒</span>
-                  <span>History</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  className={`qdx-nav-item ${activeSidebarTab === "profile" ? "active" : ""}`}
-                  onClick={() => setActiveSidebarTab("profile")}
-                >
-                  <span className="qdx-nav-icon">👤</span>
-                  <span>Profile</span>
-                </button>
-              </li>
+
+              {/* 4. Judge Studio Benchmarks */}
               <li>
                 <button
                   type="button"
@@ -756,6 +765,8 @@ export default function App() {
                   <span>Judge Studio</span>
                 </button>
               </li>
+
+              {/* 5. CSV Research Hub */}
               <li>
                 <button
                   type="button"
@@ -764,6 +775,42 @@ export default function App() {
                 >
                   <span className="qdx-nav-icon">📊</span>
                   <span>CSV Research Hub</span>
+                </button>
+              </li>
+
+              {/* 6. Statistical Dashboard */}
+              <li>
+                <button
+                  type="button"
+                  className={`qdx-nav-item ${activeSidebarTab === "dashboard" ? "active" : ""}`}
+                  onClick={() => setActiveSidebarTab("dashboard")}
+                >
+                  <span className="qdx-nav-icon">🏠</span>
+                  <span>Dashboard</span>
+                </button>
+              </li>
+
+              {/* 7. Screening History */}
+              <li>
+                <button
+                  type="button"
+                  className={`qdx-nav-item ${activeSidebarTab === "history" ? "active" : ""}`}
+                  onClick={() => setActiveSidebarTab("history")}
+                >
+                  <span className="qdx-nav-icon">🕒</span>
+                  <span>History</span>
+                </button>
+              </li>
+
+              {/* 8. User Profile */}
+              <li>
+                <button
+                  type="button"
+                  className={`qdx-nav-item ${activeSidebarTab === "profile" ? "active" : ""}`}
+                  onClick={() => setActiveSidebarTab("profile")}
+                >
+                  <span className="qdx-nav-icon">👤</span>
+                  <span>Profile</span>
                 </button>
               </li>
               <li>
