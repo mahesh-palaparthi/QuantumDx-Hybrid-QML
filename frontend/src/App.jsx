@@ -923,7 +923,19 @@ export default function App() {
                 </button>
               </li>
 
-              {/* 2. Clinical Prediction */}
+              {/* 2. Statistical Dashboard */}
+              <li>
+                <button
+                  type="button"
+                  className={`qdx-nav-item ${activeSidebarTab === "dashboard" ? "active" : ""}`}
+                  onClick={() => setActiveSidebarTab("dashboard")}
+                >
+                  <span className="qdx-nav-icon">🏠</span>
+                  <span>Dashboard</span>
+                </button>
+              </li>
+
+              {/* 3. Clinical Prediction */}
               <li>
                 <button
                   type="button"
@@ -935,7 +947,7 @@ export default function App() {
                 </button>
               </li>
 
-              {/* 3. Quantum Circuit Explorer */}
+              {/* 4. Quantum Circuit Explorer */}
               <li>
                 <button
                   type="button"
@@ -947,7 +959,7 @@ export default function App() {
                 </button>
               </li>
 
-              {/* 4. Benchmarks */}
+              {/* 5. Benchmarks */}
               <li>
                 <button
                   type="button"
@@ -959,7 +971,7 @@ export default function App() {
                 </button>
               </li>
 
-              {/* 5. CSV Research Hub */}
+              {/* 6. CSV Research Hub */}
               <li>
                 <button
                   type="button"
@@ -968,18 +980,6 @@ export default function App() {
                 >
                   <span className="qdx-nav-icon">📊</span>
                   <span>CSV Research Hub</span>
-                </button>
-              </li>
-
-              {/* 6. Statistical Dashboard */}
-              <li>
-                <button
-                  type="button"
-                  className={`qdx-nav-item ${activeSidebarTab === "dashboard" ? "active" : ""}`}
-                  onClick={() => setActiveSidebarTab("dashboard")}
-                >
-                  <span className="qdx-nav-icon">🏠</span>
-                  <span>Dashboard</span>
                 </button>
               </li>
 
@@ -1109,6 +1109,7 @@ export default function App() {
           {activeSidebarTab === "landing" && (
             <Quantum3DLanding
               onLaunchPrediction={() => setActiveSidebarTab("prediction")}
+              onOpenDashboard={() => setActiveSidebarTab("dashboard")}
               onOpenAuth={() => setIsAuthModalOpen(true)}
               onOpenStudio={() => setActiveSidebarTab("studio")}
             />

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export default function Quantum3DLanding({ onLaunchPrediction, onOpenAuth, onOpenStudio }) {
+export default function Quantum3DLanding({ onLaunchPrediction, onOpenAuth, onOpenStudio, onOpenDashboard }) {
   const canvasRef = useRef(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
@@ -223,9 +223,9 @@ export default function Quantum3DLanding({ onLaunchPrediction, onOpenAuth, onOpe
             <button
               type="button"
               className="qdx-btn-landing-secondary"
-              onClick={onOpenAuth}
+              onClick={onOpenDashboard}
             >
-              🔐 Create Free Account / Sign In
+              🏠 View Dashboard
             </button>
             <button
               type="button"
