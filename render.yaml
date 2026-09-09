@@ -22,10 +22,7 @@ services:
     autoDeploy: true
     envVars:
       - key: PYTHON_API_URL
-        fromService:
-          type: web
-          name: quantumdx-engine
-          property: hostport
+        value: https://quantumdx-engine.onrender.com
 
   # 3. Streamlit Interactive Benchmark Dashboard
   - type: web

@@ -5,6 +5,7 @@ from typing import Any, cast
 
 import numpy as np
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
 from pennylane.data import Dataset # type: ignore
 from pydantic import BaseModel, field_validator
@@ -183,6 +184,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Hybrid QML Disease Detection API", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # ---------------------------------------------------------

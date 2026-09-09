@@ -6,25 +6,55 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 5000;
 function resolvePythonApiUrl(input) {
-    let url = (input || "http://127.0.0.1:8000").trim();
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        url = "http://" + url;
+    let raw = (input || "http://127.0.0.1:8000").trim();
+    
+    // If it's already an absolute HTTP/HTTPS URL
+    if (raw.startsWith("http://") || raw.startsWith("https://")) {
+        try {
+            const u = new URL(raw);
+            // On Render free tier, web services cannot receive private network traffic (:10000).
+            // If an internal hostname without dot was provided (e.g. http://quantumdx-engine:10000), target public HTTPS domain.
+            if (!u.hostname.includes(".") && u.hostname !== "localhost" && u.hostname !== "127.0.0.1") {
+                return `https://${u.hostname}.onrender.com`;
+            }
+        } catch (e) {}
+        return raw;
     }
-    try {
-        const u = new URL(url);
-        // If it's an internal Render hostname without port (e.g. quantumdx-engine),
-        // Render internal private networking listens on port 10000.
-        if (!u.port && !url.includes(".onrender.com") && u.hostname !== "localhost" && u.hostname !== "127.0.0.1") {
-            url = `${u.protocol}//${u.hostname}:10000`;
-        }
-    } catch (e) {
-        console.error("Invalid PYTHON_API_URL format:", e);
+    
+    // If it's localhost / 127.0.0.1
+    const hostOnly = raw.split(":")[0];
+    if (hostOnly === "localhost" || hostOnly === "127.0.0.1") {
+        return `http://${raw}`;
     }
-    return url;
+    
+    // On Render Free Tier, internal web services cannot receive private traffic (:10000).
+    // They must be reached via their public HTTPS domain: https://<name>.onrender.com
+    if (!hostOnly.includes(".")) {
+        return `https://${hostOnly}.onrender.com`;
+    }
+
+    return `https://${raw}`;
 }
 
 const PYTHON_API_URL = resolvePythonApiUrl(process.env.PYTHON_API_URL);
 console.log(`[QuantumDx] Configured Python API backend: ${PYTHON_API_URL}`);
+
+// Helper to gracefully handle Render free tier cold starts
+async function fetchWithRetry(url, options, maxRetries = 2) {
+    let lastError;
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            const response = await fetch(url, options);
+            return response;
+        } catch (err) {
+            lastError = err;
+            if (attempt < maxRetries) {
+                await new Promise((resolve) => setTimeout(resolve, 1500));
+            }
+        }
+    }
+    throw lastError;
+}
 
 app.use(cors());
 app.use(express.json());
@@ -52,7 +82,7 @@ app.get("/api", (req, res) => {
 app.get("/api/health", async (req, res) => {
     let pythonStatus = "unknown";
     try {
-        const resp = await fetch(`${PYTHON_API_URL}/health`, { signal: AbortSignal.timeout(4000) });
+        const resp = await fetchWithRetry(`${PYTHON_API_URL}/health`, { signal: AbortSignal.timeout(10000) }, 1);
         if (resp.ok) {
             pythonStatus = "connected";
         } else {
@@ -115,13 +145,13 @@ app.get("/api/dataset-samples", (req, res) => {
 // Prediction
 app.post("/api/quantum-predict", async (req, res) => {
     try {
-        const response = await fetch(`${PYTHON_API_URL}/quantum-predict`, {
+        const response = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(req.body)
-        });
+        }, 1);
 
         const data = await response.json();
 
@@ -137,20 +167,21 @@ app.post("/api/quantum-predict", async (req, res) => {
         res.status(500).json({
             status: "error",
             message: "Could not connect to Quantum Python API",
-            error: error.message
+            error: error.message,
+            targetUrl: `${PYTHON_API_URL}/quantum-predict`
         });
     }
 });
 // Classical prediction
 app.post("/api/predict", async (req, res) => {
     try {
-        const response = await fetch(`${PYTHON_API_URL}/predict`, {
+        const response = await fetchWithRetry(`${PYTHON_API_URL}/predict`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(req.body)
-        });
+        }, 1);
 
         const data = await response.json();
 
@@ -166,7 +197,8 @@ app.post("/api/predict", async (req, res) => {
         res.status(500).json({
             status: "error",
             message: "Could not connect to Classical Python API",
-            error: error.message
+            error: error.message,
+            targetUrl: `${PYTHON_API_URL}/predict`
         });
     }
 });
