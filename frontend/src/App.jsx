@@ -538,9 +538,14 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
       });
-      const classicalData = await classicalResponse.json();
+      let classicalData;
+      try {
+        classicalData = await classicalResponse.json();
+      } catch {
+        throw new Error("The Quantum QML engine is currently waking up on Render. Please wait ~20 seconds and click Predict again.");
+      }
       if (!classicalResponse.ok) {
-        throw new Error(classicalData.detail || classicalData.error || "Classical prediction failed.");
+        throw new Error(classicalData.message || classicalData.detail || classicalData.error || "Classical prediction failed.");
       }
       setClassicalResult(classicalData);
 
@@ -550,9 +555,14 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
       });
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("The Quantum QML engine is currently waking up on Render. Please wait ~20 seconds and click Predict again.");
+      }
       if (!response.ok) {
-        throw new Error(data.detail || data.error || "Quantum prediction failed.");
+        throw new Error(data.message || data.detail || data.error || "Quantum prediction failed.");
       }
       setResult(data);
 

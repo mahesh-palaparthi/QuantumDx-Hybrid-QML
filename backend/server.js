@@ -56,6 +56,40 @@ async function fetchWithRetry(url, options, maxRetries = 2) {
     throw lastError;
 }
 
+// Safely parse JSON or handle Render HTML waking-up error pages
+async function parseResponseSafely(response) {
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+        try {
+            const data = await response.json();
+            return { ok: response.ok, status: response.status, data };
+        } catch (e) {
+            // fallthrough
+        }
+    }
+    const text = await response.text();
+    if (response.status === 502 || response.status === 503 || response.status === 504 || text.includes("<!DOCTYPE") || text.includes("<html")) {
+        return {
+            ok: false,
+            status: 503,
+            data: {
+                status: "error",
+                message: "The Quantum QML engine is currently waking up on Render. Please wait ~20 seconds and click Predict again.",
+                error: "Engine waking up from cold start"
+            }
+        };
+    }
+    return {
+        ok: response.ok,
+        status: response.status,
+        data: {
+            status: "error",
+            message: text.slice(0, 200) || "Received non-JSON response from Python engine",
+            error: `HTTP ${response.status} ${response.statusText}`
+        }
+    };
+}
+
 app.use(cors());
 app.use(express.json());
 
@@ -153,10 +187,9 @@ app.post("/api/quantum-predict", async (req, res) => {
             body: JSON.stringify(req.body)
         }, 1);
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            return res.status(response.status).json(data);
+        const { ok, status, data } = await parseResponseSafely(response);
+        if (!ok) {
+            return res.status(status).json(data);
         }
 
         res.json(data);
@@ -183,10 +216,9 @@ app.post("/api/predict", async (req, res) => {
             body: JSON.stringify(req.body)
         }, 1);
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            return res.status(response.status).json(data);
+        const { ok, status, data } = await parseResponseSafely(response);
+        if (!ok) {
+            return res.status(status).json(data);
         }
 
         res.json(data);
