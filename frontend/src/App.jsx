@@ -910,16 +910,16 @@ export default function App() {
 
             {/* Navigation Menu */}
             <ul className="qdx-nav-list">
-              {/* 1. Portal */}
+              {/* 1. Home */}
               <li>
                 <button
                   type="button"
                   className={`qdx-nav-item ${activeSidebarTab === "landing" ? "active" : ""}`}
                   onClick={() => setActiveSidebarTab("landing")}
-                  title="3D Portal Experience"
+                  title="Home"
                 >
-                  <span className="qdx-nav-icon">🌐</span>
-                  <span>Portal</span>
+                  <span className="qdx-nav-icon">🏠</span>
+                  <span>Home</span>
                 </button>
               </li>
 
@@ -930,7 +930,7 @@ export default function App() {
                   className={`qdx-nav-item ${activeSidebarTab === "dashboard" ? "active" : ""}`}
                   onClick={() => setActiveSidebarTab("dashboard")}
                 >
-                  <span className="qdx-nav-icon">🏠</span>
+                  <span className="qdx-nav-icon">📊</span>
                   <span>Dashboard</span>
                 </button>
               </li>
@@ -978,7 +978,7 @@ export default function App() {
                   className={`qdx-nav-item ${activeSidebarTab === "streamlit" ? "active" : ""}`}
                   onClick={() => setActiveSidebarTab("streamlit")}
                 >
-                  <span className="qdx-nav-icon">📊</span>
+                  <span className="qdx-nav-icon">🔬</span>
                   <span>CSV Research Hub</span>
                 </button>
               </li>
