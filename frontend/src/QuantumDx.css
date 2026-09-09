@@ -64,7 +64,7 @@
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
   overflow-y: auto;
   overflow-x: hidden;
-  cursor: grab;
+  cursor: default;
   user-select: none;
   -webkit-user-select: none;
   scrollbar-width: thin;
@@ -74,15 +74,6 @@
 
 .qdx-sidebar.is-dragging {
   cursor: grabbing !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-}
-
-.qdx-sidebar.is-dragging * {
-  cursor: grabbing !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  pointer-events: none !important;
 }
 
 .qdx-sidebar::-webkit-scrollbar {
@@ -107,26 +98,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0 10px 0;
-  opacity: 0.5;
+  padding: 2px 0 10px 0;
+  opacity: 0.6;
   transition: all 0.25s ease;
-  pointer-events: none;
+  cursor: grab;
 }
 
-.qdx-sidebar:hover .qdx-sidebar-drag-hint {
-  opacity: 0.9;
+.qdx-sidebar-drag-hint:hover {
+  opacity: 1;
+}
+
+.qdx-sidebar-drag-hint:active {
+  cursor: grabbing;
 }
 
 .qdx-drag-bar {
-  width: 28px;
-  height: 3px;
-  background: rgba(56, 189, 248, 0.4);
+  width: 32px;
+  height: 4px;
+  background: rgba(56, 189, 248, 0.45);
   border-radius: 4px;
   transition: all 0.25s ease;
 }
 
 .qdx-sidebar:hover .qdx-drag-bar {
-  width: 38px;
+  width: 42px;
   background: #38bdf8;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
 }
@@ -205,10 +200,17 @@
   border: 1px solid transparent;
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 2;
   transition: all 0.2s ease;
   width: 100%;
   text-align: left;
+}
+
+.qdx-nav-item * {
+  pointer-events: none;
 }
 
 .qdx-nav-item:hover {

@@ -265,6 +265,7 @@ export default function App() {
   // =========================================================================
   const sidebarRef = useRef(null);
   const [isSidebarDragging, setIsSidebarDragging] = useState(false);
+  const isMouseDownRef = useRef(false);
   const isDraggingRef = useRef(false);
   const startYRef = useRef(0);
   const startScrollTopRef = useRef(0);
@@ -284,22 +285,30 @@ export default function App() {
   const handleSidebarMouseDown = (e) => {
     if (e.button !== 0) return; // Only primary left-click
     stopMomentum();
-    isDraggingRef.current = true;
+    isMouseDownRef.current = true;
+    isDraggingRef.current = false;
     hasMovedRef.current = false;
     startYRef.current = e.clientY;
     lastYRef.current = e.clientY;
     lastTimeRef.current = performance.now();
     velocityRef.current = 0;
     startScrollTopRef.current = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
-    setIsSidebarDragging(true);
   };
 
   useEffect(() => {
     const handleGlobalMouseMove = (e) => {
-      if (!isDraggingRef.current || !sidebarRef.current) return;
+      if (!isMouseDownRef.current || !sidebarRef.current) return;
       const deltaY = e.clientY - startYRef.current;
-      if (Math.abs(deltaY) > 3) {
-        hasMovedRef.current = true;
+
+      // Require intentional movement (> 8px) before engaging drag-to-slide mode
+      if (!isDraggingRef.current) {
+        if (Math.abs(deltaY) > 8) {
+          isDraggingRef.current = true;
+          hasMovedRef.current = true;
+          setIsSidebarDragging(true);
+        } else {
+          return;
+        }
       }
 
       // Calculate sliding velocity for kinetic momentum
@@ -316,23 +325,35 @@ export default function App() {
     };
 
     const handleGlobalMouseUp = () => {
-      if (!isDraggingRef.current) return;
+      if (!isMouseDownRef.current) return;
+      isMouseDownRef.current = false;
+
+      const wasDragging = isDraggingRef.current;
       isDraggingRef.current = false;
       setIsSidebarDragging(false);
 
-      // Apply smooth inertial deceleration
-      if (sidebarRef.current && Math.abs(velocityRef.current) > 0.15) {
-        let v = velocityRef.current;
-        const decayMomentum = () => {
-          if (!sidebarRef.current || Math.abs(v) < 0.02) {
-            momentumFrameRef.current = null;
-            return;
-          }
-          sidebarRef.current.scrollTop -= v * 14;
-          v *= 0.90;
+      if (wasDragging) {
+        // Keep hasMovedRef true briefly so onClickCapture catches trailing click event
+        setTimeout(() => {
+          hasMovedRef.current = false;
+        }, 120);
+
+        // Apply smooth inertial deceleration
+        if (sidebarRef.current && Math.abs(velocityRef.current) > 0.15) {
+          let v = velocityRef.current;
+          const decayMomentum = () => {
+            if (!sidebarRef.current || Math.abs(v) < 0.02) {
+              momentumFrameRef.current = null;
+              return;
+            }
+            sidebarRef.current.scrollTop -= v * 14;
+            v *= 0.90;
+            momentumFrameRef.current = requestAnimationFrame(decayMomentum);
+          };
           momentumFrameRef.current = requestAnimationFrame(decayMomentum);
-        };
-        momentumFrameRef.current = requestAnimationFrame(decayMomentum);
+        }
+      } else {
+        hasMovedRef.current = false;
       }
     };
 
@@ -349,21 +370,27 @@ export default function App() {
   const handleSidebarTouchStart = (e) => {
     if (e.touches.length !== 1) return;
     stopMomentum();
-    isDraggingRef.current = true;
+    isMouseDownRef.current = true;
+    isDraggingRef.current = false;
     hasMovedRef.current = false;
     startYRef.current = e.touches[0].clientY;
     lastYRef.current = e.touches[0].clientY;
     lastTimeRef.current = performance.now();
     velocityRef.current = 0;
     startScrollTopRef.current = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
-    setIsSidebarDragging(true);
   };
 
   const handleSidebarTouchMove = (e) => {
-    if (!isDraggingRef.current || !sidebarRef.current) return;
+    if (!isMouseDownRef.current || !sidebarRef.current) return;
     const deltaY = e.touches[0].clientY - startYRef.current;
-    if (Math.abs(deltaY) > 3) {
-      hasMovedRef.current = true;
+    if (!isDraggingRef.current) {
+      if (Math.abs(deltaY) > 8) {
+        isDraggingRef.current = true;
+        hasMovedRef.current = true;
+        setIsSidebarDragging(true);
+      } else {
+        return;
+      }
     }
     const now = performance.now();
     const dt = now - lastTimeRef.current;
@@ -376,9 +403,18 @@ export default function App() {
   };
 
   const handleSidebarTouchEnd = () => {
-    if (!isDraggingRef.current) return;
+    if (!isMouseDownRef.current) return;
+    isMouseDownRef.current = false;
+    const wasDragging = isDraggingRef.current;
     isDraggingRef.current = false;
     setIsSidebarDragging(false);
+    if (wasDragging) {
+      setTimeout(() => {
+        hasMovedRef.current = false;
+      }, 120);
+    } else {
+      hasMovedRef.current = false;
+    }
   };
 
   const handleSidebarClickCapture = (e) => {
