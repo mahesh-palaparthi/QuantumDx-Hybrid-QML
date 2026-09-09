@@ -94,6 +94,225 @@ export default function QuantumCircuitExplorer({
 
   const deg = (rad) => `${((rad * 180) / Math.PI).toFixed(1)}°`;
 
+  const renderRepetitionGates = (baseX, repNum) => (
+    <g id={`rep-${repNum}-gates`}>
+      {/* 1. Hadamard Gates on all 4 qubits */}
+      {[0, 1, 2, 3].map((w) => {
+        const y = 50 + w * 48;
+        return (
+          <g
+            key={`h-${repNum}-${w}`}
+            className="qdx-svg-gate-interactive"
+            onClick={() =>
+              setSelectedGate({
+                title: `Hadamard Gate H on |q${w}⟩ (Repetition ${repNum})`,
+                formula: "H = (X + Z) / √2",
+                description: `Creates an equal superposition state (|0⟩ + |1⟩)/√2 on qubit ${w}, initializing quantum coherence.`,
+                paramText: "Superposition: 50% |0⟩ + 50% |1⟩",
+              })
+            }
+          >
+            <rect
+              x={baseX + 10}
+              y={y - 14}
+              width="28"
+              height="28"
+              rx="6"
+              fill="url(#hadamardGrad)"
+              stroke="#38bdf8"
+              strokeWidth="1.2"
+              filter="url(#gateShadow)"
+            />
+            <text x={baseX + 24} y={y + 4} fill="#ffffff" fontSize="11" fontWeight="800" textAnchor="middle">
+              H
+            </text>
+          </g>
+        );
+      })}
+
+      {/* 2. Single-Qubit R_z(phi_i) Phase Rotations */}
+      {[0, 1, 2, 3].map((w) => {
+        const y = 50 + w * 48;
+        const phiVal = circuitParams.phi[w];
+        const featName = normalizedFeatures[w]?.name || `Feature ${w + 1}`;
+        return (
+          <g
+            key={`rz-${repNum}-${w}`}
+            className="qdx-svg-gate-interactive"
+            onClick={() =>
+              setSelectedGate({
+                title: `Phase Rotation R_z(φ_${w}) on |q${w}⟩ (Repetition ${repNum})`,
+                formula: `φ_${w} = 2 · x_${w} = ${phiVal.toFixed(4)} rad (${deg(phiVal)})`,
+                description: `Encodes feature '${featName}' as an azimuthal quantum phase shift on the Bloch sphere of qubit ${w}.`,
+                paramText: `${phiVal.toFixed(3)} rad (${deg(phiVal)})`,
+              })
+            }
+          >
+            <rect
+              x={baseX + 70}
+              y={y - 15}
+              width="66"
+              height="30"
+              rx="6"
+              fill="url(#rzGrad)"
+              stroke="#2dd4bf"
+              strokeWidth="1.2"
+              filter="url(#gateShadow)"
+            />
+            <text
+              x={baseX + 103}
+              y={y - 1}
+              fill="#ccfbf1"
+              fontSize="9.5"
+              fontWeight="700"
+              textAnchor="middle"
+              fontFamily="monospace"
+            >
+              Rz(φ{w})
+            </text>
+            <text x={baseX + 103} y={y + 10} fill="#5eead4" fontSize="8.5" fontWeight="600" textAnchor="middle">
+              {phiVal.toFixed(2)} rad
+            </text>
+          </g>
+        );
+      })}
+
+      {/* 3. Two-Qubit Entangling ZZ Interactions */}
+      {/* Pair (0, 1) */}
+      <g
+        className="qdx-svg-gate-interactive"
+        onClick={() =>
+          setSelectedGate({
+            title: `ZZ Entanglement Interaction between |q0⟩ and |q1⟩ (Repetition ${repNum})`,
+            formula: `φ_01 = 2 · (π - x_0)(π - x_1) = ${circuitParams.phi01.toFixed(4)} rad (${deg(circuitParams.phi01)})`,
+            description:
+              "CNOT entangler and central phase rotation mapping non-linear feature cross-correlation into quantum non-separability.",
+            paramText: `${circuitParams.phi01.toFixed(3)} rad (${deg(circuitParams.phi01)})`,
+          })
+        }
+      >
+        <circle cx={baseX + 180} cy="50" r="4.5" fill="#00d2ff" />
+        <line x1={baseX + 180} y1="50" x2={baseX + 180} y2="98" stroke="#c084fc" strokeWidth="1.8" />
+        <circle cx={baseX + 180} cy="98" r="7.5" fill="#0f172a" stroke="#c084fc" strokeWidth="1.6" />
+        <line x1={baseX + 180} y1="91" x2={baseX + 180} y2="105" stroke="#c084fc" strokeWidth="1.6" />
+        <line x1={baseX + 173} y1="98" x2={baseX + 187} y2="98" stroke="#c084fc" strokeWidth="1.6" />
+        <rect
+          x={baseX + 197}
+          y="83"
+          width="60"
+          height="28"
+          rx="6"
+          fill="url(#zzGrad)"
+          stroke="#c084fc"
+          strokeWidth="1.2"
+          filter="url(#gateShadow)"
+        />
+        <text
+          x={baseX + 227}
+          y="96"
+          fill="#ffffff"
+          fontSize="9"
+          fontWeight="700"
+          textAnchor="middle"
+          fontFamily="monospace"
+        >
+          Rzz(φ₀₁)
+        </text>
+        <text x={baseX + 227} y={106} fill="#f5d0fe" fontSize="8" textAnchor="middle">
+          {circuitParams.phi01.toFixed(2)}
+        </text>
+      </g>
+
+      {/* Pair (1, 2) */}
+      <g
+        className="qdx-svg-gate-interactive"
+        onClick={() =>
+          setSelectedGate({
+            title: `ZZ Entanglement Interaction between |q1⟩ and |q2⟩ (Repetition ${repNum})`,
+            formula: `φ_12 = 2 · (π - x_1)(π - x_2) = ${circuitParams.phi12.toFixed(4)} rad (${deg(circuitParams.phi12)})`,
+            description: "Correlates middle feature pairs via two-qubit controlled phase gates.",
+            paramText: `${circuitParams.phi12.toFixed(3)} rad (${deg(circuitParams.phi12)})`,
+          })
+        }
+      >
+        <circle cx={baseX + 270} cy="98" r="4.5" fill="#00d2ff" />
+        <line x1={baseX + 270} y1="98" x2={baseX + 270} y2="146" stroke="#c084fc" strokeWidth="1.8" />
+        <circle cx={baseX + 270} cy="146" r="7.5" fill="#0f172a" stroke="#c084fc" strokeWidth="1.6" />
+        <line x1={baseX + 270} y1="139" x2={baseX + 270} y2="153" stroke="#c084fc" strokeWidth="1.6" />
+        <line x1={baseX + 263} y1="146" x2={baseX + 277} y2="146" stroke="#c084fc" strokeWidth="1.6" />
+        <rect
+          x={baseX + 285}
+          y="131"
+          width="60"
+          height="28"
+          rx="6"
+          fill="url(#zzGrad)"
+          stroke="#c084fc"
+          strokeWidth="1.2"
+          filter="url(#gateShadow)"
+        />
+        <text
+          x={baseX + 315}
+          y="144"
+          fill="#ffffff"
+          fontSize="9"
+          fontWeight="700"
+          textAnchor="middle"
+          fontFamily="monospace"
+        >
+          Rzz(φ₁₂)
+        </text>
+        <text x={baseX + 315} y={154} fill="#f5d0fe" fontSize="8" textAnchor="middle">
+          {circuitParams.phi12.toFixed(2)}
+        </text>
+      </g>
+
+      {/* Pair (2, 3) */}
+      <g
+        className="qdx-svg-gate-interactive"
+        onClick={() =>
+          setSelectedGate({
+            title: `ZZ Entanglement Interaction between |q2⟩ and |q3⟩ (Repetition ${repNum})`,
+            formula: `φ_23 = 2 · (π - x_2)(π - x_3) = ${circuitParams.phi23.toFixed(4)} rad (${deg(circuitParams.phi23)})`,
+            description: "Correlates lower feature pairs, completing linear entanglement mesh.",
+            paramText: `${circuitParams.phi23.toFixed(3)} rad (${deg(circuitParams.phi23)})`,
+          })
+        }
+      >
+        <circle cx={baseX + 355} cy="146" r="4.5" fill="#00d2ff" />
+        <line x1={baseX + 355} y1="146" x2={baseX + 355} y2="194" stroke="#c084fc" strokeWidth="1.8" />
+        <circle cx={baseX + 355} cy="194" r="7.5" fill="#0f172a" stroke="#c084fc" strokeWidth="1.6" />
+        <line x1={baseX + 355} y1="187" x2={baseX + 355} y2="201" stroke="#c084fc" strokeWidth="1.6" />
+        <line x1={baseX + 348} y1="194" x2={baseX + 362} y2="194" stroke="#c084fc" strokeWidth="1.6" />
+        <rect
+          x={baseX + 369}
+          y="179"
+          width="60"
+          height="28"
+          rx="6"
+          fill="url(#zzGrad)"
+          stroke="#c084fc"
+          strokeWidth="1.2"
+          filter="url(#gateShadow)"
+        />
+        <text
+          x={baseX + 399}
+          y="192"
+          fill="#ffffff"
+          fontSize="9"
+          fontWeight="700"
+          textAnchor="middle"
+          fontFamily="monospace"
+        >
+          Rzz(φ₂₃)
+        </text>
+        <text x={baseX + 399} y={202} fill="#f5d0fe" fontSize="8" textAnchor="middle">
+          {circuitParams.phi23.toFixed(2)}
+        </text>
+      </g>
+    </g>
+  );
+
   return (
     <div className="qdx-circuit-explorer-card">
       {/* Header Bar */}
@@ -161,8 +380,18 @@ export default function QuantumCircuitExplorer({
       <div className="qdx-circuit-viewport">
         <svg
           className="qdx-circuit-svg"
-          viewBox={activeRepView === "all" ? "0 0 880 230" : "0 0 540 230"}
-          style={{ width: "100%", height: "auto", minWidth: activeRepView === "all" ? 820 : 500 }}
+          viewBox={
+            activeRepView === "all"
+              ? "0 0 1020 230"
+              : activeRepView === "rep2"
+              ? "0 0 580 230"
+              : "0 0 540 230"
+          }
+          style={{
+            width: "100%",
+            height: "auto",
+            minWidth: activeRepView === "all" ? 920 : 500,
+          }}
         >
           <defs>
             <linearGradient id="hadamardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -183,202 +412,205 @@ export default function QuantumCircuitExplorer({
           </defs>
 
           {/* Time slice column markers */}
-          <rect x="75" y="10" width="45" height="210" fill="rgba(56, 189, 248, 0.03)" rx="6" />
-          <text x="97" y="24" fill="rgba(56, 189, 248, 0.5)" fontSize="9" fontWeight="700" textAnchor="middle">HADAMARD</text>
+          {activeRepView === "all" ? (
+            <>
+              {/* Rep 1 Markers */}
+              <rect x="75" y="10" width="45" height="210" fill="rgba(56, 189, 248, 0.03)" rx="6" />
+              <text x="97" y="24" fill="rgba(56, 189, 248, 0.6)" fontSize="8.5" fontWeight="800" textAnchor="middle">
+                HADAMARD
+              </text>
 
-          <rect x="135" y="10" width="85" height="210" fill="rgba(20, 184, 166, 0.03)" rx="6" />
-          <text x="177" y="24" fill="rgba(20, 184, 166, 0.5)" fontSize="9" fontWeight="700" textAnchor="middle">PHASE R_z(2x_i)</text>
+              <rect x="135" y="10" width="85" height="210" fill="rgba(20, 184, 166, 0.03)" rx="6" />
+              <text x="177" y="24" fill="rgba(20, 184, 166, 0.6)" fontSize="8.5" fontWeight="800" textAnchor="middle">
+                PHASE R_z(2x_i)
+              </text>
 
-          <rect x="235" y="10" width="225" height="210" fill="rgba(168, 85, 247, 0.03)" rx="6" />
-          <text x="347" y="24" fill="rgba(168, 85, 247, 0.5)" fontSize="9" fontWeight="700" textAnchor="middle">ZZ ENTANGLEMENT LAYER</text>
+              <rect x="235" y="10" width="265" height="210" fill="rgba(168, 85, 247, 0.03)" rx="6" />
+              <text x="367" y="24" fill="rgba(168, 85, 247, 0.6)" fontSize="8.5" fontWeight="800" textAnchor="middle">
+                ZZ ENTANGLEMENT (REP 1)
+              </text>
+
+              {/* Barrier Line between Rep 1 and Rep 2 */}
+              <line x1="518" y1="20" x2="518" y2="215" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1.2" strokeDasharray="4 4" />
+              <text x="518" y="15" fill="#94a3b8" fontSize="8" fontWeight="800" textAnchor="middle">
+                REP 2 BARRIER
+              </text>
+
+              {/* Rep 2 Markers */}
+              <rect x="530" y="10" width="45" height="210" fill="rgba(56, 189, 248, 0.03)" rx="6" />
+              <text x="552" y="24" fill="rgba(56, 189, 248, 0.6)" fontSize="8.5" fontWeight="800" textAnchor="middle">
+                HADAMARD
+              </text>
+
+              <rect x="590" y="10" width="85" height="210" fill="rgba(20, 184, 166, 0.03)" rx="6" />
+              <text x="632" y="24" fill="rgba(20, 184, 166, 0.6)" fontSize="8.5" fontWeight="800" textAnchor="middle">
+                PHASE R_z(2x_i)
+              </text>
+
+              <rect x="690" y="10" width="265" height="210" fill="rgba(168, 85, 247, 0.03)" rx="6" />
+              <text x="822" y="24" fill="rgba(168, 85, 247, 0.6)" fontSize="8.5" fontWeight="800" textAnchor="middle">
+                ZZ ENTANGLEMENT (REP 2)
+              </text>
+
+              {/* Measurement Column Marker */}
+              <rect x="965" y="10" width="40" height="210" fill="rgba(56, 189, 248, 0.04)" rx="6" />
+              <text x="985" y="24" fill="rgba(56, 189, 248, 0.7)" fontSize="8" fontWeight="800" textAnchor="middle">
+                MEASURE
+              </text>
+            </>
+          ) : (
+            <>
+              <rect x="75" y="10" width="45" height="210" fill="rgba(56, 189, 248, 0.03)" rx="6" />
+              <text x="97" y="24" fill="rgba(56, 189, 248, 0.6)" fontSize="9" fontWeight="700" textAnchor="middle">
+                {activeRepView === "rep2" ? "HADAMARD (REP 2)" : "HADAMARD"}
+              </text>
+
+              <rect x="135" y="10" width="85" height="210" fill="rgba(20, 184, 166, 0.03)" rx="6" />
+              <text x="177" y="24" fill="rgba(20, 184, 166, 0.6)" fontSize="9" fontWeight="700" textAnchor="middle">
+                PHASE R_z(2x_i)
+              </text>
+
+              <rect x="235" y="10" width="265" height="210" fill="rgba(168, 85, 247, 0.03)" rx="6" />
+              <text x="367" y="24" fill="rgba(168, 85, 247, 0.6)" fontSize="9" fontWeight="700" textAnchor="middle">
+                {activeRepView === "rep2" ? "ZZ ENTANGLEMENT (REP 2)" : "ZZ ENTANGLEMENT LAYER"}
+              </text>
+
+              {activeRepView === "rep2" && (
+                <>
+                  <rect x="515" y="10" width="45" height="210" fill="rgba(56, 189, 248, 0.04)" rx="6" />
+                  <text x="537" y="24" fill="rgba(56, 189, 248, 0.7)" fontSize="8.5" fontWeight="800" textAnchor="middle">
+                    MEASURE
+                  </text>
+                </>
+              )}
+            </>
+          )}
 
           {/* Qubit horizontal wires */}
           {[0, 1, 2, 3].map((w) => {
             const y = 50 + w * 48;
+            const wireEnd = activeRepView === "all" ? 995 : activeRepView === "rep2" ? 555 : 515;
             return (
               <g key={`wire-${w}`}>
-                <line x1="55" y1={y} x2={activeRepView === "all" ? 850 : 510} y2={y} stroke="rgba(56, 189, 248, 0.3)" strokeWidth="1.8" />
-                <rect x="10" y={y - 14} width="36" height="28" rx="6" fill="#071226" stroke="#38bdf8" strokeWidth="1.2" />
-                <text x="28" y={y + 4} fill="#38bdf8" fontSize="12" fontWeight="700" textAnchor="middle" fontFamily="monospace">
+                <line
+                  x1="55"
+                  y1={y}
+                  x2={wireEnd}
+                  y2={y}
+                  stroke="rgba(56, 189, 248, 0.3)"
+                  strokeWidth="1.8"
+                />
+                <rect
+                  x="10"
+                  y={y - 14}
+                  width="36"
+                  height="28"
+                  rx="6"
+                  fill="#071226"
+                  stroke="#38bdf8"
+                  strokeWidth="1.2"
+                />
+                <text
+                  x="28"
+                  y={y + 4}
+                  fill="#38bdf8"
+                  fontSize="12"
+                  fontWeight="700"
+                  textAnchor="middle"
+                  fontFamily="monospace"
+                >
                   |q{w}⟩
                 </text>
               </g>
             );
           })}
 
-          {/* =========================================================================
-              REPETITION 1
-              ========================================================================= */}
-          {(activeRepView === "all" || activeRepView === "rep1") && (
-            <g id="rep-1-gates">
-              {/* 1. Hadamard Gates on all 4 qubits */}
-              {[0, 1, 2, 3].map((w) => {
-                const y = 50 + w * 48;
-                return (
-                  <g
-                    key={`h1-${w}`}
-                    className="qdx-svg-gate-interactive"
-                    onClick={() => setSelectedGate({
-                      title: `Hadamard Gate H on |q${w}⟩`,
-                      formula: "H = (X + Z) / sqrt(2)",
-                      description: `Creates an equal superposition state (|0⟩ + |1⟩)/sqrt(2) on qubit ${w}, initializing quantum coherence.`,
-                      paramText: "Superposition: 50% |0⟩ + 50% |1⟩",
-                    })}
-                  >
-                    <rect x="85" y={y - 14} width="28" height="28" rx="6" fill="url(#hadamardGrad)" stroke="#38bdf8" strokeWidth="1.2" filter="url(#gateShadow)" />
-                    <text x="99" y={y + 4} fill="#ffffff" fontSize="11" fontWeight="800" textAnchor="middle">H</text>
-                  </g>
-                );
-              })}
-
-              {/* 2. Single-Qubit R_z(phi_i) Phase Rotations */}
-              {[0, 1, 2, 3].map((w) => {
-                const y = 50 + w * 48;
-                const phiVal = circuitParams.phi[w];
-                const featName = normalizedFeatures[w].name;
-                return (
-                  <g
-                    key={`rz1-${w}`}
-                    className="qdx-svg-gate-interactive"
-                    onClick={() => setSelectedGate({
-                      title: `Phase Rotation R_z(phi_${w}) on |q${w}⟩`,
-                      formula: `phi_${w} = 2 * x_${w} = ${phiVal.toFixed(4)} rad (${deg(phiVal)})`,
-                      description: `Encodes feature '${featName}' as an azimuthal quantum phase shift on the Bloch sphere of qubit ${w}.`,
-                      paramText: `${phiVal.toFixed(3)} rad (${deg(phiVal)})`,
-                    })}
-                  >
-                    <rect x="145" y={y - 15} width="66" height="30" rx="6" fill="url(#rzGrad)" stroke="#2dd4bf" strokeWidth="1.2" filter="url(#gateShadow)" />
-                    <text x="178" y={y - 1} fill="#ccfbf1" fontSize="9.5" fontWeight="700" textAnchor="middle" fontFamily="monospace">Rz(φ{w})</text>
-                    <text x="178" y={y + 10} fill="#5eead4" fontSize="8.5" fontWeight="600" textAnchor="middle">{phiVal.toFixed(2)} rad</text>
-                  </g>
-                );
-              })}
-
-              {/* 3. Two-Qubit Entangling ZZ Interactions */}
-              {/* Pair (0, 1) */}
-              <g
-                className="qdx-svg-gate-interactive"
-                onClick={() => setSelectedGate({
-                  title: "ZZ Entanglement Interaction between |q0⟩ and |q1⟩",
-                  formula: `phi_01 = 2 * (pi - x_0) * (pi - x_1) = ${circuitParams.phi01.toFixed(4)} rad (${deg(circuitParams.phi01)})`,
-                  description: "CNOT entangler and central phase rotation mapping non-linear feature cross-correlation into quantum non-separability.",
-                  paramText: `${circuitParams.phi01.toFixed(3)} rad (${deg(circuitParams.phi01)})`,
-                })}
-              >
-                <circle cx="255" cy="50" r="4.5" fill="#00d2ff" />
-                <line x1="255" y1="50" x2="255" y2="98" stroke="#c084fc" strokeWidth="1.8" />
-                <circle cx="255" cy="98" r="7.5" fill="#0f172a" stroke="#c084fc" strokeWidth="1.6" />
-                <line x1="255" y1="91" x2="255" y2="105" stroke="#c084fc" strokeWidth="1.6" />
-                <line x1="248" y1="98" x2="262" y2="98" stroke="#c084fc" strokeWidth="1.6" />
-                <rect x="272" y="83" width="60" height="28" rx="6" fill="url(#zzGrad)" stroke="#c084fc" strokeWidth="1.2" />
-                <text x="302" y="96" fill="#ffffff" fontSize="9" fontWeight="700" textAnchor="middle" fontFamily="monospace">Rzz(φ₀₁)</text>
-                <text x="302" y="106" fill="#f5d0fe" fontSize="8" textAnchor="middle">{circuitParams.phi01.toFixed(2)}</text>
-              </g>
-
-              {/* Pair (1, 2) */}
-              <g
-                className="qdx-svg-gate-interactive"
-                onClick={() => setSelectedGate({
-                  title: "ZZ Entanglement Interaction between |q1⟩ and |q2⟩",
-                  formula: `phi_12 = 2 * (pi - x_1) * (pi - x_2) = ${circuitParams.phi12.toFixed(4)} rad (${deg(circuitParams.phi12)})`,
-                  description: "Correlates middle feature pairs via two-qubit controlled phase gates.",
-                  paramText: `${circuitParams.phi12.toFixed(3)} rad (${deg(circuitParams.phi12)})`,
-                })}
-              >
-                <circle cx="345" cy="98" r="4.5" fill="#00d2ff" />
-                <line x1="345" y1="98" x2="345" y2="146" stroke="#c084fc" strokeWidth="1.8" />
-                <circle cx="345" cy="146" r="7.5" fill="#0f172a" stroke="#c084fc" strokeWidth="1.6" />
-                <line x1="345" y1="139" x2="345" y2="153" stroke="#c084fc" strokeWidth="1.6" />
-                <line x1="338" y1="146" x2="352" y2="146" stroke="#c084fc" strokeWidth="1.6" />
-                <rect x="360" y="131" width="60" height="28" rx="6" fill="url(#zzGrad)" stroke="#c084fc" strokeWidth="1.2" />
-                <text x="390" y="144" fill="#ffffff" fontSize="9" fontWeight="700" textAnchor="middle" fontFamily="monospace">Rzz(φ₁₂)</text>
-                <text x="390" y="154" fill="#f5d0fe" fontSize="8" textAnchor="middle">{circuitParams.phi12.toFixed(2)}</text>
-              </g>
-
-              {/* Pair (2, 3) */}
-              <g
-                className="qdx-svg-gate-interactive"
-                onClick={() => setSelectedGate({
-                  title: "ZZ Entanglement Interaction between |q2⟩ and |q3⟩",
-                  formula: `phi_23 = 2 * (pi - x_2) * (pi - x_3) = ${circuitParams.phi23.toFixed(4)} rad (${deg(circuitParams.phi23)})`,
-                  description: "Correlates lower feature pairs, completing linear and circular entanglement mesh.",
-                  paramText: `${circuitParams.phi23.toFixed(3)} rad (${deg(circuitParams.phi23)})`,
-                })}
-              >
-                <circle cx="430" cy="146" r="4.5" fill="#00d2ff" />
-                <line x1="430" y1="146" x2="430" y2="194" stroke="#c084fc" strokeWidth="1.8" />
-                <circle cx="430" cy="194" r="7.5" fill="#0f172a" stroke="#c084fc" strokeWidth="1.6" />
-                <line x1="430" y1="187" x2="430" y2="201" stroke="#c084fc" strokeWidth="1.6" />
-                <line x1="423" y1="194" x2="437" y2="194" stroke="#c084fc" strokeWidth="1.6" />
-                <rect x="444" y="179" width="60" height="28" rx="6" fill="url(#zzGrad)" stroke="#c084fc" strokeWidth="1.2" />
-                <text x="474" y="192" fill="#ffffff" fontSize="9" fontWeight="700" textAnchor="middle" fontFamily="monospace">Rzz(φ₂₃)</text>
-                <text x="474" y="202" fill="#f5d0fe" fontSize="8" textAnchor="middle">{circuitParams.phi23.toFixed(2)}</text>
-              </g>
-            </g>
-          )}
-
-          {/* =========================================================================
-              REPETITION 2 (Full View)
-              ========================================================================= */}
+          {/* Render Gates based on active view */}
           {activeRepView === "all" && (
-            <g id="rep-2-gates">
-              {/* Barrier Line */}
-              <line x1="520" y1="20" x2="520" y2="215" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" strokeDasharray="4 4" />
-              <text x="520" y="15" fill="#94a3b8" fontSize="8.5" fontWeight="700" textAnchor="middle">LAYER 2</text>
-
-              {/* Rep 2: Hadamard Layer */}
-              {[0, 1, 2, 3].map((w) => {
-                const y = 50 + w * 48;
-                return (
-                  <g key={`h2-${w}`}>
-                    <rect x="535" y={y - 14} width="26" height="28" rx="6" fill="url(#hadamardGrad)" stroke="#38bdf8" strokeWidth="1.2" />
-                    <text x="548" y={y + 4} fill="#ffffff" fontSize="10" fontWeight="700" textAnchor="middle">H</text>
-                  </g>
-                );
-              })}
-
-              {/* Rep 2: R_z Rotations */}
-              {[0, 1, 2, 3].map((w) => {
-                const y = 50 + w * 48;
-                const phiVal = circuitParams.phi[w];
-                return (
-                  <g key={`rz2-${w}`}>
-                    <rect x="575" y={y - 14} width="58" height="28" rx="6" fill="url(#rzGrad)" stroke="#2dd4bf" strokeWidth="1.2" />
-                    <text x="604" y={y} fill="#ccfbf1" fontSize="9" fontWeight="700" textAnchor="middle" fontFamily="monospace">Rz(φ{w})</text>
-                    <text x="604" y={y + 9} fill="#5eead4" fontSize="7.5" textAnchor="middle">{phiVal.toFixed(2)}</text>
-                  </g>
-                );
-              })}
-
-              {/* Rep 2: Entangling Block */}
-              {/* Pair (0, 1) */}
-              <g>
-                <circle cx="650" cy="50" r="4" fill="#00d2ff" />
-                <line x1="650" y1="50" x2="650" y2="98" stroke="#c084fc" strokeWidth="1.5" />
-                <circle cx="650" cy="98" r="6" fill="#0f172a" stroke="#c084fc" strokeWidth="1.4" />
-                <rect x="664" y="84" width="54" height="26" rx="5" fill="url(#zzGrad)" stroke="#c084fc" strokeWidth="1.2" />
-                <text x="691" y="97" fill="#ffffff" fontSize="8" fontWeight="700" textAnchor="middle">Rzz(φ₀₁)</text>
-                <text x="691" y="105" fill="#f5d0fe" fontSize="7" textAnchor="middle">{circuitParams.phi01.toFixed(2)}</text>
-              </g>
-
-              {/* Pair (1, 2) */}
-              <g>
-                <circle cx="728" cy="98" r="4" fill="#00d2ff" />
-                <line x1="728" y1="98" x2="728" y2="146" stroke="#c084fc" strokeWidth="1.5" />
-                <circle cx="728" cy="146" r="6" fill="#0f172a" stroke="#c084fc" strokeWidth="1.4" />
-                <rect x="742" y="132" width="54" height="26" rx="5" fill="url(#zzGrad)" stroke="#c084fc" strokeWidth="1.2" />
-                <text x="769" y="145" fill="#ffffff" fontSize="8" fontWeight="700" textAnchor="middle">Rzz(φ₁₂)</text>
-                <text x="769" y="153" fill="#f5d0fe" fontSize="7" textAnchor="middle">{circuitParams.phi12.toFixed(2)}</text>
-              </g>
-
+            <>
+              {renderRepetitionGates(75, 1)}
+              {renderRepetitionGates(530, 2)}
               {/* Measurement Readout Box */}
-              <g>
-                <rect x="815" y="32" width="28" height="175" rx="6" fill="#0b1e3b" stroke="#38bdf8" strokeWidth="1.4" />
-                <text x="829" y="125" fill="#38bdf8" fontSize="10" fontWeight="800" textAnchor="middle" transform="rotate(-90 829 125)">
+              <g
+                className="qdx-svg-gate-interactive"
+                onClick={() =>
+                  setSelectedGate({
+                    title: "Projective Measurement onto |0000⟩ Ground State",
+                    formula: "P(|0000⟩) = |⟨0000| U_Φ(x) |0000⟩|²",
+                    description:
+                      "Quantum readout projecting the final state onto the computational basis. The transition probability of reaching state |0000⟩ yields the exact quantum kernel matrix value K(x_1, x_2).",
+                    paramText: "Readout: Computational Basis |0000⟩",
+                  })
+                }
+              >
+                <rect
+                  x="972"
+                  y="32"
+                  width="28"
+                  height="175"
+                  rx="6"
+                  fill="#0b1e3b"
+                  stroke="#38bdf8"
+                  strokeWidth="1.4"
+                  filter="url(#gateShadow)"
+                />
+                <text
+                  x="986"
+                  y="120"
+                  fill="#38bdf8"
+                  fontSize="10"
+                  fontWeight="800"
+                  textAnchor="middle"
+                  transform="rotate(-90 986 120)"
+                >
                   MEASURE |0000⟩
                 </text>
               </g>
-            </g>
+            </>
+          )}
+
+          {activeRepView === "rep1" && renderRepetitionGates(75, 1)}
+
+          {activeRepView === "rep2" && (
+            <>
+              {renderRepetitionGates(75, 2)}
+              {/* Measurement Readout Box */}
+              <g
+                className="qdx-svg-gate-interactive"
+                onClick={() =>
+                  setSelectedGate({
+                    title: "Projective Measurement onto |0000⟩ Ground State",
+                    formula: "P(|0000⟩) = |⟨0000| U_Φ(x) |0000⟩|²",
+                    description:
+                      "Quantum readout projecting the final state onto the computational basis. The transition probability of reaching state |0000⟩ yields the exact quantum kernel matrix value K(x_1, x_2).",
+                    paramText: "Readout: Computational Basis |0000⟩",
+                  })
+                }
+              >
+                <rect
+                  x="523"
+                  y="32"
+                  width="28"
+                  height="175"
+                  rx="6"
+                  fill="#0b1e3b"
+                  stroke="#38bdf8"
+                  strokeWidth="1.4"
+                  filter="url(#gateShadow)"
+                />
+                <text
+                  x="537"
+                  y="120"
+                  fill="#38bdf8"
+                  fontSize="10"
+                  fontWeight="800"
+                  textAnchor="middle"
+                  transform="rotate(-90 537 120)"
+                >
+                  MEASURE |0000⟩
+                </text>
+              </g>
+            </>
           )}
         </svg>
       </div>
