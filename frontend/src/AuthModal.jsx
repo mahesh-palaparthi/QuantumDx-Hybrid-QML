@@ -530,17 +530,22 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                     {/* Gender Selection */}
                     <div className="qdx-field-group">
                       <label>Biological Gender (for clinical normalization)</label>
-                      <div className="qdx-input-wrap">
-                        <span className="qdx-input-icon">⚧</span>
-                        <select
-                          value={gender}
-                          onChange={(e) => setGender(e.target.value)}
-                          className="qdx-select-control"
-                        >
-                          <option value="Female">Female</option>
-                          <option value="Male">Male</option>
-                          <option value="Other">Other / Non-Binary</option>
-                        </select>
+                      <div className="qdx-gender-toggle-row">
+                        {[
+                          { id: "Female", label: "Female", icon: "♀" },
+                          { id: "Male", label: "Male", icon: "♂" },
+                          { id: "Other", label: "Other / Non-Binary", icon: "⚧" },
+                        ].map((g) => (
+                          <button
+                            key={g.id}
+                            type="button"
+                            className={`qdx-gender-btn ${gender === g.id ? "active" : ""}`}
+                            onClick={() => setGender(g.id)}
+                          >
+                            <span className="qdx-gender-icon">{g.icon}</span>
+                            <span className="qdx-gender-lbl">{g.label}</span>
+                          </button>
+                        ))}
                       </div>
                     </div>
 

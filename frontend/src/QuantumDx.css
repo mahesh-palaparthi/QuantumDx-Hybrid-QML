@@ -1901,22 +1901,95 @@
 .qdx-input-wrap input,
 .qdx-select-control {
   width: 100%;
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(150, 165, 220, 0.18);
-  color: #ffffff;
+  background: #081122;
+  border: 1px solid rgba(150, 165, 220, 0.25);
+  color: #f1f5f9;
   font-size: 13px;
   font-weight: 500;
   padding: 9px 34px 9px 36px;
   border-radius: 10px;
   outline: none;
   transition: all 0.2s ease;
+  color-scheme: dark !important;
 }
 
 .qdx-input-wrap input:focus,
 .qdx-select-control:focus {
   border-color: #4fd8ff;
-  background: rgba(79, 216, 255, 0.06);
-  box-shadow: 0 0 12px rgba(79, 216, 255, 0.2);
+  background: rgba(79, 216, 255, 0.08);
+  box-shadow: 0 0 12px rgba(79, 216, 255, 0.25);
+}
+
+select,
+.qdx-select-control,
+.qdx-select-accessible {
+  color-scheme: dark !important;
+}
+
+select option,
+.qdx-select-control option,
+.qdx-select-accessible option {
+  background-color: #0b1526 !important;
+  color: #f1f5f9 !important;
+  font-weight: 500 !important;
+  padding: 8px 12px !important;
+}
+
+select option:hover,
+select option:focus,
+select option:checked,
+.qdx-select-control option:hover,
+.qdx-select-control option:checked,
+.qdx-select-accessible option:hover,
+.qdx-select-accessible option:checked {
+  background-color: #1e293b !important;
+  color: #38bdf8 !important;
+}
+
+/* Modern Gender Selection Segmented Buttons */
+.qdx-gender-toggle-row {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  padding: 5px;
+  margin-top: 4px;
+}
+
+.qdx-gender-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--qdx-text-muted);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qdx-gender-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.qdx-gender-btn.active {
+  background: linear-gradient(120deg, #4fd8ff, #b478ff);
+  color: #0a0b16;
+  font-weight: 700;
+  border-color: transparent;
+  box-shadow: 0 2px 12px rgba(79, 216, 255, 0.35);
+}
+
+.qdx-gender-icon {
+  font-size: 14px;
 }
 
 .qdx-input-wrap.valid input {
