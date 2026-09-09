@@ -454,6 +454,20 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                     >
                       Continue to Password ──&gt;
                     </button>
+
+                    <div style={{ textAlign: "center", marginTop: 12, fontSize: "12px", color: "var(--qdx-text-muted)" }}>
+                      Already have an account?{" "}
+                      <button
+                        type="button"
+                        style={{ background: "none", border: "none", color: "#38bdf8", cursor: "pointer", fontWeight: 700, textDecoration: "underline", padding: 0 }}
+                        onClick={() => {
+                          setAuthMode("signin");
+                          setError("");
+                        }}
+                      >
+                        Sign In here
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -659,6 +673,21 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 >
                   {loading ? "Authenticating..." : "Sign In to QuantumDx ──>"}
                 </button>
+
+                <div style={{ textAlign: "center", marginTop: 12, fontSize: "12px", color: "var(--qdx-text-muted)" }}>
+                  New to QuantumDx?{" "}
+                  <button
+                    type="button"
+                    style={{ background: "none", border: "none", color: "#38bdf8", cursor: "pointer", fontWeight: 700, textDecoration: "underline", padding: 0 }}
+                    onClick={() => {
+                      setAuthMode("signup");
+                      setStep(1);
+                      setError("");
+                    }}
+                  >
+                    Create an account
+                  </button>
+                </div>
               </form>
             )}
 

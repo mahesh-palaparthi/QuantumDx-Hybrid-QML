@@ -171,17 +171,20 @@ const db = {
     if (!identifier) return null;
     const data = loadDb();
     const clean = identifier.toLowerCase().trim();
+    const cleanNoSpace = clean.replace(/\s+/g, "");
     return (
       data.users.find((u) => {
         const uEmail = (u.email || "").toLowerCase().trim();
         const uName = (u.fullName || "").toLowerCase().trim();
-        const uPhone = (u.phone || "").replace(/\s+/g, "");
-        const cleanPhone = clean.replace(/\s+/g, "");
+        const uNameNoSpace = uName.replace(/\s+/g, "");
+        const uPhone = (u.phone || "").replace(/[\s\-+()]/g, "");
+        const cleanPhone = clean.replace(/[\s\-+()]/g, "");
         return (
           uEmail === clean ||
           uName === clean ||
-          (uPhone && uPhone === cleanPhone) ||
-          uName.split(/\s+/)[0] === clean
+          uNameNoSpace === cleanNoSpace ||
+          uName.split(/\s+/)[0] === clean ||
+          (uPhone && cleanPhone && uPhone === cleanPhone)
         );
       }) || null
     );
