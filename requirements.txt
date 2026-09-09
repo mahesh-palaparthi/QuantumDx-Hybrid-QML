@@ -8,3 +8,6 @@ shap
 streamlit
 matplotlib
 pytest
+fastapi
+uvicorn
+pydantic

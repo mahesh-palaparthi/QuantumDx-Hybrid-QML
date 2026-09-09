@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { API_BASE_URL, STREAMLIT_URL } from "./config";
 import QuantumBioCanvas from "./QuantumBioCanvas";
 import JudgeComparisonStudio from "./JudgeComparisonStudio";
 import AuthModal from "./AuthModal";
@@ -220,7 +221,7 @@ export default function App() {
   const fetchScreeningHistory = async () => {
     try {
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
-      const res = await fetch("http://localhost:5000/api/auth/screenings", { headers });
+      const res = await fetch(`${API_BASE_URL}/api/auth/screenings`, { headers });
       if (res.ok) {
         const data = await res.json();
         if (data.screenings) {
@@ -236,7 +237,7 @@ export default function App() {
     if (!window.confirm("Are you sure you want to delete all saved screening records? This cannot be undone.")) return;
     try {
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
-      const res = await fetch("http://localhost:5000/api/auth/screenings", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/screenings`, {
         method: "DELETE",
         headers,
       });
@@ -532,7 +533,7 @@ export default function App() {
       }
 
       // 1. Classical Prediction
-      const classicalResponse = await fetch("http://localhost:5000/api/predict", {
+      const classicalResponse = await fetch(`${API_BASE_URL}/api/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
@@ -544,7 +545,7 @@ export default function App() {
       setClassicalResult(classicalData);
 
       // 2. Quantum Prediction
-      const response = await fetch("http://localhost:5000/api/quantum-predict", {
+      const response = await fetch(`${API_BASE_URL}/api/quantum-predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
@@ -600,7 +601,7 @@ export default function App() {
       try {
         const headers = { "Content-Type": "application/json" };
         if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
-        const saveRes = await fetch("http://localhost:5000/api/auth/screenings", {
+        const saveRes = await fetch(`${API_BASE_URL}/api/auth/screenings`, {
           method: "POST",
           headers,
           body: JSON.stringify(patientRecord),
@@ -2170,7 +2171,7 @@ export default function App() {
                     className="qdx-preset-btn"
                     style={{ fontSize: 11, borderColor: "rgba(16, 185, 129, 0.4)", color: "#86efac" }}
                     onClick={async () => {
-                      const res = await fetch("http://localhost:5000/api/auth/demo/doctor");
+                      const res = await fetch(`${API_BASE_URL}/api/auth/demo/doctor`);
                       const data = await res.json();
                       if (data.user) handleLoginSuccess(data.user, data.token);
                     }}
@@ -2182,7 +2183,7 @@ export default function App() {
                     className="qdx-preset-btn"
                     style={{ fontSize: 11, borderColor: "rgba(147, 51, 234, 0.4)", color: "#c084fc" }}
                     onClick={async () => {
-                      const res = await fetch("http://localhost:5000/api/auth/demo/researcher");
+                      const res = await fetch(`${API_BASE_URL}/api/auth/demo/researcher`);
                       const data = await res.json();
                       if (data.user) handleLoginSuccess(data.user, data.token);
                     }}
@@ -2194,7 +2195,7 @@ export default function App() {
                     className="qdx-preset-btn"
                     style={{ fontSize: 11, borderColor: "rgba(56, 189, 248, 0.4)", color: "#38bdf8" }}
                     onClick={async () => {
-                      const res = await fetch("http://localhost:5000/api/auth/demo/patient");
+                      const res = await fetch(`${API_BASE_URL}/api/auth/demo/patient`);
                       const data = await res.json();
                       if (data.user) handleLoginSuccess(data.user, data.token);
                     }}
@@ -2324,7 +2325,7 @@ export default function App() {
                 </div>
                 <div className="qdx-banner-right" style={{ display: "flex", gap: 10, alignItems: "center" }}>
                   <a
-                    href="http://localhost:8501"
+                    href={STREAMLIT_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="qdx-preset-btn"
@@ -2355,7 +2356,7 @@ export default function App() {
               {/* Embedded Frame */}
               <div style={{ width: "100%", height: "850px", borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255, 255, 255, 0.1)", background: "#0b1120", position: "relative" }}>
                 <iframe
-                  src="http://localhost:8501"
+                  src={STREAMLIT_URL}
                   title="QuantumDx Streamlit Benchmark Studio"
                   style={{ width: "100%", height: "100%", border: "none" }}
                   sandbox="allow-same-origin allow-scripts allow-forms allow-popups"

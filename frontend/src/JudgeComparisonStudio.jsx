@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_BASE_URL } from "./config";
 
 const METRIC_DEFINITIONS = {
   accuracy: {
@@ -164,7 +165,7 @@ export default function JudgeComparisonStudio({ benchmarks = {} }) {
     setLiveMessage("Running live test query through Node.js (:5000) and FastAPI QML Engine (:8000)...");
     try {
       const startTime = performance.now();
-      const res = await fetch("http://localhost:5000/api/predict", {
+      const res = await fetch(`${API_BASE_URL}/api/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -4,7 +4,8 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+const PYTHON_API_URL = process.env.PYTHON_API_URL || "http://127.0.0.1:8000";
 
 app.use(cors());
 app.use(express.json());
@@ -13,11 +14,18 @@ app.use(express.json());
 const authRouter = require("./auth");
 app.use("/api/auth", authRouter);
 
-// Home
-app.get("/", (req, res) => {
+// Serve built frontend in production if dist exists
+const distPath = path.join(__dirname, "..", "frontend", "dist");
+if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
+}
+
+// Home API info
+app.get("/api", (req, res) => {
     res.json({
         status: "success",
-        message: "Hybrid QML Backend is running"
+        message: "QuantumDx Hybrid QML API Gateway is running",
+        pythonBackend: PYTHON_API_URL
     });
 });
 
@@ -76,7 +84,7 @@ app.get("/api/dataset-samples", (req, res) => {
 // Prediction
 app.post("/api/quantum-predict", async (req, res) => {
     try {
-        const response = await fetch("http://127.0.0.1:8000/quantum-predict", {
+        const response = await fetch(`${PYTHON_API_URL}/quantum-predict`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -105,14 +113,13 @@ app.post("/api/quantum-predict", async (req, res) => {
 // Classical prediction
 app.post("/api/predict", async (req, res) => {
     try {
-        const response = await fetch("http://127.0.0.1:8000/predict", {
+        const response = await fetch(`${PYTHON_API_URL}/predict`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(req.body)
         });
-
 
         const data = await response.json();
 
@@ -132,6 +139,15 @@ app.post("/api/predict", async (req, res) => {
         });
     }
 });
+
+// SPA Fallback for client-side routing in production
+if (fs.existsSync(distPath)) {
+    app.use((req, res, next) => {
+        if (req.path.startsWith("/api")) return next();
+        res.sendFile(path.join(distPath, "index.html"));
+    });
+}
+
 // Start Node.js server
 app.listen(PORT, () => {
     console.log(`Node.js backend running at http://localhost:${PORT}`);

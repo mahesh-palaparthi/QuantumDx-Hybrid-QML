@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "./config";
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [authMode, setAuthMode] = useState("signup"); // "signup" | "signin"
@@ -126,7 +127,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
           ? { institution: conditionalField || "Quantum AI Institute", researchArea: "QML & Bioinformatics" }
           : { hospitalName: conditionalField || "Metro General Hospital", department: "Clinical Endocrinology" };
 
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -164,7 +165,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: email.trim(), email: email.trim(), password }),
@@ -189,7 +190,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/demo/${demoRole}`);
+      const res = await fetch(`${API_BASE_URL}/api/auth/demo/${demoRole}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Demo login failed.");
 

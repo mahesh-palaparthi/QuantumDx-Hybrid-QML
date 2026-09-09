@@ -1,0 +1,38 @@
+﻿services:
+  # 1. Python QML Engine (FastAPI + PennyLane + Scikit-Learn)
+  - type: web
+    name: quantumdx-engine
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn python_api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # 2. Main Web Application (Node.js Gateway + Built React UI)
+  - type: web
+    name: quantumdx
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    startCommand: cd backend && node server.js
+    healthCheckPath: /api
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_API_URL
+        fromService:
+          type: web
+          name: quantumdx-engine
+          property: host
+
+  # 3. Streamlit Interactive Benchmark Dashboard
+  - type: web
+    name: quantumdx-dashboard
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run dashboard/app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    autoDeploy: true
