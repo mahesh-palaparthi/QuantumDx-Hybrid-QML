@@ -1591,14 +1591,17 @@
 .qdx-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(4, 8, 18, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(4, 8, 18, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: clamp(8px, 2vh, 20px) clamp(8px, 2vw, 20px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
   animation: fadeInModal 0.25s ease-out;
 }
 
@@ -1609,14 +1612,40 @@
 
 .qdx-auth-dialog {
   width: 100%;
-  max-width: 520px;
-  background: rgba(13, 22, 46, 0.92);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  border-radius: 20px;
-  padding: 2.2rem 2.2rem 2rem;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+  max-width: min(490px, 94vw);
+  max-height: min(92vh, 740px);
+  background: rgba(13, 22, 46, 0.96);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: clamp(14px, 2vw, 20px);
+  padding: clamp(1.2rem, 3vh, 1.8rem) clamp(1.2rem, 3vw, 2rem);
+  box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.18);
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.35) transparent;
+}
+
+.qdx-auth-dialog::-webkit-scrollbar {
+  width: 5px;
+}
+
+.qdx-auth-dialog::-webkit-scrollbar-track {
+  background: rgba(7, 16, 33, 0.5);
+  border-radius: 4px;
+}
+
+.qdx-auth-dialog::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.3);
+  border-radius: 4px;
+}
+
+.qdx-auth-dialog::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.6);
 }
 
 .qdx-auth-dialog::before {
@@ -2078,6 +2107,116 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ==========================================================================
+   Responsive Scaling for Browser Zoom & Compact Viewports
+   ========================================================================== */
+@media (max-height: 750px) {
+  .qdx-modal-backdrop {
+    align-items: flex-start;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .qdx-auth-dialog {
+    max-height: 94vh;
+    padding: 1rem 1.4rem 1.2rem;
+  }
+  .qdx-auth-brand-head {
+    margin-bottom: 0.85rem;
+    padding-right: 48px;
+  }
+  .qdx-auth-brand-logo svg {
+    width: 24px;
+    height: 24px;
+  }
+  .qdx-auth-brand-title {
+    font-size: 15px;
+  }
+  .qdx-auth-mode-toggle {
+    margin-top: 2px;
+    margin-bottom: 0.85rem;
+    padding: 3px;
+  }
+  .qdx-mode-btn {
+    padding: 5px 8px;
+    font-size: 11.5px;
+  }
+  .qdx-step-header h2 {
+    font-size: 16px;
+  }
+  .qdx-step-header p {
+    font-size: 11px;
+    margin: 2px 0 8px 0;
+  }
+  .qdx-field-group {
+    margin-bottom: 8px;
+  }
+  .qdx-field-group label {
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+  .qdx-input-wrap input,
+  .qdx-select-control {
+    padding: 7px 30px 7px 32px;
+    font-size: 12px;
+  }
+  .qdx-input-icon {
+    font-size: 12px;
+    left: 10px;
+  }
+  .qdx-btn-primary-auth,
+  .qdx-btn-ghost-auth {
+    padding: 8px 12px;
+    font-size: 12.5px;
+  }
+  .qdx-auth-divider {
+    margin: 10px 0 8px 0;
+    font-size: 9px;
+  }
+  .qdx-viva-demo-row {
+    gap: 6px;
+  }
+  .qdx-viva-btn {
+    padding: 5px 8px;
+    font-size: 10.5px;
+    min-width: 100px;
+  }
+  .qdx-modal-close-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    top: 12px;
+    right: 12px;
+  }
+  .qdx-modal-close-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-height: 560px) {
+  .qdx-auth-dialog {
+    padding: 0.85rem 1.1rem 1rem;
+    border-radius: 12px;
+  }
+  .qdx-auth-brand-head {
+    margin-bottom: 0.5rem;
+  }
+  .qdx-auth-mode-toggle {
+    margin-bottom: 0.6rem;
+  }
+  .qdx-field-group {
+    margin-bottom: 6px;
+  }
+  .qdx-input-wrap input,
+  .qdx-select-control {
+    padding: 5px 26px 5px 28px;
+  }
+  .qdx-auth-divider {
+    margin: 6px 0 5px 0;
+  }
 }
 
 /* ==========================================================================
