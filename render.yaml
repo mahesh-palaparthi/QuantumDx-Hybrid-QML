@@ -1,4 +1,4 @@
-﻿services:
+services:
   # 1. Python QML Engine (FastAPI + PennyLane + Scikit-Learn)
   - type: web
     name: quantumdx-engine
@@ -18,14 +18,14 @@
     plan: free
     buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
     startCommand: cd backend && node server.js
-    healthCheckPath: /api
+    healthCheckPath: /api/health
     autoDeploy: true
     envVars:
       - key: PYTHON_API_URL
         fromService:
           type: web
           name: quantumdx-engine
-          property: host
+          property: hostport
 
   # 3. Streamlit Interactive Benchmark Dashboard
   - type: web

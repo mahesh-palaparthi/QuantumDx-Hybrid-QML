@@ -5,7 +5,26 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const PYTHON_API_URL = process.env.PYTHON_API_URL || "http://127.0.0.1:8000";
+function resolvePythonApiUrl(input) {
+    let url = (input || "http://127.0.0.1:8000").trim();
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "http://" + url;
+    }
+    try {
+        const u = new URL(url);
+        // If it's an internal Render hostname without port (e.g. quantumdx-engine),
+        // Render internal private networking listens on port 10000.
+        if (!u.port && !url.includes(".onrender.com") && u.hostname !== "localhost" && u.hostname !== "127.0.0.1") {
+            url = `${u.protocol}//${u.hostname}:10000`;
+        }
+    } catch (e) {
+        console.error("Invalid PYTHON_API_URL format:", e);
+    }
+    return url;
+}
+
+const PYTHON_API_URL = resolvePythonApiUrl(process.env.PYTHON_API_URL);
+console.log(`[QuantumDx] Configured Python API backend: ${PYTHON_API_URL}`);
 
 app.use(cors());
 app.use(express.json());
@@ -30,11 +49,23 @@ app.get("/api", (req, res) => {
 });
 
 // Health check
-app.get("/api/health", (req, res) => {
+app.get("/api/health", async (req, res) => {
+    let pythonStatus = "unknown";
+    try {
+        const resp = await fetch(`${PYTHON_API_URL}/health`, { signal: AbortSignal.timeout(4000) });
+        if (resp.ok) {
+            pythonStatus = "connected";
+        } else {
+            pythonStatus = `http_${resp.status}`;
+        }
+    } catch (e) {
+        pythonStatus = `unreachable: ${e.message}`;
+    }
     res.json({
         status: "ok",
-        service: "Node.js API",
-        pythonBackend: "Connected"
+        service: "QuantumDx Node.js API Gateway",
+        pythonBackendUrl: PYTHON_API_URL,
+        pythonStatus
     });
 });
 

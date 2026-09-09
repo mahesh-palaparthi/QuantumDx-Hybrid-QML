@@ -170,11 +170,13 @@ quantum_predictor = QuantumBreastCancerPredictor()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Warmup classical predictors in background thread
+    # Warmup all predictors in background threads so first queries don't hang
     threading.Thread(target=classical_diabetes_predictor.train, daemon=True).start()
     threading.Thread(target=quantum_diabetes_predictor.train, daemon=True).start()
     threading.Thread(target=classical_cancer_predictor.train, daemon=True).start()
+    threading.Thread(target=quantum_predictor.train, daemon=True).start()
     threading.Thread(target=classical_heart_predictor.train, daemon=True).start()
+    threading.Thread(target=quantum_heart_predictor.train, daemon=True).start()
     logger.info("FastAPI service started and ready.")
     yield
 
