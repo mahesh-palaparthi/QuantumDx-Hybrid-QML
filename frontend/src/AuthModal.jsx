@@ -22,16 +22,37 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
  
+  const handleClose = () => {
+    setIsSuccess(false);
+    setError("");
+    setPassword("");
+    setConfirmPassword("");
+    setStep(1);
+    setAuthMode("signin");
+    onClose();
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsSuccess(false);
+      setError("");
+      setPassword("");
+      setConfirmPassword("");
+      setStep(1);
+      setAuthMode("signin");
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
-        onClose();
+        handleClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -155,7 +176,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       localStorage.setItem("quantumdx_token", data.token);
       localStorage.setItem("quantumdx_user", JSON.stringify(data.user));
       onLoginSuccess(data.user, data.token);
-      onClose();
+      handleClose();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -175,7 +196,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       localStorage.setItem("quantumdx_token", data.token);
       localStorage.setItem("quantumdx_user", JSON.stringify(data.user));
       onLoginSuccess(data.user, data.token);
-      onClose();
+      handleClose();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -184,12 +205,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   };
 
   return (
-    <div className="qdx-modal-backdrop" onClick={onClose}>
+    <div className="qdx-modal-backdrop" onClick={handleClose}>
       <div className="qdx-auth-dialog" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           className="qdx-modal-close-btn"
-          onClick={onClose}
+          onClick={handleClose}
           aria-label="Close modal"
           title="Close (Esc)"
         >
@@ -259,7 +280,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
               type="button"
               className="qdx-btn-primary-auth"
               style={{ width: "100%", marginTop: 16 }}
-              onClick={onClose}
+              onClick={handleClose}
             >
               Enter Screening Workspace ──&gt;
             </button>

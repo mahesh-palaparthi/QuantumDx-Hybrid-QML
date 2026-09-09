@@ -258,6 +258,7 @@ export default function App() {
     localStorage.removeItem("quantumdx_token");
     setCurrentUser(null);
     setAuthToken("");
+    setIsAuthModalOpen(true);
   };
 
   // =========================================================================

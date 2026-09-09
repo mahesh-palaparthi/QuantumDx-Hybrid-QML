@@ -2820,31 +2820,55 @@ select option:checked,
 
 .qdx-select-accessible {
   background: #081122;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 6px 26px 6px 10px;
-  border-radius: 8px;
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  color: #ffffff !important;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 28px 7px 12px;
+  border-radius: 9px;
   cursor: pointer;
   outline: none;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  -webkit-appearance: none;
+  color-scheme: dark !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 13px;
+  background-position: right 9px center;
+  background-size: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.qdx-select-accessible:hover {
+  border-color: #38bdf8;
+  filter: brightness(1.1);
 }
 
 .qdx-select-accessible.val-yes {
-  border-color: rgba(239, 68, 68, 0.6);
-  color: #fca5a5;
-  background-color: rgba(239, 68, 68, 0.12);
+  border: 1.5px solid #ef4444 !important;
+  color: #ffffff !important;
+  background-color: #dc2626 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
 }
 
 .qdx-select-accessible.val-no {
-  border-color: rgba(16, 185, 129, 0.6);
-  color: #86efac;
-  background-color: rgba(16, 185, 129, 0.12);
+  border: 1.5px solid #10b981 !important;
+  color: #ffffff !important;
+  background-color: #059669 !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+}
+
+.qdx-select-accessible option {
+  background-color: #0b1526 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  padding: 8px 12px !important;
+}
+
+.qdx-select-accessible option:checked,
+.qdx-select-accessible option:hover {
+  background-color: #1e293b !important;
+  color: #38bdf8 !important;
 }
 
 /* ==========================================================================
