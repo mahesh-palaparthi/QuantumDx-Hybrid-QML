@@ -112,11 +112,21 @@ app.get("/api", (req, res) => {
     });
 });
 
-// Health check
-app.get("/api/health", async (req, res) => {
+// Health check (instant response for Render deployment health probe)
+app.get("/api/health", (req, res) => {
+    res.status(200).json({
+        status: "ok",
+        service: "QuantumDx Node.js API Gateway",
+        uptime: process.uptime(),
+        pythonBackendUrl: PYTHON_API_URL
+    });
+});
+
+// Deep health check for Python engine connection
+app.get("/api/engine-health", async (req, res) => {
     let pythonStatus = "unknown";
     try {
-        const resp = await fetchWithRetry(`${PYTHON_API_URL}/health`, { signal: AbortSignal.timeout(10000) }, 1);
+        const resp = await fetchWithRetry(`${PYTHON_API_URL}/health`, { signal: AbortSignal.timeout(5000) }, 1);
         if (resp.ok) {
             pythonStatus = "connected";
         } else {
