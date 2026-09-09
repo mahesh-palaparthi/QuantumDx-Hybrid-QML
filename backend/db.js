@@ -167,6 +167,26 @@ const db = {
     return data.users.find((u) => u.email.toLowerCase() === email.toLowerCase().trim()) || null;
   },
 
+  findUserByIdentifier(identifier) {
+    if (!identifier) return null;
+    const data = loadDb();
+    const clean = identifier.toLowerCase().trim();
+    return (
+      data.users.find((u) => {
+        const uEmail = (u.email || "").toLowerCase().trim();
+        const uName = (u.fullName || "").toLowerCase().trim();
+        const uPhone = (u.phone || "").replace(/\s+/g, "");
+        const cleanPhone = clean.replace(/\s+/g, "");
+        return (
+          uEmail === clean ||
+          uName === clean ||
+          (uPhone && uPhone === cleanPhone) ||
+          uName.split(/\s+/)[0] === clean
+        );
+      }) || null
+    );
+  },
+
   findUserById(id) {
     const data = loadDb();
     return data.users.find((u) => u.id === id) || null;
@@ -197,8 +217,8 @@ const db = {
     return newUser;
   },
 
-  verifyCredentials(email, password) {
-    const user = this.findUserByEmail(email);
+  verifyCredentials(identifier, password) {
+    const user = this.findUserByIdentifier(identifier) || this.findUserByEmail(identifier);
     if (!user) return null;
     const isValid = verifyPassword(password, user.passwordHash);
     return isValid ? user : null;

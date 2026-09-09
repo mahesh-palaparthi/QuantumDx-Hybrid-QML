@@ -158,7 +158,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     e.preventDefault();
     setError("");
     if (!email.trim() || !password) {
-      setError("Please enter both your email address and password.");
+      setError("Please enter your username or email address and password.");
       return;
     }
 
@@ -167,11 +167,11 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier: email.trim(), email: email.trim(), password }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed. Check your email or password.");
+      if (!res.ok) throw new Error(data.message || "Login failed. Check your username/email or password.");
 
       localStorage.setItem("quantumdx_token", data.token);
       localStorage.setItem("quantumdx_user", JSON.stringify(data.user));
@@ -616,15 +616,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 </div>
 
                 <div className="qdx-field-group">
-                  <label>Email Address</label>
+                  <label>Username or Email Address</label>
                   <div className="qdx-input-wrap">
-                    <span className="qdx-input-icon">✉️</span>
+                    <span className="qdx-input-icon">👤</span>
                     <input
-                      type="email"
-                      placeholder="you@example.com"
+                      type="text"
+                      placeholder="e.g. mahesh or you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      autoComplete="username"
                     />
                   </div>
                 </div>

@@ -74,19 +74,20 @@ router.post("/register", (req, res) => {
 // 2. LOGIN
 router.post("/login", (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const identifier = req.body.email || req.body.username || req.body.identifier;
+    const { password } = req.body;
+    if (!identifier || !password) {
       return res.status(400).json({
         status: "error",
-        message: "Please provide both email address and password.",
+        message: "Please enter your username or email address and password.",
       });
     }
 
-    const user = db.verifyCredentials(email, password);
+    const user = db.verifyCredentials(identifier, password);
     if (!user) {
       return res.status(401).json({
         status: "error",
-        message: "Invalid email or password. Please check your credentials.",
+        message: "Invalid username/email or password. Please check your credentials.",
       });
     }
 

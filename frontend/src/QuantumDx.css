@@ -1921,6 +1921,16 @@
   box-shadow: 0 0 12px rgba(79, 216, 255, 0.25);
 }
 
+.qdx-input-wrap input:-webkit-autofill,
+.qdx-input-wrap input:-webkit-autofill:hover, 
+.qdx-input-wrap input:-webkit-autofill:focus, 
+.qdx-input-wrap input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #081122 inset !important;
+  -webkit-text-fill-color: #f1f5f9 !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 select,
 .qdx-select-control,
 .qdx-select-accessible {
