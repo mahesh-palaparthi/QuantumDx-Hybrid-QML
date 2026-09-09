@@ -1669,9 +1669,9 @@ export default function App() {
                           <div className="qdx-outcome-card outcome-inconclusive">
                             <div className="qdx-outcome-icon-box">🔬</div>
                             <div className="qdx-outcome-content">
-                              <div className="qdx-outcome-title">Uncertainty</div>
+                              <div className="qdx-outcome-title">Inconclusive</div>
                               <div className="qdx-outcome-subtitle">
-                                Clinical Review Advised — Uncertainty Deadband
+                                Clinical Review Advised — Inconclusive Deadband
                               </div>
                             </div>
                           </div>
@@ -1911,15 +1911,15 @@ export default function App() {
                                 </p>
                               </div>
 
-                              {/* Col 3: Uncertainty */}
+                              {/* Col 3: Inconclusive */}
                               <div className={`qdx-mat-col col-inconc ${finalOutcome === "Inconclusive" ? "active" : ""}`}>
                                 <div className="qdx-col-head">
-                                  <span>{isHighDivergence ? "Divergence" : "Uncertainty"}</span>
+                                  <span>{isHighDivergence ? "Divergence" : "Inconclusive"}</span>
                                   {finalOutcome === "Inconclusive" && <span className="qdx-active-dot-badge" style={{ color: "#f59e0b" }}>● Active Decision</span>}
                                 </div>
-                                <div className="qdx-col-title" style={{ color: "#f59e0b" }}>Uncertainty</div>
+                                <div className="qdx-col-title" style={{ color: "#f59e0b" }}>Inconclusive</div>
                                 <p className="qdx-col-desc">
-                                  Models diverged in confidence or fell into the uncertainty deadband. Automated safety gating orders confirmatory lab testing.
+                                  Models diverged in confidence or fell into the inconclusive deadband. Automated safety gating orders confirmatory lab testing.
                                 </p>
                               </div>
                             </div>
