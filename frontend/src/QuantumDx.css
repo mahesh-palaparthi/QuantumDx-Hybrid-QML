@@ -4,6 +4,7 @@
    ========================================================================== */
 
 :root {
+  color-scheme: dark;
   --qdx-bg: #060e1d;
   --qdx-surface: #0a1529;
   --qdx-surface-2: #0f1f3d;
@@ -2819,11 +2820,11 @@ select option:checked,
 }
 
 .qdx-select-accessible {
-  background: #081122;
-  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  background: #0a1427;
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
   color: #ffffff !important;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   padding: 7px 28px 7px 12px;
   border-radius: 9px;
   cursor: pointer;
@@ -2835,27 +2836,42 @@ select option:checked,
   background-repeat: no-repeat;
   background-position: right 9px center;
   background-size: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
 }
 
 .qdx-select-accessible:hover {
   border-color: #38bdf8;
-  filter: brightness(1.1);
+  background-color: #0f1f3d;
+}
+
+.qdx-select-accessible:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
 }
 
 .qdx-select-accessible.val-yes {
-  border: 1.5px solid #ef4444 !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.55) !important;
   color: #ffffff !important;
-  background-color: #dc2626 !important;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+  background-color: rgba(220, 38, 38, 0.16) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.qdx-select-accessible.val-yes:hover {
+  border-color: rgba(239, 68, 68, 0.8) !important;
+  background-color: rgba(220, 38, 38, 0.24) !important;
 }
 
 .qdx-select-accessible.val-no {
-  border: 1.5px solid #10b981 !important;
+  border: 1.5px solid rgba(16, 185, 129, 0.55) !important;
   color: #ffffff !important;
-  background-color: #059669 !important;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+  background-color: rgba(16, 185, 129, 0.16) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.qdx-select-accessible.val-no:hover {
+  border-color: rgba(16, 185, 129, 0.8) !important;
+  background-color: rgba(16, 185, 129, 0.24) !important;
 }
 
 .qdx-select-accessible option {
@@ -2866,9 +2882,10 @@ select option:checked,
 }
 
 .qdx-select-accessible option:checked,
-.qdx-select-accessible option:hover {
-  background-color: #1e293b !important;
-  color: #38bdf8 !important;
+.qdx-select-accessible option:hover,
+.qdx-select-accessible option:focus {
+  background-color: #16294f !important;
+  color: #ffffff !important;
 }
 
 /* ==========================================================================
