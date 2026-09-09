@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import QuantumBioCanvas from "./QuantumBioCanvas";
 import JudgeComparisonStudio from "./JudgeComparisonStudio";
 import AuthModal from "./AuthModal";
@@ -258,6 +258,135 @@ export default function App() {
     localStorage.removeItem("quantumdx_token");
     setCurrentUser(null);
     setAuthToken("");
+  };
+
+  // =========================================================================
+  // DRAGGABLE VERTICAL SLIDING SIDEBAR (Hold & Move with Cursor)
+  // =========================================================================
+  const sidebarRef = useRef(null);
+  const [isSidebarDragging, setIsSidebarDragging] = useState(false);
+  const isDraggingRef = useRef(false);
+  const startYRef = useRef(0);
+  const startScrollTopRef = useRef(0);
+  const hasMovedRef = useRef(false);
+  const lastYRef = useRef(0);
+  const lastTimeRef = useRef(0);
+  const velocityRef = useRef(0);
+  const momentumFrameRef = useRef(null);
+
+  const stopMomentum = () => {
+    if (momentumFrameRef.current) {
+      cancelAnimationFrame(momentumFrameRef.current);
+      momentumFrameRef.current = null;
+    }
+  };
+
+  const handleSidebarMouseDown = (e) => {
+    if (e.button !== 0) return; // Only primary left-click
+    stopMomentum();
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+    startYRef.current = e.clientY;
+    lastYRef.current = e.clientY;
+    lastTimeRef.current = performance.now();
+    velocityRef.current = 0;
+    startScrollTopRef.current = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
+    setIsSidebarDragging(true);
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e) => {
+      if (!isDraggingRef.current || !sidebarRef.current) return;
+      const deltaY = e.clientY - startYRef.current;
+      if (Math.abs(deltaY) > 3) {
+        hasMovedRef.current = true;
+      }
+
+      // Calculate sliding velocity for kinetic momentum
+      const now = performance.now();
+      const dt = now - lastTimeRef.current;
+      if (dt > 0) {
+        velocityRef.current = (e.clientY - lastYRef.current) / dt;
+      }
+      lastYRef.current = e.clientY;
+      lastTimeRef.current = now;
+
+      // Sliding up with cursor pulls content down / scrolls down
+      sidebarRef.current.scrollTop = startScrollTopRef.current - deltaY;
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
+      setIsSidebarDragging(false);
+
+      // Apply smooth inertial deceleration
+      if (sidebarRef.current && Math.abs(velocityRef.current) > 0.15) {
+        let v = velocityRef.current;
+        const decayMomentum = () => {
+          if (!sidebarRef.current || Math.abs(v) < 0.02) {
+            momentumFrameRef.current = null;
+            return;
+          }
+          sidebarRef.current.scrollTop -= v * 14;
+          v *= 0.90;
+          momentumFrameRef.current = requestAnimationFrame(decayMomentum);
+        };
+        momentumFrameRef.current = requestAnimationFrame(decayMomentum);
+      }
+    };
+
+    window.addEventListener("mousemove", handleGlobalMouseMove);
+    window.addEventListener("mouseup", handleGlobalMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleGlobalMouseMove);
+      window.removeEventListener("mouseup", handleGlobalMouseUp);
+      stopMomentum();
+    };
+  }, []);
+
+  const handleSidebarTouchStart = (e) => {
+    if (e.touches.length !== 1) return;
+    stopMomentum();
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+    startYRef.current = e.touches[0].clientY;
+    lastYRef.current = e.touches[0].clientY;
+    lastTimeRef.current = performance.now();
+    velocityRef.current = 0;
+    startScrollTopRef.current = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
+    setIsSidebarDragging(true);
+  };
+
+  const handleSidebarTouchMove = (e) => {
+    if (!isDraggingRef.current || !sidebarRef.current) return;
+    const deltaY = e.touches[0].clientY - startYRef.current;
+    if (Math.abs(deltaY) > 3) {
+      hasMovedRef.current = true;
+    }
+    const now = performance.now();
+    const dt = now - lastTimeRef.current;
+    if (dt > 0) {
+      velocityRef.current = (e.touches[0].clientY - lastYRef.current) / dt;
+    }
+    lastYRef.current = e.touches[0].clientY;
+    lastTimeRef.current = now;
+    sidebarRef.current.scrollTop = startScrollTopRef.current - deltaY;
+  };
+
+  const handleSidebarTouchEnd = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setIsSidebarDragging(false);
+  };
+
+  const handleSidebarClickCapture = (e) => {
+    if (hasMovedRef.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      hasMovedRef.current = false;
+    }
   };
 
   const updateDiabetesField = (field, value) => {
@@ -689,7 +818,19 @@ export default function App() {
         {/* ==========================================================================
             Left Navigation Sidebar (media_1788695307019.jpg)
             ========================================================================== */}
-        <aside className="qdx-sidebar">
+        <aside
+          ref={sidebarRef}
+          className={`qdx-sidebar ${isSidebarDragging ? "is-dragging" : ""}`}
+          onMouseDown={handleSidebarMouseDown}
+          onTouchStart={handleSidebarTouchStart}
+          onTouchMove={handleSidebarTouchMove}
+          onTouchEnd={handleSidebarTouchEnd}
+          onClickCapture={handleSidebarClickCapture}
+        >
+          {/* Subtle cursor drag handle pill */}
+          <div className="qdx-sidebar-drag-hint" title="Hold & move cursor up/down to slide sidebar">
+            <span className="qdx-drag-bar" />
+          </div>
           <div>
             {/* Top Brand Logo */}
             <div className="qdx-brand">
