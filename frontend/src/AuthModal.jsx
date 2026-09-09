@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [authMode, setAuthMode] = useState("signup"); // "signup" | "signin"
@@ -21,6 +21,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+ 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -175,8 +186,26 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   return (
     <div className="qdx-modal-backdrop" onClick={onClose}>
       <div className="qdx-auth-dialog" onClick={(e) => e.stopPropagation()}>
-        <button className="qdx-modal-close-btn" onClick={onClose} aria-label="Close">
-          ✕
+        <button
+          type="button"
+          className="qdx-modal-close-btn"
+          onClick={onClose}
+          aria-label="Close modal"
+          title="Close (Esc)"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
 
         {/* Brand Banner at Top */}

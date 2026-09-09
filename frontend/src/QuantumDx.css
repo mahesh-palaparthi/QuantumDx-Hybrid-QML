@@ -1632,26 +1632,35 @@
 
 .qdx-modal-close-btn {
   position: absolute;
-  top: 1.2rem;
-  right: 1.2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--qdx-text-muted);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  top: 16px;
+  right: 16px;
+  background: rgba(13, 22, 46, 0.95);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  color: #f1f5f9;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  z-index: 50;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 12px rgba(56, 189, 248, 0.25);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .qdx-modal-close-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.25);
   border-color: #ef4444;
   color: #ffffff;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.5), 0 4px 14px rgba(0, 0, 0, 0.5);
+  transform: scale(1.08);
+}
+
+.qdx-modal-close-btn:active {
+  transform: scale(0.95);
 }
 
 .qdx-auth-brand-head {
@@ -1659,6 +1668,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.3rem;
+  padding-right: 56px;
 }
 
 .qdx-auth-brand-logo {
@@ -1699,16 +1709,20 @@
   border: 1px solid rgba(79, 216, 255, 0.2);
   padding: 4px 10px;
   border-radius: 9999px;
+  flex-shrink: 0;
 }
 
 .qdx-auth-mode-toggle {
   display: flex;
   gap: 6px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(56, 189, 248, 0.15);
   border-radius: 12px;
   padding: 4px;
-  margin-bottom: 1.2rem;
+  margin-top: 4px;
+  margin-bottom: 1.3rem;
+  position: relative;
+  z-index: 5;
 }
 
 .qdx-mode-btn {
