@@ -255,7 +255,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             </svg>
             <div>
               <span className="qdx-auth-brand-title">Quantum<span>Dx</span></span>
-              <span className="qdx-auth-brand-tag">DISEASE RISK PREDICTION PLATFORM</span>
+              <span className="qdx-auth-brand-tag">EARLY DISEASE DETECTION PLATFORM</span>
             </div>
           </div>
           <div className="qdx-secure-pill-badge">

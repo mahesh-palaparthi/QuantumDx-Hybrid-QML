@@ -1,7 +1,7 @@
-# ⚛️ QuantumDx — Hybrid Quantum-Classical ML Disease Risk Platform
+# ⚛️ QuantumDx — Hybrid Quantum-Classical ML Early Disease Detection Platform
 
-> **Disease Risk Prediction Platform • Hybrid Quantum Machine Learning**  
-> *Developed for the Smart India Hackathon (SIH)*
+> **Early Disease Detection Platform • Hybrid Quantum Machine Learning**  
+> *Developed for the Smart India Hackathon (SIH)**
 
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61dafb?logo=react)](https://react.dev/)
 [![FastAPI](https://img.shields.io/badge/ML%20Engine-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com/)

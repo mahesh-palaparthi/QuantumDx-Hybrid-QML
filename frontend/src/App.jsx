@@ -916,7 +916,7 @@ export default function App() {
               </div>
               <div className="qdx-brand-text">
                 <span className="qdx-brand-title">QuantumDx</span>
-                <span className="qdx-brand-sub">Disease Risk Prediction</span>
+                <span className="qdx-brand-sub">Early Disease Detection</span>
               </div>
             </div>
 
@@ -1138,7 +1138,7 @@ export default function App() {
                   <div className="qdx-banner-icon">📋</div>
                   <div className="qdx-banner-titles">
                     <h1 className="qdx-banner-main-title">
-                      Disease Risk <span className="qdx-gradient-text">Prediction Studio</span>
+                      Early Disease <span className="qdx-gradient-text">Detection Studio</span>
                     </h1>
                     <p className="qdx-banner-desc">
                       Enter the 16 patient details below using simple everyday language. Analyzed by Classical Tuned SVM (94.0% accuracy, 98.6% recall) and Quantum Neural Network (QNN).
@@ -1605,7 +1605,7 @@ export default function App() {
                       </>
                     ) : (
                       <>
-                        ✨ Predict Disease Risk ──&gt;
+                        ✨ Run Disease Detection ──&gt;
                       </>
                     )}
                   </button>
@@ -1630,7 +1630,7 @@ export default function App() {
                       <div className="qdx-placeholder-icon">⚛️</div>
                       <h3 className="qdx-placeholder-title">Awaiting Clinical Parameters</h3>
                       <p className="qdx-placeholder-desc">
-                        Select a patient preset or configure the 16 clinical indicators on the left, then click <strong>"Predict Disease Risk"</strong> to execute real-time dual-model consensus inference.
+                        Select a patient preset or configure the 16 clinical indicators on the left, then click <strong>"Run Disease Detection"</strong> to execute real-time dual-model consensus inference.
                       </p>
                       <div className="qdx-placeholder-pills">
                         <span className="qdx-p-pill">FIPS PBKDF2 Secure Database</span>
@@ -2378,7 +2378,7 @@ export default function App() {
           {/* Platform Footer */}
           <footer style={{ marginTop: "auto", paddingTop: 20, borderTop: "1px solid rgba(255, 255, 255, 0.06)", fontSize: 12, color: "var(--qdx-text-muted)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
             <div>
-              <strong>QuantumDx</strong> — Hybrid Quantum Machine Learning Disease Risk Platform.
+              <strong>QuantumDx</strong> — Hybrid Quantum Machine Learning Disease Detection Platform.
             </div>
             <div>
               PennyLane Quantum Simulator • Offline PBKDF2 Database • Research &amp; Clinical Decision Support
