@@ -243,7 +243,7 @@ class QuantumEarlyStageDiabetesPredictor:
             X_train_proc = preprocessor.fit_transform(X_train, y_train)
 
             # Quantum Neural Network on 4 qubits
-            model = MODEL_REGISTRY["quantum_qnn"](n_qubits=4, n_layers=2, epochs=10, batch_size=32, lr=0.1)
+            model = MODEL_REGISTRY["quantum_qnn"](n_qubits=4, n_layers=2, epochs=3, batch_size=64, lr=0.1)
             model.fit(X_train_proc, y_train)
 
             self.preprocessor = preprocessor
@@ -404,7 +404,7 @@ class QuantumHeartDiseasePredictor:
                 feature_names=dataset.feature_names,
             )
 
-            model = VariationalQuantumClassifier(n_qubits=4, epochs=15, batch_size=32, lr=0.15)
+            model = VariationalQuantumClassifier(n_qubits=4, epochs=3, batch_size=64, lr=0.15)
             model.fit(X_train_processed, y_train)
 
             self.preprocessor = preprocessor

@@ -116,7 +116,7 @@ class QuantumBreastCancerPredictor:
                 X_train, y_train, feature_names=dataset.feature_names
             )
 
-            model = VariationalQuantumClassifier(n_qubits=4)
+            model = VariationalQuantumClassifier(n_qubits=4, epochs=3, batch_size=64)
             model.fit(X_train_processed, y_train)
 
             # Assign only after training succeeds, so a failed retrain

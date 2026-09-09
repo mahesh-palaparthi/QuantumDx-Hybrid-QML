@@ -253,6 +253,16 @@ if (fs.existsSync(distPath)) {
     });
 }
 
+// Global JSON error handler - guarantees Express never sends HTML for API routes
+app.use((err, req, res, next) => {
+    console.error("API Gateway error:", err);
+    res.status(err.status || 500).json({
+        status: "error",
+        message: err.message || "Internal Server Error",
+        error: err.toString()
+    });
+});
+
 // Start Node.js server
 app.listen(PORT, () => {
     console.log(`Node.js backend running at http://localhost:${PORT}`);
