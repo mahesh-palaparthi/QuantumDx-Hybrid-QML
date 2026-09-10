@@ -10,6 +10,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.svm import SVC
 from sklearn.calibration import CalibratedClassifierCV
+import joblib
+from pennylane import numpy as pnp
 
 from .data import DATA_LOADERS, Dataset
 from .preprocessing import QuantumReadyPreprocessor
@@ -218,6 +220,29 @@ class QuantumEarlyStageDiabetesPredictor:
         with self._lock:
             if self.is_trained:
                 return
+
+            checkpoint_path = Path(__file__).resolve().parent / "models" / "precomputed" / "diabetes_qnn_checkpoint.joblib"
+            if checkpoint_path.exists():
+                try:
+                    checkpoint = joblib.load(checkpoint_path)
+                    self.preprocessor = checkpoint["preprocessor"]
+                    self.feature_names = checkpoint["feature_names"]
+
+                    model = MODEL_REGISTRY["quantum_qnn"](n_qubits=4, n_layers=2)
+                    model.weights = pnp.array(checkpoint["weights"], requires_grad=False)
+                    model.nn_weights = pnp.array(checkpoint["nn_weights"], requires_grad=False)
+                    model.nn_bias = pnp.array(checkpoint["nn_bias"], requires_grad=False)
+                    model.threshold = float(checkpoint["threshold"])
+                    model.angle_scaler = checkpoint["angle_scaler"]
+                    model.loss_history = checkpoint.get("loss_history", [])
+                    model.training_time_seconds = checkpoint.get("training_time_seconds", 0.0)
+
+                    self.model = model
+                    self.is_trained = True
+                    return
+                except Exception:
+                    pass
+
             csv_path = Path(__file__).resolve().parent.parent / "data" / "early_stage_diabetes.csv"
             df = pd.read_csv(csv_path).drop_duplicates().reset_index(drop=True)
 
@@ -383,6 +408,28 @@ class QuantumHeartDiseasePredictor:
         with self._lock:
             if self.is_trained:
                 return
+
+            checkpoint_path = Path(__file__).resolve().parent / "models" / "precomputed" / "heart_vqc_checkpoint.joblib"
+            if checkpoint_path.exists():
+                try:
+                    checkpoint = joblib.load(checkpoint_path)
+                    self.preprocessor = checkpoint["preprocessor"]
+                    self.feature_names = checkpoint["feature_names"]
+
+                    model = VariationalQuantumClassifier(n_qubits=4, epochs=3, batch_size=64, lr=0.15)
+                    model.weights = pnp.array(checkpoint["weights"], requires_grad=False)
+                    model.bias = pnp.array(checkpoint["bias"], requires_grad=False)
+                    model.threshold = float(checkpoint["threshold"])
+                    model.angle_scaler = checkpoint["angle_scaler"]
+                    model.loss_history = checkpoint.get("loss_history", [])
+                    model.training_time_seconds = checkpoint.get("training_time_seconds", 0.0)
+
+                    self.model = model
+                    self.is_trained = True
+                    return
+                except Exception:
+                    pass
+
             dataset: Dataset = DATA_LOADERS["heart_disease"]().load()
             self.feature_names = list(dataset.feature_names)
 

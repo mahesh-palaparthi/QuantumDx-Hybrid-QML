@@ -1,9 +1,12 @@
 import logging
+from pathlib import Path
 import threading
 from contextlib import asynccontextmanager
 from typing import Any, cast
 
+import joblib
 import numpy as np
+from pennylane import numpy as pnp
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
@@ -94,6 +97,28 @@ class QuantumBreastCancerPredictor:
         with self._lock:
             if self.is_trained:
                 return
+
+            checkpoint_path = Path(__file__).resolve().parent / "qmldd" / "models" / "precomputed" / "cancer_vqc_checkpoint.joblib"
+            if checkpoint_path.exists():
+                try:
+                    checkpoint = joblib.load(checkpoint_path)
+                    self.preprocessor = checkpoint["preprocessor"]
+                    self.feature_names = checkpoint["feature_names"]
+
+                    model = VariationalQuantumClassifier(n_qubits=4, epochs=3, batch_size=64)
+                    model.weights = pnp.array(checkpoint["weights"], requires_grad=False)
+                    model.bias = pnp.array(checkpoint["bias"], requires_grad=False)
+                    model.threshold = float(checkpoint["threshold"])
+                    model.angle_scaler = checkpoint["angle_scaler"]
+                    model.loss_history = checkpoint.get("loss_history", [])
+                    model.training_time_seconds = checkpoint.get("training_time_seconds", 0.0)
+
+                    self.model = model
+                    self.is_trained = True
+                    logger.info("Loaded precomputed Breast Cancer VQC model.")
+                    return
+                except Exception:
+                    pass
 
             logger.info("Training VQC model...")
 
@@ -311,4 +336,9 @@ def demo_patient(disease: str = "breast_cancer") -> dict[str, Any]:
         raise HTTPException(
             status_code=500,
             detail="Could not generate demo patient"
-        )
+        )
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("python_api:app", host="127.0.0.1", port=8000, reload=False)
