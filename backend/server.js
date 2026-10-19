@@ -68,6 +68,17 @@ async function parseResponseSafely(response) {
         }
     }
     const text = await response.text();
+    if (response.status === 429) {
+        return {
+            ok: false,
+            status: 429,
+            data: {
+                status: "error",
+                message: "Render Cloud free-tier rate limit reached. Please wait ~15 seconds for the cloud quota to cool down, then click Predict again.",
+                error: "Rate limit exceeded"
+            }
+        };
+    }
     if (response.status === 502 || response.status === 503 || response.status === 504 || text.includes("<!DOCTYPE") || text.includes("<html")) {
         return {
             ok: false,

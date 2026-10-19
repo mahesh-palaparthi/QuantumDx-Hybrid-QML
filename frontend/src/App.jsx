@@ -216,6 +216,7 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [classicalResult, setClassicalResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(false);
   const [error, setError] = useState("");
   const [showFullDecisionMatrix, setShowFullDecisionMatrix] = useState(false);
 
@@ -515,6 +516,7 @@ export default function App() {
 
   // Prediction Inference
   const analyze = async () => {
+    if (loading || cooldown) return;
     setError("");
     setResult(null);
     setClassicalResult(null);
@@ -585,6 +587,9 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
       });
+      if (classicalResponse.status === 429) {
+        throw new Error("Render cloud rate limit reached. Please wait ~15 seconds for the cloud quota to cool down, then click Predict again.");
+      }
       let classicalData;
       try {
         classicalData = await classicalResponse.json();
@@ -602,6 +607,9 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
       });
+      if (response.status === 429) {
+        throw new Error("Render cloud rate limit reached. Please wait ~15 seconds for the cloud quota to cool down, then click Predict again.");
+      }
       let data;
       try {
         data = await response.json();
@@ -675,6 +683,8 @@ export default function App() {
       setError(err.message || "Unable to connect to prediction service. Check that backend is running.");
     } finally {
       setLoading(false);
+      setCooldown(true);
+      setTimeout(() => setCooldown(false), 2500);
     }
   };
 
@@ -1865,12 +1875,17 @@ export default function App() {
                     type="button"
                     className="qdx-btn-predict"
                     onClick={analyze}
-                    disabled={loading}
+                    disabled={loading || cooldown}
+                    style={{ opacity: loading || cooldown ? 0.75 : 1, cursor: loading || cooldown ? "not-allowed" : "pointer" }}
                   >
                     {loading ? (
                       <>
                         <span className="dot-pulse" />
                         Evaluating Quantum Hilbert Space &amp; Classical Hyperplane...
+                      </>
+                    ) : cooldown ? (
+                      <>
+                        <span>⏳</span> Cooling down...
                       </>
                     ) : (
                       <>
