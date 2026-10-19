@@ -690,7 +690,7 @@ export default function App() {
     ? Math.max(0, Math.min(1, Number(result.probability)))
     : quantumPred === 1 ? 0.92 : 0.08;
 
-  const classicalWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : 0.509;
+  const classicalWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : isMalnutrition ? 0.52 : 0.509;
   const quantumWeight = 1 - classicalWeight;
   const hybridScore = classicalResult && result ? Number((classicalWeight * pClassical + quantumWeight * pQuantum).toFixed(4)) : null;
   const confidenceDelta = classicalResult && result ? Number(Math.abs(pClassical - pQuantum).toFixed(4)) : 0;
@@ -1316,16 +1316,24 @@ export default function App() {
                   <div className="qdx-card-header">
                     <div className="qdx-card-title-row">
                       <h2 className="qdx-card-title">
-                        <span>👤</span>
+                        <span>{isMalnutrition ? "👶" : "👤"}</span>
                         {isDiabetes
                           ? "Patient Symptoms (16 Accessible Features)"
                           : isHeart
                           ? "Cardiovascular Parameters (13 Factors)"
+                          : isMalnutrition
+                          ? "Pediatric Clinical Anthropometry (6 Features)"
                           : "Cellular Morphometry (30 Features)"}
                       </h2>
                     </div>
                     <p className="qdx-card-subtitle">
-                      Every clinical term is explained in everyday language so anyone can understand and verify symptoms easily.
+                      {isMalnutrition
+                        ? "Pediatric clinical anthropometry and nutritional indicators based on UNICEF/WHO field survey standards."
+                        : isDiabetes
+                        ? "Every clinical term is explained in everyday language so anyone can understand and verify symptoms easily."
+                        : isHeart
+                        ? "Cardiovascular measurements and diagnostic metrics based on clinical cardiology standards."
+                        : "Fine needle aspirate (FNA) cell nucleus characteristics for breast cancer diagnostics."}
                     </p>
                   </div>
 
@@ -1881,7 +1889,13 @@ export default function App() {
                       </h2>
                     </div>
                     <p className="qdx-card-subtitle">
-                      Based on Classical Tuned SVM and Quantum Neural Network (QNN)
+                      {isMalnutrition
+                        ? "Based on Classical Calibrated SVM (92.2% Acc) and 4-Qubit Quantum Neural Network (QNN)"
+                        : isDiabetes
+                        ? "Based on Classical Tuned SVM and Quantum Neural Network (QNN)"
+                        : isHeart
+                        ? "Based on Logistic Regression Baseline and Variational Quantum Classifier (QVQC)"
+                        : "Based on Deep Neural Classifier (MLP) and Variational Quantum Classifier (QVQC)"}
                     </p>
                   </div>
 
@@ -1891,7 +1905,7 @@ export default function App() {
                       <div className="qdx-placeholder-icon">⚛️</div>
                       <h3 className="qdx-placeholder-title">Awaiting Clinical Parameters</h3>
                       <p className="qdx-placeholder-desc">
-                        Select a patient preset or configure the 16 clinical indicators on the left, then click <strong>"Run Disease Detection"</strong> to execute real-time dual-model consensus inference.
+                        Select a patient preset or configure the {isMalnutrition ? 6 : isDiabetes ? 16 : isHeart ? 13 : 30} clinical indicators on the left, then click <strong>"Run Disease Detection"</strong> to execute real-time dual-model consensus inference.
                       </p>
                       <div className="qdx-placeholder-pills">
                         <span className="qdx-p-pill">FIPS PBKDF2 Secure Database</span>
@@ -1906,7 +1920,7 @@ export default function App() {
                       <div className="qdx-placeholder-icon" style={{ animation: "spin 2s linear infinite" }}>⚛️</div>
                       <h3 className="qdx-placeholder-title">Quantum ML Inference in Progress</h3>
                       <p className="qdx-placeholder-desc">
-                        Projecting 16 patient clinical factors into PennyLane parameter-shift Hilbert rotations and calculating SVM hyperplane margin...
+                        Projecting {isMalnutrition ? 6 : isDiabetes ? 16 : isHeart ? 13 : 30} patient clinical factors into PennyLane parameter-shift Hilbert rotations and calculating {isHeart ? "Logistic" : "SVM"} hyperplane margin...
                       </p>
                     </div>
                   )}
@@ -2091,9 +2105,15 @@ export default function App() {
                             </h3>
                             <p className="qdx-xai-subtitle">
                               {finalOutcome === "Positive"
-                                ? "Calculated from patient's actively present clinical symptoms and quantum feature sensitivity:"
+                                ? (isMalnutrition
+                                    ? "Calculated from child's anthropometric measurements and quantum feature sensitivity:"
+                                    : "Calculated from patient's actively present clinical symptoms and quantum feature sensitivity:")
                                 : finalOutcome === "Negative"
-                                ? "Calculated from the absence of core diabetic risk markers (Protective Factor Analysis):"
+                                ? (isMalnutrition
+                                    ? "Calculated from healthy pediatric growth markers and absence of acute malnutrition indicators (Protective Factor Analysis):"
+                                    : isDiabetes
+                                    ? "Calculated from the absence of core diabetic risk markers (Protective Factor Analysis):"
+                                    : "Calculated from non-pathological diagnostic indicators (Protective Factor Analysis):")
                                 : "Feature divergence analysis — conflicting symptom signals between Classical SVM and Quantum QNN:"}
                             </p>
                           </div>

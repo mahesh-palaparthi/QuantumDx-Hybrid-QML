@@ -20,11 +20,14 @@ export default function VerifiedPatientPicker({
 }) {
   const isDiabetes = activeDisease === "diabetes";
   const isHeart = activeDisease === "heart_disease";
+  const isMalnutrition = activeDisease === "child_malnutrition";
 
   const datasetTitle = isDiabetes
     ? "Sylhet Early Stage Diabetes (Published Clinical Dataset)"
     : isHeart
     ? "Statlog Cleveland Heart Disease (Clinical Institute Dataset)"
+    : isMalnutrition
+    ? "UNICEF/WHO SMART Survey Cohort (Pediatric Anthropometry)"
     : "UCI Breast Cancer Wisconsin Diagnostic FNA (Biopsy Dataset)";
 
   const handleRandomPick = () => {
