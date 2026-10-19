@@ -76,12 +76,14 @@ export default function VerifiedPatientPicker({
         <label className="qdx-picker-label">Select Verified Dataset Row:</label>
         <select
           className="qdx-picker-dropdown"
-          value={selectedCase?.id || ""}
+          value={selectedCase?.id || "custom"}
           onChange={(e) => {
+            if (e.target.value === "custom") return;
             const chosen = cohorts.find((c) => c.id === e.target.value);
             if (chosen) onSelectCase(chosen);
           }}
         >
+          <option value="custom">✏️ Custom Manual Patient Entry</option>
           {cohorts.map((c) => (
             <option key={c.id} value={c.id}>
               {c.label}
@@ -91,7 +93,7 @@ export default function VerifiedPatientPicker({
       </div>
 
       {/* Active Case Ground-Truth Banner */}
-      {selectedCase && (
+      {selectedCase ? (
         <div className="qdx-case-meta-banner">
           <div className="qdx-case-meta-left">
             <div className="qdx-case-source">
@@ -115,6 +117,25 @@ export default function VerifiedPatientPicker({
             >
               <span className="qdx-gt-dot" />
               <span>Ground Truth: {selectedCase.isPositive ? "POSITIVE" : "NEGATIVE"}</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="qdx-case-meta-banner" style={{ background: "rgba(56, 189, 248, 0.08)", borderColor: "rgba(56, 189, 248, 0.25)" }}>
+          <div className="qdx-case-meta-left">
+            <div className="qdx-case-source">
+              <span className="qdx-case-tag" style={{ background: "#0284c7" }}>CUSTOM INPUT</span>
+              <strong className="qdx-case-row-num">Active Manual Entry</strong>
+              <span className="qdx-case-origin">• Evaluating custom user-entered clinical parameters</span>
+            </div>
+            <div className="qdx-case-hallmarks">
+              <span>Status: </span>
+              <strong>Custom values entered. You can edit any parameter freely.</strong>
+            </div>
+          </div>
+          <div className="qdx-case-meta-right">
+            <div className="qdx-ground-truth-badge" style={{ background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.3)" }}>
+              <span>User Custom Data</span>
             </div>
           </div>
         </div>

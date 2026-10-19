@@ -458,18 +458,22 @@ export default function App() {
   };
 
   const updateDiabetesField = (field, value) => {
+    setSelectedCohortCase(null);
     setDiabetesData((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateHeartField = (field, value) => {
+    setSelectedCohortCase(null);
     setHeartData((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateMalnutritionField = (field, value) => {
+    setSelectedCohortCase(null);
     setMalnutritionData((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateCancerField = (index, value) => {
+    setSelectedCohortCase(null);
     const next = [...cancerFeatures];
     next[index] = value;
     setCancerFeatures(next);
@@ -483,16 +487,16 @@ export default function App() {
     setSaveBanner("");
     if (diseaseKey === "diabetes") {
       setSelectedCohortCase(DIABETES_COHORTS[0]);
-      setDiabetesData(DIABETES_COHORTS[0].data);
+      setDiabetesData({ ...DIABETES_COHORTS[0].data });
     } else if (diseaseKey === "heart_disease") {
       setSelectedCohortCase(HEART_COHORTS[0]);
-      setHeartData(HEART_COHORTS[0].data);
+      setHeartData({ ...HEART_COHORTS[0].data });
     } else if (diseaseKey === "child_malnutrition") {
       setSelectedCohortCase(CHILD_MALNUTRITION_COHORTS[0]);
-      setMalnutritionData(CHILD_MALNUTRITION_COHORTS[0].data);
+      setMalnutritionData({ ...CHILD_MALNUTRITION_COHORTS[0].data });
     } else {
       setSelectedCohortCase(CANCER_COHORTS[0]);
-      setCancerFeatures(CANCER_COHORTS[0].features.map(String));
+      setCancerFeatures([...CANCER_COHORTS[0].features.map(String)]);
     }
   };
 
@@ -504,13 +508,13 @@ export default function App() {
     setError("");
     setSaveBanner("");
     if (activeDisease === "diabetes" && caseObj.data) {
-      setDiabetesData(caseObj.data);
+      setDiabetesData({ ...caseObj.data });
     } else if (activeDisease === "heart_disease" && caseObj.data) {
-      setHeartData(caseObj.data);
+      setHeartData({ ...caseObj.data });
     } else if (activeDisease === "child_malnutrition" && caseObj.data) {
-      setMalnutritionData(caseObj.data);
+      setMalnutritionData({ ...caseObj.data });
     } else if (caseObj.features) {
-      setCancerFeatures(caseObj.features.map(String));
+      setCancerFeatures([...caseObj.features.map(String)]);
     }
   };
 
@@ -1752,6 +1756,7 @@ export default function App() {
                             onChange={(e) => updateMalnutritionField("age_months", e.target.value)}
                             min="6"
                             max="59"
+                            autoComplete="off"
                           />
                           <span className="qdx-cell-unit">mo</span>
                         </div>
@@ -1794,6 +1799,7 @@ export default function App() {
                             step="0.1"
                             min="3.0"
                             max="30.0"
+                            autoComplete="off"
                           />
                           <span className="qdx-cell-unit">kg</span>
                         </div>
@@ -1816,6 +1822,7 @@ export default function App() {
                             step="0.5"
                             min="50"
                             max="125"
+                            autoComplete="off"
                           />
                           <span className="qdx-cell-unit">cm</span>
                         </div>
@@ -1843,6 +1850,7 @@ export default function App() {
                             onChange={(e) => updateMalnutritionField("muac_mm", e.target.value)}
                             min="80"
                             max="220"
+                            autoComplete="off"
                           />
                           <span className="qdx-cell-unit">mm</span>
                         </div>
