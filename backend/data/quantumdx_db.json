@@ -50,7 +50,84 @@
       "profile": {
         "gender": "Male"
       }
+    },
+    {
+      "id": "usr-1789057713696-416",
+      "fullName": "tagore",
+      "email": "tagore14@gmail.com",
+      "phone": "",
+      "passwordHash": "e5d3fdd7e79485586483bf9702c80cd4:57c1b0dcce2b03360f7d1e590a914661c3723dcf1b86a2425830cc4a2199103f30431228b03bfb30f50c75b4ff49087a7f3deb15da90c92b0c3c4690418e10e1",
+      "role": "patient",
+      "createdAt": "2026-09-10T16:28:33.698Z",
+      "profile": {
+        "gender": "Male"
+      }
     }
   ],
-  "screenings": []
+  "screenings": [
+    {
+      "id": "scr-1789101222073-111",
+      "timestamp": "2026-09-11T04:33:42.073Z",
+      "userId": null,
+      "patientId": "PT-30525",
+      "patientName": "Outpatient Screened",
+      "disease": "Diabetes (16 Symptoms)",
+      "classicalPrediction": "Positive",
+      "classicalProbability": 0.9340702440057186,
+      "quantumPrediction": "Positive",
+      "quantumProbability": 0.6270750220640835,
+      "consensusVerdict": "Positive",
+      "confidencePercent": 79,
+      "symptoms": {
+        "Age": "60",
+        "Gender": "Male",
+        "Polyuria": "Yes",
+        "Polydipsia": "Yes",
+        "sudden_weight_loss": "No",
+        "weakness": "Yes",
+        "Polyphagia": "Yes",
+        "Genital_thrush": "No",
+        "visual_blurring": "Yes",
+        "Itching": "Yes",
+        "Irritability": "No",
+        "delayed_healing": "Yes",
+        "partial_paresis": "Yes",
+        "muscle_stiffness": "No",
+        "Alopecia": "No",
+        "Obesity": "No"
+      }
+    },
+    {
+      "id": "scr-1789098145305-773",
+      "timestamp": "2026-09-11T03:42:25.305Z",
+      "userId": null,
+      "patientId": "PT-22520",
+      "patientName": "Outpatient Screened",
+      "disease": "Diabetes (16 Symptoms)",
+      "classicalPrediction": "Positive",
+      "classicalProbability": 0.9340702440057186,
+      "quantumPrediction": "Positive",
+      "quantumProbability": 0.6270750220640835,
+      "consensusVerdict": "Positive",
+      "confidencePercent": 79,
+      "symptoms": {
+        "Age": "60",
+        "Gender": "Male",
+        "Polyuria": "Yes",
+        "Polydipsia": "Yes",
+        "sudden_weight_loss": "No",
+        "weakness": "Yes",
+        "Polyphagia": "Yes",
+        "Genital_thrush": "No",
+        "visual_blurring": "Yes",
+        "Itching": "Yes",
+        "Irritability": "No",
+        "delayed_healing": "Yes",
+        "partial_paresis": "Yes",
+        "muscle_stiffness": "No",
+        "Alopecia": "No",
+        "Obesity": "No"
+      }
+    }
+  ]
 }

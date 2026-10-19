@@ -22,6 +22,8 @@ from qmldd.predictor import (
     QuantumEarlyStageDiabetesPredictor,
     HeartDiseasePredictor,
     QuantumHeartDiseasePredictor,
+    ChildMalnutritionPredictor,
+    QuantumChildMalnutritionPredictor,
 )
 from qmldd.models.quantum import VariationalQuantumClassifier
 
@@ -54,11 +56,15 @@ def resolve_disease(request: PredictionRequest) -> str:
             return "breast_cancer"
         if d in ["early_stage_diabetes", "diabetes"]:
             return "early_stage_diabetes"
+        if d in ["child_malnutrition", "malnutrition", "pediatric"]:
+            return "child_malnutrition"
         return d
     if len(request.features) == 13:
         return "heart_disease"
     if len(request.features) == 30:
         return "breast_cancer"
+    if len(request.features) == 6:
+        return "child_malnutrition"
     return "early_stage_diabetes"
 
 
@@ -72,6 +78,8 @@ classical_diabetes_predictor = EarlyStageDiabetesPredictor()
 quantum_diabetes_predictor = QuantumEarlyStageDiabetesPredictor()
 classical_heart_predictor = HeartDiseasePredictor()
 quantum_heart_predictor = QuantumHeartDiseasePredictor()
+classical_malnutrition_predictor = ChildMalnutritionPredictor()
+quantum_malnutrition_predictor = QuantumChildMalnutritionPredictor()
 
 
 
@@ -203,6 +211,8 @@ async def lifespan(app: FastAPI):
     threading.Thread(target=quantum_predictor.train, daemon=True).start()
     threading.Thread(target=classical_heart_predictor.train, daemon=True).start()
     threading.Thread(target=quantum_heart_predictor.train, daemon=True).start()
+    threading.Thread(target=classical_malnutrition_predictor.train, daemon=True).start()
+    threading.Thread(target=quantum_malnutrition_predictor.train, daemon=True).start()
     logger.info("FastAPI service started and ready.")
     yield
 
@@ -236,8 +246,8 @@ def health() -> dict[str, object]:
     return {
         "status": "ok",
         "service": "Python FastAPI",
-        "classical_predictor": "BreastCancerPredictor / EarlyStageDiabetesPredictor / HeartDiseasePredictor",
-        "quantum_predictor": "VariationalQuantumClassifier",
+        "classical_predictor": "BreastCancer / Diabetes / HeartDisease / ChildMalnutrition",
+        "quantum_predictor": "VariationalQuantumClassifier / QuantumNeuralNetwork",
         "quantum_model_trained": quantum_predictor.is_trained,
     }
 
@@ -254,6 +264,8 @@ def predict(request: PredictionRequest) -> dict[str, Any]:
             result = classical_cancer_predictor.predict(request.features)
         elif disease == "heart_disease":
             result = classical_heart_predictor.predict(request.features)
+        elif disease == "child_malnutrition":
+            result = classical_malnutrition_predictor.predict(request.features)
         else:
             result = classical_diabetes_predictor.predict(request.features)
     except ValueError as e:
@@ -291,6 +303,11 @@ async def quantum_predict(request: PredictionRequest) -> dict[str, Any]:
                 quantum_heart_predictor.predict,
                 request.features
             )
+        elif disease == "child_malnutrition":
+            result = await run_in_threadpool(
+                quantum_malnutrition_predictor.predict,
+                request.features
+            )
         else:
             result = await run_in_threadpool(
                 quantum_diabetes_predictor.predict,
@@ -317,7 +334,16 @@ async def quantum_predict(request: PredictionRequest) -> dict[str, Any]:
 @app.get("/demo-patient")
 def demo_patient(disease: str = "breast_cancer") -> dict[str, Any]:
     try:
-        loader_name = "heart_disease" if disease in ["heart_disease", "heart"] else "breast_cancer"
+        d = disease.strip().lower()
+        if d in ["child_malnutrition", "malnutrition"]:
+            loader_name = "child_malnutrition"
+        elif d in ["heart_disease", "heart"]:
+            loader_name = "heart_disease"
+        elif d in ["early_stage_diabetes", "diabetes"]:
+            loader_name = "early_stage_diabetes"
+        else:
+            loader_name = "breast_cancer"
+
         dataset: Dataset = DATA_LOADERS[loader_name]().load() # pyright: ignore[reportAssignmentType]
 
         index = np.random.randint(0, len(dataset.X))

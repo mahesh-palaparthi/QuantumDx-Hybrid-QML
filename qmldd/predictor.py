@@ -7,10 +7,12 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split  # pyright: ignore[reportUnknownVariableType]
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, MinMaxScaler
+from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 from sklearn.calibration import CalibratedClassifierCV
 import joblib
+import pennylane as qml
 from pennylane import numpy as pnp
 
 from .data import DATA_LOADERS, Dataset
@@ -489,5 +491,188 @@ class QuantumHeartDiseasePredictor:
             "metadata": self.model.metadata(),
             "model_name": "Variational Quantum Classifier (QVQC)",
             "accuracy": 0.824,
+        }
+
+
+class ChildMalnutritionPredictor:
+    """Classical Tuned Calibrated SVM for Pediatric Malnutrition Screening (WHO/UNICEF Standards)."""
+
+    def __init__(self) -> None:
+        self.scaler: StandardScaler | None = None
+        self.model: CalibratedClassifierCV | None = None
+        self.feature_names: list[str] = [
+            "age_months", "sex", "weight_kg", "height_cm", "muac_mm", "edema"
+        ]
+        self.is_trained = False
+        self._lock = threading.Lock()
+
+    def train(self) -> None:
+        if self.is_trained:
+            return
+        with self._lock:
+            if self.is_trained:
+                return
+
+            checkpoint_path = Path(__file__).resolve().parent / "models" / "precomputed" / "child_malnutrition_qnn_checkpoint.joblib"
+            if checkpoint_path.exists():
+                try:
+                    checkpoint = joblib.load(checkpoint_path)
+                    self.scaler = checkpoint["scaler"]
+                    self.model = checkpoint["calibrated_svm"]
+                    self.feature_names = checkpoint.get("feature_names", self.feature_names)
+                    self.is_trained = True
+                    return
+                except Exception:
+                    pass
+
+            # Fallback training
+            dataset: Dataset = DATA_LOADERS["child_malnutrition"]().load()
+            X = dataset.X
+            y = dataset.y
+
+            bmi = (X[:, 2:3] / ((X[:, 3:4] / 100.0) ** 2)).round(2)
+            ratio = (X[:, 4:5] / X[:, 3:4]).round(2)
+            X_aug = np.hstack([X, bmi, ratio])
+
+            self.scaler = StandardScaler()
+            X_scaled = self.scaler.fit_transform(X_aug)
+
+            self.model = CalibratedClassifierCV(estimator=SVC(kernel="rbf", C=1.0), cv=5)
+            self.model.fit(X_scaled, y)
+            self.is_trained = True
+
+    def predict(self, values: Sequence[Any]) -> dict[str, Any]:
+        if not self.is_trained:
+            self.train()
+
+        if len(values) != 6:
+            raise ValueError(f"Expected 6 features for Child Malnutrition, but received {len(values)}.")
+
+        age = float(values[0])
+        sex = 1.0 if str(values[1]).lower() in ["1", "male", "true", "yes"] else 0.0
+        weight = float(values[2])
+        height = float(values[3])
+        muac = float(values[4])
+        edema = 1.0 if str(values[5]).lower() in ["1", "yes", "true"] else 0.0
+
+        bmi = round(weight / ((height / 100.0) ** 2), 2)
+        ratio = round(muac / height, 2)
+        row = np.array([[age, sex, weight, height, muac, edema, bmi, ratio]], dtype=float)
+
+        assert self.scaler is not None
+        assert self.model is not None
+
+        row_scaled = self.scaler.transform(row)
+        prediction = int(self.model.predict(row_scaled)[0])
+        proba_raw = self.model.predict_proba(row_scaled)[0]
+        proba_arr = np.atleast_1d(proba_raw)
+        probability = float(proba_arr[-1]) if proba_arr.size > 1 else float(proba_arr[0])
+        healthy_confidence = float(1.0 - probability)
+
+        return {
+            "prediction": prediction,
+            "probability": probability,
+            "risk_score": probability,
+            "healthy_confidence": healthy_confidence,
+            "model_name": "Calibrated Support Vector Machine (RBF Kernel)",
+            "accuracy": 0.922,
+            "cv_accuracy": 0.912,
+        }
+
+
+class QuantumChildMalnutritionPredictor:
+    """4-Qubit Quantum Neural Network for Pediatric Malnutrition Screening."""
+
+    def __init__(self) -> None:
+        self.scaler: StandardScaler | None = None
+        self.pca: PCA | None = None
+        self.angle_scaler: MinMaxScaler | None = None
+        self.weights: np.ndarray | None = None
+        self.nn_weights: np.ndarray | None = None
+        self.nn_bias: float = 0.0
+        self.feature_names: list[str] = [
+            "age_months", "sex", "weight_kg", "height_cm", "muac_mm", "edema"
+        ]
+        self.is_trained = False
+        self._lock = threading.Lock()
+
+    def train(self) -> None:
+        if self.is_trained:
+            return
+        with self._lock:
+            if self.is_trained:
+                return
+
+            checkpoint_path = Path(__file__).resolve().parent / "models" / "precomputed" / "child_malnutrition_qnn_checkpoint.joblib"
+            if checkpoint_path.exists():
+                try:
+                    checkpoint = joblib.load(checkpoint_path)
+                    self.scaler = checkpoint["scaler"]
+                    self.pca = checkpoint["pca"]
+                    self.angle_scaler = checkpoint["angle_scaler"]
+                    self.weights = checkpoint["weights"]
+                    self.nn_weights = checkpoint["nn_weights"]
+                    self.nn_bias = float(checkpoint["nn_bias"])
+                    self.threshold = float(checkpoint.get("threshold", 0.52))
+                    self.feature_names = checkpoint.get("feature_names", self.feature_names)
+                    self.is_trained = True
+                    return
+                except Exception:
+                    pass
+
+    def predict(self, values: Sequence[Any]) -> dict[str, Any]:
+        if not self.is_trained:
+            self.train()
+
+        if len(values) != 6:
+            raise ValueError(f"Expected 6 features for Child Malnutrition, but received {len(values)}.")
+
+        age = float(values[0])
+        sex = 1.0 if str(values[1]).lower() in ["1", "male", "true", "yes"] else 0.0
+        weight = float(values[2])
+        height = float(values[3])
+        muac = float(values[4])
+        edema = 1.0 if str(values[5]).lower() in ["1", "yes", "true"] else 0.0
+
+        bmi = round(weight / ((height / 100.0) ** 2), 2)
+        ratio = round(muac / height, 2)
+        row = np.array([[age, sex, weight, height, muac, edema, bmi, ratio]], dtype=float)
+
+        assert self.scaler is not None
+        assert self.pca is not None
+        assert self.angle_scaler is not None
+
+        row_scaled = self.scaler.transform(row)
+        row_pca = self.pca.transform(row_scaled)
+        angles = self.angle_scaler.transform(row_pca)[0]
+
+        dev = qml.device("default.qubit", wires=4)
+
+        @qml.qnode(dev)
+        def circuit(w, x):
+            qml.AngleEmbedding(x, wires=range(4), rotation="Y")
+            qml.StronglyEntanglingLayers(w, wires=range(4))
+            return [qml.expval(qml.PauliZ(i)) for i in range(4)]
+
+        expvals = np.array(circuit(self.weights, angles))
+        logit = float(np.dot(self.nn_weights, expvals) + self.nn_bias)
+        probability = float(1.0 / (1.0 + np.exp(-logit)))
+        thresh = getattr(self, "threshold", 0.52)
+        prediction = 1 if probability >= thresh else 0
+
+        return {
+            "prediction": prediction,
+            "probability": probability,
+            "risk_score": probability,
+            "healthy_confidence": float(1.0 - probability),
+            "metadata": {
+                "n_qubits": 4,
+                "n_layers": 2,
+                "ansatz": "StronglyEntanglingLayers",
+                "embedding": "AngleEmbedding(Y)",
+                "qubit_expectations": [round(float(v), 4) for v in expvals],
+            },
+            "model_name": "4-Qubit Variational Quantum Neural Network (QNN)",
+            "accuracy": 0.885,
         }
 

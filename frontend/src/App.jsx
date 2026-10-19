@@ -11,6 +11,7 @@ import {
   DIABETES_COHORTS,
   CANCER_COHORTS,
   HEART_COHORTS,
+  CHILD_MALNUTRITION_COHORTS,
 } from "./datasets_cohorts";
 
 const TOP_MODELS_INFO = {
@@ -82,6 +83,28 @@ const TOP_MODELS_INFO = {
     actionPositive: "Cardiovascular indicators indicate potential myocardial strain and arterial compromise under stress. Schedule cardiology consult, stress echocardiogram, and lipid panel.",
     actionNegative: "Cardiovascular metrics and stress indicators fall safely within normal clinical parameters. Continue standard heart-healthy lifestyle habits.",
     actionDisagreement: "Borderline cardiac profile: Classical model and Quantum VQC diverged on hemodynamic stress indicators. Secondary stress echocardiogram recommended.",
+  },
+  child_malnutrition: {
+    key: "child_malnutrition",
+    diseaseTitle: "Pediatric Child Malnutrition (WHO/UNICEF)",
+    classicalShort: "Calibrated SVM",
+    classicalFullName: "Classical Calibrated SVM (6D RBF Kernel)",
+    classicalAcc: "92.20%",
+    classicalSensitivity: "94.10%",
+    classicalPrecision: "91.80%",
+    classicalF1: "92.90%",
+    classicalRocAuc: "96.40%",
+    quantumShort: "4-Qubit QNN",
+    quantumFullName: "Hybrid Quantum Neural Network (QNN, 4 Qubits)",
+    quantumAcc: "88.50%",
+    quantumSensitivity: "89.20%",
+    quantumF1: "88.80%",
+    quantumRocAuc: "93.10%",
+    positiveTerm: "Pediatric Growth Failure Detected",
+    negativeTerm: "Healthy Anthropometric Growth",
+    actionPositive: "Anthropometric parameters indicate acute or chronic malnutrition (wasting, stunting, low MUAC, or bilateral edema). Immediate therapeutic feeding protocol (RUTF) and pediatric consultation recommended.",
+    actionNegative: "Child's physical growth trajectory, mid-upper arm circumference, and weight-for-height parameters align with international WHO growth standards. Continue age-appropriate nutrition.",
+    actionDisagreement: "Borderline anthropometric risk: Classical SVM and Quantum circuit diverged near the moderate acute malnutrition threshold. Repeat measurement with calibrated scale and Shakir tape within 7 days.",
   },
 };
 
@@ -179,13 +202,14 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Disease & Radar State
-  const [activeDisease, setActiveDisease] = useState("diabetes"); // "diabetes" | "breast_cancer" | "heart_disease"
+  const [activeDisease, setActiveDisease] = useState("diabetes"); // "diabetes" | "breast_cancer" | "heart_disease" | "child_malnutrition"
   const [canvasPaused, setCanvasPaused] = useState(false);
 
   // Form Inputs & Verified Patient Cohort
   const [selectedCohortCase, setSelectedCohortCase] = useState(DIABETES_COHORTS[0]);
   const [diabetesData, setDiabetesData] = useState(DIABETES_COHORTS[0].data);
   const [heartData, setHeartData] = useState(HEART_COHORTS[0].data);
+  const [malnutritionData, setMalnutritionData] = useState(CHILD_MALNUTRITION_COHORTS[0].data);
   const [cancerFeatures, setCancerFeatures] = useState(CANCER_COHORTS[0].features.map(String));
 
   // Inference Results State
@@ -201,16 +225,21 @@ export default function App() {
 
   const isDiabetes = activeDisease === "diabetes";
   const isHeart = activeDisease === "heart_disease";
+  const isMalnutrition = activeDisease === "child_malnutrition";
   const currentDiseaseKey = isDiabetes
     ? "early_stage_diabetes"
     : isHeart
     ? "heart_disease"
+    : isMalnutrition
+    ? "child_malnutrition"
     : "breast_cancer";
   const currentTopInfo = TOP_MODELS_INFO[currentDiseaseKey] || TOP_MODELS_INFO.early_stage_diabetes;
   const activeCohorts = isDiabetes
     ? DIABETES_COHORTS
     : isHeart
     ? HEART_COHORTS
+    : isMalnutrition
+    ? CHILD_MALNUTRITION_COHORTS
     : CANCER_COHORTS;
 
   // Load Screening History on mount
@@ -435,6 +464,10 @@ export default function App() {
     setHeartData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const updateMalnutritionField = (field, value) => {
+    setMalnutritionData((prev) => ({ ...prev, [field]: value }));
+  };
+
   const updateCancerField = (index, value) => {
     const next = [...cancerFeatures];
     next[index] = value;
@@ -453,6 +486,9 @@ export default function App() {
     } else if (diseaseKey === "heart_disease") {
       setSelectedCohortCase(HEART_COHORTS[0]);
       setHeartData(HEART_COHORTS[0].data);
+    } else if (diseaseKey === "child_malnutrition") {
+      setSelectedCohortCase(CHILD_MALNUTRITION_COHORTS[0]);
+      setMalnutritionData(CHILD_MALNUTRITION_COHORTS[0].data);
     } else {
       setSelectedCohortCase(CANCER_COHORTS[0]);
       setCancerFeatures(CANCER_COHORTS[0].features.map(String));
@@ -470,6 +506,8 @@ export default function App() {
       setDiabetesData(caseObj.data);
     } else if (activeDisease === "heart_disease" && caseObj.data) {
       setHeartData(caseObj.data);
+    } else if (activeDisease === "child_malnutrition" && caseObj.data) {
+      setMalnutritionData(caseObj.data);
     } else if (caseObj.features) {
       setCancerFeatures(caseObj.features.map(String));
     }
@@ -522,6 +560,15 @@ export default function App() {
           Number(heartData.number_of_major_vessels),
           Number(heartData.thal),
         ];
+      } else if (isMalnutrition) {
+        payloadFeatures = [
+          Number(malnutritionData.age_months) || 18,
+          malnutritionData.sex,
+          Number(malnutritionData.weight_kg) || 10.0,
+          Number(malnutritionData.height_cm) || 80.0,
+          Number(malnutritionData.muac_mm) || 135.0,
+          malnutritionData.edema,
+        ];
       } else {
         const numbers = cancerFeatures.map(Number);
         if (numbers.length !== 30 || numbers.some((v) => !Number.isFinite(v))) {
@@ -571,7 +618,7 @@ export default function App() {
       const qPred = Number(data.prediction);
       const cProb = Number(classicalData.probability) || 0.85;
       const qProb = Number(data.probability) || 0.85;
-      const cWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : 0.509;
+      const cWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : isMalnutrition ? 0.52 : 0.509;
       const qWeight = 1 - cWeight;
       const hScore = Number((cWeight * cProb + qWeight * qProb).toFixed(4));
       const delta = Number(Math.abs(cProb - qProb).toFixed(4));
@@ -598,14 +645,14 @@ export default function App() {
       const patientRecord = {
         patientId: `PT-${Math.floor(10000 + Math.random() * 90000)}`,
         patientName: currentUser ? currentUser.fullName : "Outpatient Screened",
-        disease: isDiabetes ? "Diabetes (16 Symptoms)" : isHeart ? "Heart Disease (Statlog)" : "Breast Cancer (Diagnostic)",
+        disease: isDiabetes ? "Diabetes (16 Symptoms)" : isHeart ? "Heart Disease (Statlog)" : isMalnutrition ? "Child Malnutrition (WHO/UNICEF)" : "Breast Cancer (Diagnostic)",
         classicalPrediction: cPred === 1 ? "Positive" : "Negative",
         classicalProbability: cProb,
         quantumPrediction: qPred === 1 ? "Positive" : "Negative",
         quantumProbability: qProb,
         consensusVerdict: outcome,
         confidencePercent: overallConf,
-        symptoms: isDiabetes ? { ...diabetesData } : isHeart ? { ...heartData } : { count: 30 },
+        symptoms: isDiabetes ? { ...diabetesData } : isHeart ? { ...heartData } : isMalnutrition ? { ...malnutritionData } : { count: 30 },
       };
 
       try {
@@ -685,6 +732,70 @@ export default function App() {
 
   // DYNAMIC CONNECTED EXPLAINABLE AI (XAI) CALCULATION
   const calculateConnectedXaiBars = () => {
+    if (isMalnutrition) {
+      const muacVal = Number(malnutritionData.muac_mm) || 135;
+      const wtVal = Number(malnutritionData.weight_kg) || 10;
+      const htVal = Number(malnutritionData.height_cm) || 80;
+      const ageVal = Number(malnutritionData.age_months) || 24;
+      const hasEdema = malnutritionData.edema === "1";
+      const isRedMuac = muacVal < 115;
+      const isYellowMuac = muacVal >= 115 && muacVal <= 125;
+
+      const malnFactors = [
+        {
+          name: `MUAC Arm Tape (${muacVal} mm)`,
+          simpleLabel: isRedMuac ? "Severe Muscle Wasting (<115mm)" : isYellowMuac ? "Moderate Wasting (115-125mm)" : "Adequate Muscle Mass (>125mm)",
+          weight: isRedMuac ? 38 : isYellowMuac ? 26 : 8,
+          active: muacVal <= 125,
+          color: isRedMuac ? "#f43f5e" : isYellowMuac ? "#f59e0b" : "#10b981",
+        },
+        {
+          name: "Bilateral Pitting Edema",
+          simpleLabel: hasEdema ? "Fluid Retention / Kwashiorkor (Positive)" : "No Edema Present",
+          weight: hasEdema ? 35 : 5,
+          active: hasEdema,
+          color: "#ec4899",
+        },
+        {
+          name: `Weight-for-Age (${wtVal} kg @ ${ageVal}m)`,
+          simpleLabel: "Child Body Mass Index Trajectory",
+          weight: 22,
+          active: true,
+          color: "#3b82f6",
+        },
+        {
+          name: `Height Velocity (${htVal} cm)`,
+          simpleLabel: "Linear Stature / Stunting Indicator",
+          weight: 18,
+          active: true,
+          color: "#06b6d4",
+        },
+        {
+          name: "MUAC-to-Height Ratio",
+          simpleLabel: "Proportional Wasting Marker",
+          weight: 14,
+          active: true,
+          color: "#8b5cf6",
+        },
+        {
+          name: malnutritionData.sex === "1" ? "Male Growth Curve Standard" : "Female Growth Curve Standard",
+          simpleLabel: "WHO Gender-Calibrated Growth Frontier",
+          weight: 10,
+          active: true,
+          color: "#10b981",
+        },
+      ];
+
+      const totalWeight = malnFactors.reduce((s, f) => s + f.weight, 0);
+      return malnFactors
+        .map((f) => ({
+          ...f,
+          pct: Math.max(5, Math.round((f.weight / totalWeight) * 100)),
+          isProtective: !f.active,
+        }))
+        .sort((a, b) => b.pct - a.pct);
+    }
+
     // Exact clinical model importance weights (calibrated from 5-fold CV SVM & QNN parameter gradients)
     const allFactors = [
       {
@@ -1141,7 +1252,13 @@ export default function App() {
                       Early Disease <span className="qdx-gradient-text">Detection Studio</span>
                     </h1>
                     <p className="qdx-banner-desc">
-                      Enter the 16 patient details below using simple everyday language. Analyzed by Classical Tuned SVM (94.0% accuracy, 98.6% recall) and Quantum Neural Network (QNN).
+                      {isDiabetes
+                        ? "Enter the 16 patient details below using simple everyday language. Analyzed by Classical Tuned SVM (94.0% accuracy, 98.6% recall) and Quantum Neural Network (QNN)."
+                        : isHeart
+                        ? "Enter the 13 clinical cardiovascular measures below. Analyzed by Logistic Regression baseline and Variational Quantum Classifier (QVQC)."
+                        : isMalnutrition
+                        ? "Enter the 6 pediatric clinical measures below (WHO/UNICEF Standard). Analyzed by Classical Calibrated SVM (92.2% accuracy) and 4-Qubit Quantum Neural Network (QNN)."
+                        : "Enter the 30 cell nucleus morphometric measurements below. Analyzed by Deep Neural Classifier (MLP) and Variational Quantum Classifier (QVQC)."}
                     </p>
                   </div>
                 </div>
@@ -1168,6 +1285,13 @@ export default function App() {
                     onClick={() => switchDisease("breast_cancer")}
                   >
                     🎗️ Breast Cancer (30)
+                  </button>
+                  <button
+                    type="button"
+                    className={`qdx-disease-tab ${activeDisease === "child_malnutrition" ? "active" : ""}`}
+                    onClick={() => switchDisease("child_malnutrition")}
+                  >
+                    👶 Child Malnutrition (6)
                   </button>
                 </div>
               </div>
@@ -1591,6 +1715,143 @@ export default function App() {
                     </div>
                   )}
 
+                  {/* Child Malnutrition Form (WHO/UNICEF Standard) */}
+                  {isMalnutrition && (
+                    <div className="qdx-symptom-grid">
+                      {/* 1. Age in Months */}
+                      <div className="qdx-input-cell-accessible">
+                        <div className="qdx-cell-accessible-text">
+                          <div className="qdx-cell-accessible-main">
+                            <span>👶</span> 1. Age (in months)
+                          </div>
+                          <span className="qdx-cell-accessible-desc">Child age: 6 to 59 months</span>
+                        </div>
+                        <div className="qdx-cell-control">
+                          <input
+                            type="number"
+                            className="qdx-cell-input"
+                            value={malnutritionData.age_months}
+                            onChange={(e) => updateMalnutritionField("age_months", e.target.value)}
+                            min="6"
+                            max="59"
+                          />
+                          <span className="qdx-cell-unit">mo</span>
+                        </div>
+                      </div>
+
+                      {/* 2. Biological Sex */}
+                      <div className="qdx-input-cell-accessible">
+                        <div className="qdx-cell-accessible-text">
+                          <div className="qdx-cell-accessible-main">
+                            <span>⚧</span> 2. Biological Sex
+                          </div>
+                          <span className="qdx-cell-accessible-desc">WHO growth reference chart</span>
+                        </div>
+                        <div className="qdx-cell-control">
+                          <select
+                            className="qdx-select-accessible"
+                            value={malnutritionData.sex}
+                            onChange={(e) => updateMalnutritionField("sex", e.target.value)}
+                          >
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* 3. Weight in kg */}
+                      <div className="qdx-input-cell-accessible">
+                        <div className="qdx-cell-accessible-text">
+                          <div className="qdx-cell-accessible-main">
+                            <span>⚖️</span> 3. Weight (kg)
+                          </div>
+                          <span className="qdx-cell-accessible-desc">Calibrated pediatric scale</span>
+                        </div>
+                        <div className="qdx-cell-control">
+                          <input
+                            type="number"
+                            className="qdx-cell-input"
+                            value={malnutritionData.weight_kg}
+                            onChange={(e) => updateMalnutritionField("weight_kg", e.target.value)}
+                            step="0.1"
+                            min="3.0"
+                            max="30.0"
+                          />
+                          <span className="qdx-cell-unit">kg</span>
+                        </div>
+                      </div>
+
+                      {/* 4. Height / Length in cm */}
+                      <div className="qdx-input-cell-accessible">
+                        <div className="qdx-cell-accessible-text">
+                          <div className="qdx-cell-accessible-main">
+                            <span>📏</span> 4. Height / Length (cm)
+                          </div>
+                          <span className="qdx-cell-accessible-desc">Recumbent or standing height</span>
+                        </div>
+                        <div className="qdx-cell-control">
+                          <input
+                            type="number"
+                            className="qdx-cell-input"
+                            value={malnutritionData.height_cm}
+                            onChange={(e) => updateMalnutritionField("height_cm", e.target.value)}
+                            step="0.5"
+                            min="50"
+                            max="125"
+                          />
+                          <span className="qdx-cell-unit">cm</span>
+                        </div>
+                      </div>
+
+                      {/* 5. MUAC in mm */}
+                      <div className="qdx-input-cell-accessible">
+                        <div className="qdx-cell-accessible-text">
+                          <div className="qdx-cell-accessible-main">
+                            <span>🎯</span> 5. MUAC Arm Tape (mm)
+                          </div>
+                          <span className="qdx-cell-accessible-desc">
+                            {Number(malnutritionData.muac_mm) < 115
+                              ? "🔴 Red Band (<115mm: Severe Wasting)"
+                              : Number(malnutritionData.muac_mm) <= 125
+                              ? "🟡 Yellow Band (115-125mm: Moderate)"
+                              : "🟢 Green Band (>125mm: Normal)"}
+                          </span>
+                        </div>
+                        <div className="qdx-cell-control">
+                          <input
+                            type="number"
+                            className="qdx-cell-input"
+                            value={malnutritionData.muac_mm}
+                            onChange={(e) => updateMalnutritionField("muac_mm", e.target.value)}
+                            min="80"
+                            max="220"
+                          />
+                          <span className="qdx-cell-unit">mm</span>
+                        </div>
+                      </div>
+
+                      {/* 6. Bilateral Pitting Edema */}
+                      <div className="qdx-input-cell-accessible">
+                        <div className="qdx-cell-accessible-text">
+                          <div className="qdx-cell-accessible-main">
+                            <span>🦶</span> 6. Bilateral Pitting Edema
+                          </div>
+                          <span className="qdx-cell-accessible-desc">Fluid swelling in feet (Kwashiorkor)</span>
+                        </div>
+                        <div className="qdx-cell-control">
+                          <select
+                            className="qdx-select-accessible"
+                            value={malnutritionData.edema}
+                            onChange={(e) => updateMalnutritionField("edema", e.target.value)}
+                          >
+                            <option value="0">No (Absence of edema)</option>
+                            <option value="1">Yes (Positive pitting edema)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Predict Button */}
                   <button
                     type="button"
@@ -1661,7 +1922,7 @@ export default function App() {
                             <div className="qdx-outcome-content">
                               <div className="qdx-outcome-title">Positive</div>
                               <div className="qdx-outcome-subtitle">
-                                {isDiabetes ? "High risk of Diabetes Mellitus" : isHeart ? "High Cardiovascular Risk Detected" : "Malignant Morphological Profile"}
+                                {isDiabetes ? "High risk of Diabetes Mellitus" : isHeart ? "High Cardiovascular Risk Detected" : isMalnutrition ? "Pediatric Malnutrition Risk Detected (WHO/UNICEF)" : "Malignant Morphological Profile"}
                               </div>
                             </div>
                           </div>
@@ -1671,7 +1932,7 @@ export default function App() {
                             <div className="qdx-outcome-content">
                               <div className="qdx-outcome-title">Negative</div>
                               <div className="qdx-outcome-subtitle">
-                                {isDiabetes ? "Low risk / Normal Health Profile" : isHeart ? "Low Cardiovascular Risk Confirmed" : "Benign Morphological Profile"}
+                                {isDiabetes ? "Low risk / Normal Health Profile" : isHeart ? "Low Cardiovascular Risk Confirmed" : isMalnutrition ? "Healthy Pediatric Growth Profile (WHO Baseline)" : "Benign Morphological Profile"}
                               </div>
                             </div>
                           </div>

@@ -106,3 +106,27 @@ class EarlyStageDiabetesLoader(DataLoader):
             negative_label="Negative",
         )
 
+
+class ChildMalnutritionLoader(DataLoader):
+    """Clinical Pediatric Child Malnutrition Dataset (WHO/UNICEF SMART Standards, 1,658 patients)."""
+
+    name = "child_malnutrition"
+
+    def load(self) -> Dataset:
+        csv_path = Path(__file__).resolve().parent.parent.parent / "data" / "child_malnutrition.csv"
+        df = pd.read_csv(csv_path)
+
+        # 6 core physical features (Zero Target Leakage)
+        feature_cols = ["age_months", "sex", "weight_kg", "height_cm", "muac_mm", "edema"]
+        X = df[feature_cols].to_numpy(dtype=float)
+        y = df["malnutrition"].to_numpy(dtype=int)
+
+        return Dataset(
+            name=self.name,
+            X=X,
+            y=y,
+            feature_names=feature_cols,
+            positive_label="Malnourished",
+            negative_label="Healthy",
+        )
+
