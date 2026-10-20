@@ -38,11 +38,18 @@ export default function VerifiedPatientPicker({
     onSelectCase(pick);
   };
 
+  const isGroundTruthInconclusive =
+    selectedCase?.isInconclusive ||
+    (typeof selectedCase?.groundTruth === "string" &&
+      selectedCase.groundTruth.toLowerCase().includes("inconclusive"));
+
   const isMatch =
     predictionOutcome &&
     selectedCase &&
-    ((predictionOutcome === "Positive" && selectedCase.isPositive) ||
-      (predictionOutcome === "Negative" && !selectedCase.isPositive));
+    (isGroundTruthInconclusive
+      ? predictionOutcome === "Inconclusive"
+      : (predictionOutcome === "Positive" && selectedCase.isPositive) ||
+        (predictionOutcome === "Negative" && !selectedCase.isPositive));
 
   return (
     <div className="qdx-verified-picker-card">
@@ -112,11 +119,22 @@ export default function VerifiedPatientPicker({
           <div className="qdx-case-meta-right">
             <div
               className={`qdx-ground-truth-badge ${
-                selectedCase.isPositive ? "badge-positive" : "badge-negative"
+                isGroundTruthInconclusive
+                  ? "badge-inconclusive"
+                  : selectedCase.isPositive
+                  ? "badge-positive"
+                  : "badge-negative"
               }`}
             >
               <span className="qdx-gt-dot" />
-              <span>Ground Truth: {selectedCase.isPositive ? "POSITIVE" : "NEGATIVE"}</span>
+              <span>
+                Ground Truth:{" "}
+                {isGroundTruthInconclusive
+                  ? "INCONCLUSIVE (SAFETY GATE)"
+                  : selectedCase.isPositive
+                  ? "POSITIVE"
+                  : "NEGATIVE"}
+              </span>
             </div>
           </div>
         </div>
@@ -148,16 +166,26 @@ export default function VerifiedPatientPicker({
             <div className="qdx-v-icon">{isMatch ? "🎯" : "⚠️"}</div>
             <div>
               <div className="qdx-v-title">
-                {isMatch ? "Ground-Truth Verification Confirmed" : "Clinical Classifier Divergence"}
+                {isMatch
+                  ? isGroundTruthInconclusive
+                    ? "Ground-Truth Safety Gate Confirmed"
+                    : "Ground-Truth Verification Confirmed"
+                  : "Clinical Classifier Divergence"}
               </div>
               <div className="qdx-v-desc">
-                Model prediction ({predictionOutcome} {confidenceScore ? `at ${confidenceScore}%` : ""}) vs Authentic Dataset Label ({selectedCase.isPositive ? "Positive" : "Negative"}).
+                {isMatch && isGroundTruthInconclusive
+                  ? `Dual-model architecture successfully identified borderline clinical divergence (${predictionOutcome} ${confidenceScore ? `at ${confidenceScore}%` : ""}). Safety review protocol activated as expected.`
+                  : `Model prediction (${predictionOutcome} ${confidenceScore ? `at ${confidenceScore}%` : ""}) vs Authentic Dataset Label (${isGroundTruthInconclusive ? "Inconclusive" : selectedCase.isPositive ? "Positive" : "Negative"}).`}
               </div>
             </div>
           </div>
           <div className="qdx-v-right">
             <span className={`qdx-v-pill ${isMatch ? "pill-match" : "pill-review"}`}>
-              {isMatch ? "100% Match Confirmed ✅" : "Review Advised 🔬"}
+              {isMatch
+                ? isGroundTruthInconclusive
+                  ? "Safety Gate Match ✅"
+                  : "100% Match Confirmed ✅"
+                : "Review Advised 🔬"}
             </span>
           </div>
         </div>
