@@ -39,12 +39,18 @@ function resolvePythonApiUrl(input) {
 const PYTHON_API_URL = resolvePythonApiUrl(process.env.PYTHON_API_URL);
 console.log(`[QuantumDx] Configured Python API backend: ${PYTHON_API_URL}`);
 
-// Helper to gracefully handle Render free tier cold starts
-async function fetchWithRetry(url, options, maxRetries = 2) {
+// Helper to gracefully handle Render free tier cold starts and burst rate limits
+async function fetchWithRetry(url, options, maxRetries = 3) {
     let lastError;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
             const response = await fetch(url, options);
+            if (response.status === 429 && attempt < maxRetries) {
+                const backoffMs = 1200 * (attempt + 1);
+                console.warn(`[QuantumDx] Received 429 rate limit from ${url}, backing off ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries})...`);
+                await new Promise((resolve) => setTimeout(resolve, backoffMs));
+                continue;
+            }
             return response;
         } catch (err) {
             lastError = err;
@@ -54,6 +60,32 @@ async function fetchWithRetry(url, options, maxRetries = 2) {
         }
     }
     throw lastError;
+}
+
+// In-memory cache for prediction inferences to eliminate redundant outbound requests
+const predictionCache = new Map();
+const MAX_CACHE_SIZE = 300;
+
+function getCacheKey(type, body) {
+    return `${type}:${body?.disease || ""}:${JSON.stringify(body?.features || [])}`;
+}
+
+function getFromCache(key) {
+    const item = predictionCache.get(key);
+    if (!item) return null;
+    if (Date.now() > item.expiresAt) {
+        predictionCache.delete(key);
+        return null;
+    }
+    return item.data;
+}
+
+function setInCache(key, data, ttlMs = 15 * 60 * 1000) {
+    if (predictionCache.size >= MAX_CACHE_SIZE) {
+        const oldestKey = predictionCache.keys().next().value;
+        if (oldestKey) predictionCache.delete(oldestKey);
+    }
+    predictionCache.set(key, { data, expiresAt: Date.now() + ttlMs });
 }
 
 // Safely parse JSON or handle Render HTML waking-up error pages
@@ -197,22 +229,89 @@ app.get("/api/dataset-samples", (req, res) => {
     }
 });
 
-// Prediction
-app.post("/api/quantum-predict", async (req, res) => {
+// Unified Dual (Classical + Quantum) prediction route
+app.post("/api/dual-predict", async (req, res) => {
     try {
-        const response = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
+        const cacheKey = getCacheKey("dual", req.body);
+        const cached = getFromCache(cacheKey);
+        if (cached) {
+            return res.json({ ...cached, _cached: true });
+        }
+
+        // Try Python unified /dual-predict first
+        const response = await fetchWithRetry(`${PYTHON_API_URL}/dual-predict`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(req.body)
-        }, 1);
+        }, 3);
+
+        if (response.status === 404) {
+            // Fallback for older python instances during rolling deployment
+            const classicalResp = await fetchWithRetry(`${PYTHON_API_URL}/predict`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(req.body)
+            }, 3);
+            const { ok: cOk, status: cStatus, data: cData } = await parseResponseSafely(classicalResp);
+            if (!cOk) return res.status(cStatus).json(cData);
+
+            await new Promise((r) => setTimeout(r, 150));
+
+            const quantumResp = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(req.body)
+            }, 3);
+            const { ok: qOk, status: qStatus, data: qData } = await parseResponseSafely(quantumResp);
+            if (!qOk) return res.status(qStatus).json(qData);
+
+            const combined = { classical: cData, quantum: qData };
+            setInCache(cacheKey, combined);
+            return res.json(combined);
+        }
 
         const { ok, status, data } = await parseResponseSafely(response);
         if (!ok) {
             return res.status(status).json(data);
         }
 
+        setInCache(cacheKey, data);
+        res.json(data);
+
+    } catch (error) {
+        console.error("Python Dual API error:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Could not connect to Prediction Engine",
+            error: error.message,
+            targetUrl: `${PYTHON_API_URL}/dual-predict`
+        });
+    }
+});
+
+// Quantum Prediction
+app.post("/api/quantum-predict", async (req, res) => {
+    try {
+        const cacheKey = getCacheKey("quantum", req.body);
+        const cached = getFromCache(cacheKey);
+        if (cached) {
+            return res.json({ ...cached, _cached: true });
+        }
+
+        const response = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(req.body)
+        }, 3);
+
+        const { ok, status, data } = await parseResponseSafely(response);
+        if (!ok) {
+            return res.status(status).json(data);
+        }
+
+        setInCache(cacheKey, data);
         res.json(data);
 
     } catch (error) {
@@ -226,22 +325,30 @@ app.post("/api/quantum-predict", async (req, res) => {
         });
     }
 });
+
 // Classical prediction
 app.post("/api/predict", async (req, res) => {
     try {
+        const cacheKey = getCacheKey("classical", req.body);
+        const cached = getFromCache(cacheKey);
+        if (cached) {
+            return res.json({ ...cached, _cached: true });
+        }
+
         const response = await fetchWithRetry(`${PYTHON_API_URL}/predict`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(req.body)
-        }, 1);
+        }, 3);
 
         const { ok, status, data } = await parseResponseSafely(response);
         if (!ok) {
             return res.status(status).json(data);
         }
 
+        setInCache(cacheKey, data);
         res.json(data);
 
     } catch (error) {

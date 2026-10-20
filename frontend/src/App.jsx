@@ -585,44 +585,98 @@ export default function App() {
         payloadFeatures = numbers;
       }
 
-      // 1. Classical Prediction
-      const classicalResponse = await fetch(`${API_BASE_URL}/api/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
-      });
-      if (classicalResponse.status === 429) {
-        throw new Error("Render cloud rate limit reached. Please wait ~15 seconds for the cloud quota to cool down, then click Predict again.");
-      }
-      let classicalData;
-      try {
-        classicalData = await classicalResponse.json();
-      } catch {
-        throw new Error("The Quantum QML engine is currently waking up on Render. Please wait ~20 seconds and click Predict again.");
-      }
-      if (!classicalResponse.ok) {
-        throw new Error(classicalData.message || classicalData.detail || classicalData.error || "Classical prediction failed.");
-      }
-      setClassicalResult(classicalData);
+      // Dual-Model Prediction Execution
+      // Helper function to fetch with client-side retry for cold starts and 429 rate limits
+      const postWithRetry = async (url, payload, retries = 2) => {
+        for (let attempt = 0; attempt <= retries; attempt++) {
+          try {
+            const resp = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            if (resp.status === 429 && attempt < retries) {
+              await new Promise((r) => setTimeout(r, 1200 * (attempt + 1)));
+              continue;
+            }
+            return resp;
+          } catch (fetchErr) {
+            if (attempt < retries) {
+              await new Promise((r) => setTimeout(r, 1200));
+              continue;
+            }
+            throw fetchErr;
+          }
+        }
+      };
 
-      // 2. Quantum Prediction
-      const response = await fetch(`${API_BASE_URL}/api/quantum-predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ features: payloadFeatures, disease: diseaseKey }),
-      });
-      if (response.status === 429) {
-        throw new Error("Render cloud rate limit reached. Please wait ~15 seconds for the cloud quota to cool down, then click Predict again.");
-      }
-      let data;
+      let classicalData = null;
+      let data = null;
+
+      // Attempt unified /dual-predict (1 single request instead of 2 separate bursts)
       try {
-        data = await response.json();
-      } catch {
-        throw new Error("The Quantum QML engine is currently waking up on Render. Please wait ~20 seconds and click Predict again.");
+        const dualResp = await postWithRetry(`${API_BASE_URL}/api/dual-predict`, {
+          features: payloadFeatures,
+          disease: diseaseKey,
+        }, 1);
+        if (dualResp && dualResp.ok) {
+          const dualJson = await dualResp.json();
+          if (dualJson.classical && dualJson.quantum) {
+            classicalData = dualJson.classical;
+            data = dualJson.quantum;
+          }
+        }
+      } catch (dualErr) {
+        console.warn("Dual predict fallback:", dualErr);
       }
-      if (!response.ok) {
-        throw new Error(data.message || data.detail || data.error || "Quantum prediction failed.");
+
+      // If unified endpoint wasn't available or didn't return both, fallback to sequential calls
+      if (!classicalData || !data) {
+        // 1. Classical Prediction
+        const classicalResponse = await postWithRetry(`${API_BASE_URL}/api/predict`, {
+          features: payloadFeatures,
+          disease: diseaseKey,
+        });
+        if (!classicalResponse) {
+          throw new Error("Unable to reach prediction service. Please check connection.");
+        }
+        if (classicalResponse.status === 429) {
+          throw new Error("Render cloud processing quota is cooling down. Please wait ~10 seconds and click Predict again.");
+        }
+        try {
+          classicalData = await classicalResponse.json();
+        } catch {
+          throw new Error("The Quantum QML engine is currently waking up on Render. Please wait ~15 seconds and click Predict again.");
+        }
+        if (!classicalResponse.ok) {
+          throw new Error(classicalData.message || classicalData.detail || classicalData.error || "Classical prediction failed.");
+        }
+
+        // Small pause between requests to prevent Cloudflare burst limit
+        await new Promise((r) => setTimeout(r, 150));
+
+        // 2. Quantum Prediction
+        const response = await postWithRetry(`${API_BASE_URL}/api/quantum-predict`, {
+          features: payloadFeatures,
+          disease: diseaseKey,
+        });
+        if (!response) {
+          throw new Error("Unable to reach quantum service. Please check connection.");
+        }
+        if (response.status === 429) {
+          throw new Error("Render cloud processing quota is cooling down. Please wait ~10 seconds and click Predict again.");
+        }
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error("The Quantum QML engine is currently waking up on Render. Please wait ~15 seconds and click Predict again.");
+        }
+        if (!response.ok) {
+          throw new Error(data.message || data.detail || data.error || "Quantum prediction failed.");
+        }
       }
+
+      setClassicalResult(classicalData);
       setResult(data);
 
       // Auto-save screening to persistent database

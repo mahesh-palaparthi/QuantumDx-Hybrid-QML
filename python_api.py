@@ -326,6 +326,19 @@ async def quantum_predict(request: PredictionRequest) -> dict[str, Any]:
     return result
 
 
+# ---------------------------------------------------------
+# Unified Dual (Classical + Quantum) prediction
+# ---------------------------------------------------------
+
+@app.post("/dual-predict")
+async def dual_predict(request: PredictionRequest) -> dict[str, Any]:
+    c_res = predict(request)
+    q_res = await quantum_predict(request)
+    return {
+        "classical": c_res,
+        "quantum": q_res,
+    }
+
 
 # ---------------------------------------------------------
 # Demo patient from actual datasets
