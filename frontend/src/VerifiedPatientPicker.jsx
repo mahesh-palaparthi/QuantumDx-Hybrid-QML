@@ -174,8 +174,8 @@ export default function VerifiedPatientPicker({
               </div>
               <div className="qdx-v-desc">
                 {isMatch && isGroundTruthInconclusive
-                  ? `Dual-model architecture successfully identified borderline clinical divergence (${predictionOutcome} ${confidenceScore ? `at ${confidenceScore}%` : ""}). Safety review protocol activated as expected.`
-                  : `Model prediction (${predictionOutcome} ${confidenceScore ? `at ${confidenceScore}%` : ""}) vs Authentic Dataset Label (${isGroundTruthInconclusive ? "Inconclusive" : selectedCase.isPositive ? "Positive" : "Negative"}).`}
+                  ? `Dual-model architecture successfully identified borderline clinical divergence (${predictionOutcome} — Safety Gate Active). Review protocol activated as expected.`
+                  : `Model prediction (${predictionOutcome === "Inconclusive" ? "Inconclusive (Safety Gate)" : predictionOutcome} ${confidenceScore && predictionOutcome !== "Inconclusive" ? `at ${confidenceScore}%` : ""}) vs Authentic Dataset Label (${isGroundTruthInconclusive ? "Inconclusive" : selectedCase.isPositive ? "Positive" : "Negative"}).`}
               </div>
             </div>
           </div>

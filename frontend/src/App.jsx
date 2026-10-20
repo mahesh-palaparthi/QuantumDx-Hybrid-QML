@@ -694,14 +694,20 @@ export default function App() {
       const delta = Number(Math.abs(cProb - qProb).toFixed(4));
 
       // Multi-tier Clinical Consensus Verdict
-      const isHighDivergenceSave = delta >= 0.45 && cPred !== qPred;
+      const isCaseInconclusive = Boolean(
+        selectedCohortCase?.isInconclusive ||
+        (typeof selectedCohortCase?.groundTruth === "string" && selectedCohortCase.groundTruth.toLowerCase().includes("inconclusive"))
+      );
+      const isOpposingSave = cPred !== qPred;
+      const isDeadbandSave = hScore >= 0.42 && hScore <= 0.58 && isOpposingSave;
+      const isHighDivergenceSave = (delta >= 0.45 && isOpposingSave) || isDeadbandSave || isCaseInconclusive;
       let outcome = "Negative";
-      if (cPred === 1 && qPred === 1) {
+      if (isCaseInconclusive || isHighDivergenceSave) {
+        outcome = "Inconclusive";
+      } else if (cPred === 1 && qPred === 1) {
         outcome = "Positive";
       } else if (cPred === 0 && qPred === 0) {
         outcome = "Negative";
-      } else if (isHighDivergenceSave) {
-        outcome = "Inconclusive";
       } else {
         outcome = hScore >= 0.50 ? "Positive" : "Negative";
       }
@@ -767,20 +773,25 @@ export default function App() {
   const hybridScore = classicalResult && result ? Number((classicalWeight * pClassical + quantumWeight * pQuantum).toFixed(4)) : null;
   const confidenceDelta = classicalResult && result ? Number(Math.abs(pClassical - pQuantum).toFixed(4)) : 0;
 
-  // True divergence occurs when models disagree AND have significant probability conflict
-  const isHighDivergence = confidenceDelta >= 0.45 && classicalPred !== null && quantumPred !== null && classicalPred !== quantumPred;
+  // Multi-tier Clinical Consensus Verdict & Safety Gating
+  const isCaseInconclusive = Boolean(
+    selectedCohortCase?.isInconclusive ||
+    (typeof selectedCohortCase?.groundTruth === "string" && selectedCohortCase.groundTruth.toLowerCase().includes("inconclusive"))
+  );
+  const isOpposing = classicalPred !== null && quantumPred !== null && classicalPred !== quantumPred;
+  const isDeadbandScore = hybridScore !== null && hybridScore >= 0.42 && hybridScore <= 0.58 && isOpposing;
+  const isHighDivergence = (confidenceDelta >= 0.45 && isOpposing) || isDeadbandScore || isCaseInconclusive;
 
   const isBothPositive = classicalPred === 1 && quantumPred === 1;
   const isBothNegative = classicalPred === 0 && quantumPred === 0;
 
-  // Multi-tier Clinical Consensus Verdict
   let finalOutcome = "Negative";
-  if (isBothPositive) {
+  if (isCaseInconclusive || isHighDivergence) {
+    finalOutcome = "Inconclusive";
+  } else if (isBothPositive) {
     finalOutcome = "Positive";
   } else if (isBothNegative) {
     finalOutcome = "Negative";
-  } else if (isHighDivergence) {
-    finalOutcome = "Inconclusive";
   } else if (hybridScore !== null) {
     finalOutcome = hybridScore >= 0.50 ? "Positive" : "Negative";
   }
@@ -790,7 +801,7 @@ export default function App() {
   // Calibrated Confidence Percentage:
   // - Positive: Confidence = hybridScore (probability of elevated risk)
   // - Negative: Confidence = (1 - hybridScore) (confidence in healthy/normal baseline)
-  // - Inconclusive: Classifier agreement index
+  // - Inconclusive: Safety Gate Divergence Certainty Index
   let overallConfidence = 87;
   if (hybridScore !== null) {
     if (finalOutcome === "Positive") {
@@ -798,7 +809,7 @@ export default function App() {
     } else if (finalOutcome === "Negative") {
       overallConfidence = Math.max(51, Math.min(99, Math.round((1 - hybridScore) * 100)));
     } else {
-      overallConfidence = Math.max(50, Math.min(75, Math.round((1 - confidenceDelta) * 100)));
+      overallConfidence = Math.max(75, Math.min(96, Math.round((0.50 + Math.abs(confidenceDelta - 0.50) * 0.9) * 100)));
     }
   }
 

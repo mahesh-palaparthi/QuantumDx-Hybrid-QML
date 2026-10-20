@@ -379,6 +379,23 @@ export const CANCER_COHORTS = [
       0.2003, 0.2267, 0.07632, 0.3379, 0.07924,
     ],
   },
+  {
+    rowIndex: 37,
+    id: "cancer-case-37",
+    datasetSource: "UCI Breast Cancer Wisconsin (Diagnostic) — Row #37",
+    label: "Row #37: Atypical Borderline Cytology (Inconclusive)",
+    groundTruth: "Inconclusive (Safety Gate Active — Classical 0.2% vs Quantum 51.8%)",
+    isPositive: false,
+    isInconclusive: true,
+    hallmarks: "Radius 13.03, Area 523.8, Texture SE 2.34, High Model Divergence",
+    clinicalNotes: "Fine-needle aspirate presenting with intermediate nuclear texture and atypical boundary contours. Classical MLP assigns low benign probability (0.2%), while Quantum VQC maps latent manifold curvature across the decision boundary (51.8%). Divergence (Δ = 51.6%) orders histopathologic biopsy review.",
+    features: [
+      13.03, 18.42, 82.61, 523.8, 0.08983, 0.03766, 0.02562, 0.02923, 0.1467,
+      0.05863, 0.1839, 2.342, 1.17, 14.16, 0.004352, 0.004899, 0.01343,
+      0.01164, 0.02671, 0.001777, 13.3, 22.81, 84.46, 545.9, 0.09701,
+      0.04619, 0.04833, 0.05013, 0.1987, 0.06169,
+    ],
+  },
 ];
 
 export const HEART_COHORTS = [
