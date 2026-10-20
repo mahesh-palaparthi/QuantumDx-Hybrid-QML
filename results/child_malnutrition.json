@@ -1,0 +1,126 @@
+{
+  "dataset": "child_malnutrition",
+  "n_train": 1326,
+  "n_test": 332,
+  "raw_feature_count": 6,
+  "n_components": 4,
+  "explained_variance_ratio": 0.9484285602694918,
+  "preprocessing_summary": {
+    "method": "pca",
+    "n_components": 4,
+    "explained_variance_ratio": 0.9484285602694918
+  },
+  "results": [
+    {
+      "model_name": "classical_svm",
+      "is_quantum": false,
+      "accuracy": 0.922,
+      "sensitivity": 0.941,
+      "specificity": 0.895,
+      "precision": 0.918,
+      "f1": 0.929,
+      "roc_auc": 0.964,
+      "training_time_seconds": 0.15,
+      "inference_time_seconds": 0.0018,
+      "metadata": {
+        "n_params": null
+      }
+    },
+    {
+      "model_name": "classical_rf",
+      "is_quantum": false,
+      "accuracy": 0.904,
+      "sensitivity": 0.918,
+      "specificity": 0.884,
+      "precision": 0.902,
+      "f1": 0.910,
+      "roc_auc": 0.952,
+      "training_time_seconds": 0.35,
+      "inference_time_seconds": 0.0125,
+      "metadata": {
+        "n_params": null
+      }
+    },
+    {
+      "model_name": "quantum_qnn",
+      "is_quantum": true,
+      "accuracy": 0.885,
+      "sensitivity": 0.892,
+      "specificity": 0.875,
+      "precision": 0.882,
+      "f1": 0.887,
+      "roc_auc": 0.931,
+      "training_time_seconds": 18.2,
+      "inference_time_seconds": 0.042,
+      "metadata": {
+        "n_qubits": 4,
+        "circuit_depth": 6,
+        "n_params": 12
+      }
+    },
+    {
+      "model_name": "classical_nn",
+      "is_quantum": false,
+      "accuracy": 0.873,
+      "sensitivity": 0.885,
+      "specificity": 0.856,
+      "precision": 0.870,
+      "f1": 0.877,
+      "roc_auc": 0.928,
+      "training_time_seconds": 0.48,
+      "inference_time_seconds": 0.0011,
+      "metadata": {
+        "n_params": 225
+      }
+    },
+    {
+      "model_name": "quantum_qsvm",
+      "is_quantum": true,
+      "accuracy": 0.861,
+      "sensitivity": 0.874,
+      "specificity": 0.842,
+      "precision": 0.858,
+      "f1": 0.866,
+      "roc_auc": 0.918,
+      "training_time_seconds": 44.5,
+      "inference_time_seconds": 0.115,
+      "metadata": {
+        "n_qubits": 4,
+        "circuit_depth": 4,
+        "n_params": 0
+      }
+    },
+    {
+      "model_name": "classical_logreg",
+      "is_quantum": false,
+      "accuracy": 0.849,
+      "sensitivity": 0.871,
+      "specificity": 0.817,
+      "precision": 0.838,
+      "f1": 0.854,
+      "roc_auc": 0.906,
+      "training_time_seconds": 0.006,
+      "inference_time_seconds": 0.0001,
+      "metadata": {
+        "n_params": 5
+      }
+    },
+    {
+      "model_name": "quantum_vqc",
+      "is_quantum": true,
+      "accuracy": 0.783,
+      "sensitivity": 0.812,
+      "specificity": 0.741,
+      "precision": 0.770,
+      "f1": 0.790,
+      "roc_auc": 0.842,
+      "training_time_seconds": 88.4,
+      "inference_time_seconds": 0.390,
+      "metadata": {
+        "n_qubits": 4,
+        "circuit_depth": 3,
+        "n_params": 9
+      }
+    }
+  ]
+}
