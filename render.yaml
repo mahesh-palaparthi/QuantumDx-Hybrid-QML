@@ -23,6 +23,8 @@ services:
     envVars:
       - key: PYTHON_API_URL
         value: https://quantumdx-engine.onrender.com
+      - key: VITE_STREAMLIT_URL
+        value: https://quantumdx-dashboard.onrender.com
 
   # 3. Streamlit Interactive Benchmark Dashboard
   - type: web
@@ -31,5 +33,5 @@ services:
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run dashboard/app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    startCommand: streamlit run dashboard/app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --server.enableCORS false --server.enableXsrfProtection false
     autoDeploy: true

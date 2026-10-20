@@ -2716,12 +2716,26 @@ export default function App() {
                       ⚡ Streamlit Interactive Benchmark Server
                     </h3>
                     <p style={{ fontSize: 13, color: "var(--qdx-text-muted)", margin: 0 }}>
-                      If the embedded frame below shows a connection prompt, start the Streamlit server in your terminal:
+                      {STREAMLIT_URL.includes("localhost")
+                        ? "For local offline testing, start the Streamlit server in your terminal:"
+                        : "Connected to dedicated cloud benchmark server on Render. If your browser blocks third-party embedded frames, open directly in full window:"}
                     </p>
                   </div>
-                  <div style={{ background: "rgba(0, 0, 0, 0.5)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: 8, padding: "8px 14px", fontFamily: "monospace", fontSize: 13, color: "#38bdf8", display: "flex", alignItems: "center", gap: 8 }}>
-                    <span>streamlit run dashboard/app.py</span>
-                  </div>
+                  {STREAMLIT_URL.includes("localhost") ? (
+                    <div style={{ background: "rgba(0, 0, 0, 0.5)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: 8, padding: "8px 14px", fontFamily: "monospace", fontSize: 13, color: "#38bdf8", display: "flex", alignItems: "center", gap: 8 }}>
+                      <span>streamlit run dashboard/app.py</span>
+                    </div>
+                  ) : (
+                    <a
+                      href={STREAMLIT_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="qdx-preset-btn"
+                      style={{ background: "#0284c7", color: "#ffffff", border: "none", padding: "8px 16px", borderRadius: 8, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 600, fontSize: 13 }}
+                    >
+                      <span>🚀 Launch Streamlit Fullscreen</span>
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -2731,7 +2745,8 @@ export default function App() {
                   src={STREAMLIT_URL}
                   title="QuantumDx Streamlit Benchmark Studio"
                   style={{ width: "100%", height: "100%", border: "none" }}
-                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                  allow="camera; microphone; clipboard-read; clipboard-write;"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-downloads allow-modals"
                 />
               </div>
             </div>
