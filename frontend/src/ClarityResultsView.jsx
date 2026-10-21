@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import RiskStratificationMeter from "./RiskStratificationMeter";
 import QuantumCircuitExplorer from "./QuantumCircuitExplorer";
 import AiExplainabilityPanel from "./AiExplainabilityPanel";
 
@@ -123,7 +122,7 @@ export default function ClarityResultsView({
           style={{ padding: "8px 18px", fontSize: "13px", fontWeight: 700 }}
           onClick={() => setActiveResultsTab("overview")}
         >
-          <span>⚡ Model Overview & Triage</span>
+          <span>⚡ Consensus Verdict & Model Comparison</span>
         </button>
         <button
           type="button"
@@ -143,7 +142,7 @@ export default function ClarityResultsView({
         </button>
       </div>
 
-      {/* TAB 1: MODEL OVERVIEW & TRIAGE */}
+      {/* TAB 1: MODEL OVERVIEW & TRI-STATE CONSENSUS VERDICT */}
       {activeResultsTab === "overview" && (
         <>
           {/* Blue Informational Banner */}
@@ -154,17 +153,194 @@ export default function ClarityResultsView({
             </div>
           </div>
 
-          {/* Semicircular Risk Stratification Gauge Meter */}
-          <div style={{ marginBottom: 24 }}>
-            <RiskStratificationMeter
-              riskScore={hScore * 100}
-              isDisagreement={outcome === "Inconclusive"}
-              finalOutcome={outcome}
-              classicalProb={cProb}
-              quantumProb={qProb}
-              diseaseName={diseaseName}
-              groundTruth={selectedCohortCase?.groundTruth}
-            />
+          {/* Tri-State Verdict Representation (Positive, Negative, Inconclusive) */}
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h3 style={{ fontSize: "16px", fontWeight: 800, margin: 0, color: "var(--c-text-primary)" }}>
+                Consensus Classification Verdict
+              </h3>
+              <span className="clarity-tag-pill">3-TIER CLINICAL SAFETY GATE</span>
+            </div>
+
+            <div className="clarity-verdict-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px" }}>
+              {/* NEGATIVE TILE */}
+              <div
+                style={{
+                  background: outcome === "Negative" ? "#F0FDF4" : "#FFFFFF",
+                  border: outcome === "Negative" ? "2px solid #10B981" : "1px solid #E2E8F0",
+                  borderRadius: "12px",
+                  padding: "16px",
+                  transition: "all 0.2s ease",
+                  boxShadow: outcome === "Negative" ? "0 4px 14px rgba(16, 185, 129, 0.16)" : "var(--c-shadow-sm)",
+                  opacity: outcome === "Negative" ? 1 : 0.62,
+                  position: "relative",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "22px" }}>🛡️</span>
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      fontWeight: 800,
+                      padding: "3px 8px",
+                      borderRadius: "9999px",
+                      background: outcome === "Negative" ? "#DCFCE7" : "#F1F5F9",
+                      color: outcome === "Negative" ? "#15803D" : "#64748B",
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    {outcome === "Negative" ? "✓ ACTIVE VERDICT" : "LOW RISK"}
+                  </span>
+                </div>
+                <div style={{ fontSize: "18px", fontWeight: 800, color: outcome === "Negative" ? "#15803D" : "#0F172A", marginBottom: "4px" }}>
+                  Negative
+                </div>
+                <div style={{ fontSize: "12px", color: outcome === "Negative" ? "#166534" : "#64748B", lineHeight: 1.45 }}>
+                  Concordant low risk. Both Classical and Quantum ML models verify indicators within healthy baselines.
+                </div>
+              </div>
+
+              {/* POSITIVE TILE */}
+              <div
+                style={{
+                  background: outcome === "Positive" ? "#FEF2F2" : "#FFFFFF",
+                  border: outcome === "Positive" ? "2px solid #EF4444" : "1px solid #E2E8F0",
+                  borderRadius: "12px",
+                  padding: "16px",
+                  transition: "all 0.2s ease",
+                  boxShadow: outcome === "Positive" ? "0 4px 14px rgba(239, 68, 68, 0.16)" : "var(--c-shadow-sm)",
+                  opacity: outcome === "Positive" ? 1 : 0.62,
+                  position: "relative",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "22px" }}>⚠️</span>
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      fontWeight: 800,
+                      padding: "3px 8px",
+                      borderRadius: "9999px",
+                      background: outcome === "Positive" ? "#FEE2E2" : "#F1F5F9",
+                      color: outcome === "Positive" ? "#B91C1C" : "#64748B",
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    {outcome === "Positive" ? "⚠️ ACTIVE VERDICT" : "ELEVATED RISK"}
+                  </span>
+                </div>
+                <div style={{ fontSize: "18px", fontWeight: 800, color: outcome === "Positive" ? "#B91C1C" : "#0F172A", marginBottom: "4px" }}>
+                  Positive
+                </div>
+                <div style={{ fontSize: "12px", color: outcome === "Positive" ? "#991B1B" : "#64748B", lineHeight: 1.45 }}>
+                  Consensus risk detected. Pathological biomarker alignments exceed the clinical decision boundary.
+                </div>
+              </div>
+
+              {/* INCONCLUSIVE TILE */}
+              <div
+                style={{
+                  background: outcome === "Inconclusive" ? "#F5F3FF" : "#FFFFFF",
+                  border: outcome === "Inconclusive" ? "2px solid #8B5CF6" : "1px solid #E2E8F0",
+                  borderRadius: "12px",
+                  padding: "16px",
+                  transition: "all 0.2s ease",
+                  boxShadow: outcome === "Inconclusive" ? "0 4px 14px rgba(139, 92, 246, 0.16)" : "var(--c-shadow-sm)",
+                  opacity: outcome === "Inconclusive" ? 1 : 0.62,
+                  position: "relative",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "22px" }}>⚡</span>
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      fontWeight: 800,
+                      padding: "3px 8px",
+                      borderRadius: "9999px",
+                      background: outcome === "Inconclusive" ? "#EDE9FE" : "#F1F5F9",
+                      color: outcome === "Inconclusive" ? "#6D28D9" : "#64748B",
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    {outcome === "Inconclusive" ? "🛡️ SAFETY GATE" : "DIVERGENT"}
+                  </span>
+                </div>
+                <div style={{ fontSize: "18px", fontWeight: 800, color: outcome === "Inconclusive" ? "#6D28D9" : "#0F172A", marginBottom: "4px" }}>
+                  Inconclusive
+                </div>
+                <div style={{ fontSize: "12px", color: outcome === "Inconclusive" ? "#5B21B6" : "#64748B", lineHeight: 1.45 }}>
+                  High divergence (Δ ≥ 45%) or boundary deadband. Halts binary classification for human clinical review.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Consensus Summary Hero Card */}
+          <div className={`clarity-consensus-card ${outcome.toLowerCase()}`} style={{ marginBottom: 24 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12, flexWrap: "wrap", gap: 12 }}>
+              <div>
+                <span
+                  className={`clarity-badge-pill ${outcome.toLowerCase()}`}
+                  style={{ fontSize: "12px", padding: "5px 12px", marginBottom: 8 }}
+                >
+                  {outcome === "Inconclusive"
+                    ? "🟣 Clinical Safety Gate Active"
+                    : outcome === "Positive"
+                    ? "🟡 High Consensus Risk"
+                    : "🟢 Normal Consensus Profile"}
+                </span>
+                <h3 style={{ fontSize: "22px", fontWeight: 800, margin: "4px 0", color: "var(--c-text-primary)" }}>
+                  {outcome === "Inconclusive"
+                    ? "Inconclusive — Clinical Review Advised"
+                    : outcome === "Positive"
+                    ? "Positive: Clinical Risk Detected"
+                    : "Negative: Healthy Baselines Confirmed"}
+                </h3>
+              </div>
+
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--c-text-primary)" }}>
+                  Hybrid Consensus Score: <strong>{(hScore * 100).toFixed(1)}%</strong>
+                </div>
+                <div style={{ fontSize: "12px", color: "var(--c-text-muted)" }}>
+                  Model Divergence (&Delta;): <strong>{(delta * 100).toFixed(1)}%</strong>
+                </div>
+              </div>
+            </div>
+
+            <p style={{ fontSize: "13.5px", color: "var(--c-text-secondary)", lineHeight: 1.6, margin: 0 }}>
+              {outcome === "Inconclusive"
+                ? `Safety Gate Triggered: Classical SVM (${cPct}%) and Quantum QNN (${qPct}%) reached opposing conclusions with high divergence (\u0394 = ${(delta * 100).toFixed(1)}% \u2265 45%). Binary verdict suspended; immediate secondary diagnostic tests recommended.`
+                : outcome === "Positive"
+                ? `Both Classical and Quantum ML models independently detect risk markers above the clinical decision threshold. Fasting diagnostic testing and clinician consultation recommended.`
+                : `Both Classical and Quantum ML models agree within healthy baseline bounds. Continue regular preventive screenings and dietary monitoring.`}
+            </p>
+
+            {onExportPdf && (
+              <div style={{ marginTop: 18, borderTop: "1px solid rgba(0,0,0,0.08)", paddingTop: 14 }}>
+                <button
+                  type="button"
+                  onClick={onExportPdf}
+                  style={{
+                    background: "var(--c-teal)",
+                    color: "#FFFFFF",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "10px 18px",
+                    fontSize: "13px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <span>Download Official QuantumDx Clinical Summary (PDF)</span>
+                  <span>📄</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Same Inputs. Two Approaches Header */}
@@ -256,73 +432,6 @@ export default function ClarityResultsView({
                 <span>Latency: ~180 ms</span>
               </div>
             </div>
-          </div>
-
-          {/* Consensus & Safety Gate Card */}
-          <div className={`clarity-consensus-card ${outcome.toLowerCase()}`} style={{ marginTop: 24 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12, flexWrap: "wrap", gap: 12 }}>
-              <div>
-                <span
-                  className={`clarity-badge-pill ${outcome.toLowerCase()}`}
-                  style={{ fontSize: "12px", padding: "5px 12px", marginBottom: 8 }}
-                >
-                  {outcome === "Inconclusive"
-                    ? "🟣 Clinical Safety Gate Active"
-                    : outcome === "Positive"
-                    ? "🟡 High Consensus Risk"
-                    : "🟢 Normal Consensus Profile"}
-                </span>
-                <h3 style={{ fontSize: "22px", fontWeight: 800, margin: "4px 0", color: "var(--c-text-primary)" }}>
-                  {outcome === "Inconclusive"
-                    ? "Inconclusive — Clinical Review Advised"
-                    : outcome === "Positive"
-                    ? "Positive: Clinical Risk Detected"
-                    : "Negative: Healthy Baselines Confirmed"}
-                </h3>
-              </div>
-
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--c-text-primary)" }}>
-                  Hybrid Consensus Score: <strong>{(hScore * 100).toFixed(1)}%</strong>
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--c-text-muted)" }}>
-                  Model Divergence (&Delta;): <strong>{(delta * 100).toFixed(1)}%</strong>
-                </div>
-              </div>
-            </div>
-
-            <p style={{ fontSize: "13.5px", color: "var(--c-text-secondary)", lineHeight: 1.6, margin: 0 }}>
-              {outcome === "Inconclusive"
-                ? `Safety Gate Triggered: Classical SVM (${cPct}%) and Quantum QNN (${qPct}%) reached opposing conclusions with high divergence (\u0394 = ${(delta * 100).toFixed(1)}% \u2265 45%). Binary verdict suspended; immediate secondary diagnostic tests recommended.`
-                : outcome === "Positive"
-                ? `Both Classical and Quantum ML models independently detect risk markers above the clinical decision threshold. Fasting diagnostic testing and clinician consultation recommended.`
-                : `Both Classical and Quantum ML models agree within healthy baseline bounds. Continue regular preventive screenings and dietary monitoring.`}
-            </p>
-
-            {onExportPdf && (
-              <div style={{ marginTop: 18, borderTop: "1px solid rgba(0,0,0,0.08)", paddingTop: 14 }}>
-                <button
-                  type="button"
-                  onClick={onExportPdf}
-                  style={{
-                    background: "var(--c-teal)",
-                    color: "#FFFFFF",
-                    border: "none",
-                    borderRadius: "8px",
-                    padding: "10px 18px",
-                    fontSize: "13px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <span>Download Official QuantumDx Clinical Summary (PDF)</span>
-                  <span>📄</span>
-                </button>
-              </div>
-            )}
           </div>
         </>
       )}
