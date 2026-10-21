@@ -120,7 +120,7 @@ export default function ClarityHistoryView({
           const isInconclusive = item.consensusVerdict === "Inconclusive";
 
           const cPct = Math.max(3, Math.min(96, Math.round(cProb * 100)));
-          const qPct = Math.max(3, Math.min(96, Math.round(qProb * 100)));
+          const qPct = Math.max(4, Math.min(84, Math.round(qProb * 100)));
 
           const dName = typeof item.disease === "string" ? item.disease : "Heart Disease";
           const isHeart = dName.toLowerCase().includes("heart");

@@ -89,7 +89,7 @@ export default function ClarityDashboard({
   const cProbVal = latestScreening?.classicalProbability ?? latestScreening?.classicalProb;
   const qProbVal = latestScreening?.quantumProbability ?? latestScreening?.quantumProb;
   const cProbPct = Number.isFinite(Number(cProbVal)) ? Math.max(3, Math.min(96, Math.round(Number(cProbVal) * 100))) : 72;
-  const qProbPct = Number.isFinite(Number(qProbVal)) ? Math.max(3, Math.min(96, Math.round(Number(qProbVal) * 100))) : 68;
+  const qProbPct = Number.isFinite(Number(qProbVal)) ? Math.max(4, Math.min(84, Math.round(Number(qProbVal) * 100))) : 68;
 
   // Timestamp formatting
   const ts = latestScreening?.timestamp ? new Date(latestScreening.timestamp) : new Date();

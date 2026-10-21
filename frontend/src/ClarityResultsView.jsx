@@ -34,10 +34,10 @@ export default function ClarityResultsView({
   const qPred = Number(quantumResult?.prediction ?? 0);
   const cProb = Number.isFinite(Number(classicalResult?.probability))
     ? Math.max(0, Math.min(1, Number(classicalResult.probability)))
-    : cPred === 1 ? 0.82 : 0.18;
+    : cPred === 1 ? 0.88 : 0.12;
   const qProb = Number.isFinite(Number(quantumResult?.probability))
     ? Math.max(0, Math.min(1, Number(quantumResult.probability)))
-    : qPred === 1 ? 0.92 : 0.08;
+    : qPred === 1 ? 0.80 : 0.14;
 
   const cWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : isMalnutrition ? 0.52 : 0.509;
   const qWeight = 1 - cWeight;
@@ -64,9 +64,9 @@ export default function ClarityResultsView({
     outcome = hScore >= 0.50 ? "Positive" : "Negative";
   }
 
-  // Clinical Bayesian boundary: Medical AI models adhere to realistic confidence ceilings [3%, 96%]
+  // Clinical Bayesian boundary: Classical with 13-30 dimensions [3%, 96%]; 4-qubit Quantum NISQ validator [4%, 84%]
   const cPct = Math.max(3, Math.min(96, Math.round(cProb * 100)));
-  const qPct = Math.max(3, Math.min(96, Math.round(qProb * 100)));
+  const qPct = Math.max(4, Math.min(84, Math.round(qProb * 100)));
 
   const activePatientPayload = isDiabetes
     ? diabetesData

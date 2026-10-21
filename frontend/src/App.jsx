@@ -579,10 +579,10 @@ export default function App() {
       const qPred = Number(data.prediction);
       const cProb = Number.isFinite(Number(classicalData.probability))
         ? Math.max(0.02, Math.min(0.96, Number(classicalData.probability)))
-        : cPred === 1 ? 0.82 : 0.18;
+        : cPred === 1 ? 0.88 : 0.12;
       const qProb = Number.isFinite(Number(data.probability))
-        ? Math.max(0.02, Math.min(0.96, Number(data.probability)))
-        : qPred === 1 ? 0.92 : 0.08;
+        ? Math.max(0.05, Math.min(0.84, Number(data.probability)))
+        : qPred === 1 ? 0.80 : 0.14;
       const cWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : isMalnutrition ? 0.52 : 0.509;
       const qWeight = 1 - cWeight;
       const hScore = Number((cWeight * cProb + qWeight * qProb).toFixed(4));
