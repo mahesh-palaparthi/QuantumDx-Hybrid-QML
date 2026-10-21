@@ -25,25 +25,31 @@ export default function AiExplainabilityPanel({
     ? "negative"
     : "disagreement";
 
-  // Formulate status-specific titles and badges
+  // Formulate status-specific titles and badges (Clean, minimal, accessible clinical theme)
   const statusMeta = {
     positive: {
       badge: "🚨 HIGH RISK CONFIRMED",
       title: "Consensus Disease Risk Detected — Clinical Evidence & Attribution",
       subtitle: "Both Classical SVM and Quantum algorithms independently confirmed acute biomarker alignment.",
-      themeColor: "#ef4444",
-      bgGradient: "linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(185, 28, 28, 0.05))",
-      borderColor: "rgba(239, 68, 68, 0.35)",
-      glowColor: "rgba(239, 68, 68, 0.2)",
+      themeColor: "#b91c1c",
+      bannerBg: "#ffffff",
+      borderColor: "#fecaca",
+      glowColor: "rgba(220, 38, 38, 0.05)",
+      pillBg: "#fef2f2",
+      pillBorder: "#fca5a5",
+      pillColor: "#991b1b",
     },
     negative: {
       badge: "🛡️ HEALTHY PROFILE CONFIRMED",
       title: "Consensus Low Risk — Preventative Evidence & Grounding",
       subtitle: "Both Classical and Quantum models verified low biomarker risk with high diagnostic certainty.",
-      themeColor: "#10b981",
-      bgGradient: "linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(4, 120, 87, 0.05))",
-      borderColor: "rgba(16, 185, 129, 0.35)",
-      glowColor: "rgba(16, 185, 129, 0.2)",
+      themeColor: "#047857",
+      bannerBg: "#ffffff",
+      borderColor: "#a7f3d0",
+      glowColor: "rgba(5, 150, 105, 0.05)",
+      pillBg: "#ecfdf5",
+      pillBorder: "#6ee7b7",
+      pillColor: "#065f46",
     },
     disagreement: {
       badge: wasEscalatedByConfidence ? "⚠️ CONFIDENCE ESCALATION" : "🔬 CLINICAL MODEL DISAGREEMENT",
@@ -51,10 +57,13 @@ export default function AiExplainabilityPanel({
       subtitle: wasEscalatedByConfidence
         ? "Directional consensus occurred, but confidence fell in the 40%–60% uncertainty margin. Automated gating halts binary clearance."
         : "Classical SVM and Quantum Hilbert models diverged on boundary geometry. Deep feature attribution reveals root cause below.",
-      themeColor: "#f59e0b",
-      bgGradient: "linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(180, 83, 9, 0.06))",
-      borderColor: "rgba(245, 158, 11, 0.4)",
-      glowColor: "rgba(245, 158, 11, 0.25)",
+      themeColor: "#b45309",
+      bannerBg: "#ffffff",
+      borderColor: "#fde68a",
+      glowColor: "rgba(217, 119, 6, 0.05)",
+      pillBg: "#fffbeb",
+      pillBorder: "#fcd34d",
+      pillColor: "#92400e",
     },
   }[statusType];
 
@@ -732,7 +741,7 @@ export default function AiExplainabilityPanel({
                 <span className="stat-label">Model Concordance</span>
                 <span
                   className="stat-value"
-                  style={{ color: isDisagreement ? "#f59e0b" : "#10b981" }}
+                  style={{ color: isDisagreement ? "#b45309" : "#047857" }}
                 >
                   {isDisagreement ? "⚠️ 62.5% (Divergent)" : "✅ 93.8% (Consensus)"}
                 </span>
@@ -949,8 +958,8 @@ export default function AiExplainabilityPanel({
       className="ai-explainability-panel"
       style={{
         border: `1px solid ${statusMeta.borderColor}`,
-        background: statusMeta.bgGradient,
-        boxShadow: `0 8px 32px ${statusMeta.glowColor}`,
+        background: statusMeta.bannerBg,
+        boxShadow: `0 2px 10px ${statusMeta.glowColor}`,
       }}
     >
       {/* Top Banner Header */}
@@ -958,7 +967,11 @@ export default function AiExplainabilityPanel({
         <div className="xai-header-left">
           <div
             className="xai-status-pill"
-            style={{ borderColor: statusMeta.borderColor, color: statusMeta.themeColor }}
+            style={{
+              borderColor: statusMeta.pillBorder,
+              background: statusMeta.pillBg,
+              color: statusMeta.pillColor,
+            }}
           >
             {statusMeta.badge}
           </div>
@@ -1003,18 +1016,13 @@ export default function AiExplainabilityPanel({
       {/* Scoped Styling */}
       <style>{`
         .ai-explainability-panel {
-          margin: 24px 0 28px;
-          border-radius: 14px;
-          padding: 24px;
-          color: #f8fafc;
-          font-family: Inter, system-ui, -apple-system, sans-serif;
-          transition: all 0.3s ease;
-          animation: fadeInSlideUp 0.4s ease-out;
-        }
-
-        @keyframes fadeInSlideUp {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
+          margin: 20px 0 24px;
+          border-radius: 12px;
+          padding: 22px;
+          color: #0f172a;
+          background: #ffffff;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+          transition: all 0.2s ease;
         }
 
         .xai-panel-header {
@@ -1023,8 +1031,8 @@ export default function AiExplainabilityPanel({
           align-items: flex-start;
           gap: 20px;
           flex-wrap: wrap;
-          padding-bottom: 18px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding-bottom: 16px;
+          border-bottom: 1px solid #e2e8f0;
           margin-bottom: 20px;
         }
 
@@ -1036,26 +1044,25 @@ export default function AiExplainabilityPanel({
         .xai-status-pill {
           display: inline-block;
           font-size: 0.72rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
+          font-weight: 700;
+          letter-spacing: 0.06em;
           padding: 4px 10px;
           border-radius: 6px;
           border: 1px solid;
-          background: rgba(0, 0, 0, 0.3);
           margin-bottom: 8px;
         }
 
         .xai-title {
-          font-size: 1.25rem;
-          font-weight: 800;
+          font-size: 1.18rem;
+          font-weight: 700;
           margin: 0 0 6px;
-          color: #ffffff;
+          color: #0f172a;
         }
 
         .xai-subtitle {
-          font-size: 0.88rem;
+          font-size: 0.86rem;
           font-weight: 500;
-          color: #94a3b8;
+          color: #475569;
           margin: 0;
           line-height: 1.5;
         }
@@ -1067,50 +1074,51 @@ export default function AiExplainabilityPanel({
 
         .xai-subtabs-nav {
           display: flex;
-          gap: 6px;
-          background: rgba(15, 23, 42, 0.85);
+          gap: 4px;
+          background: #f1f5f9;
           padding: 4px;
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          border: 1px solid #e2e8f0;
         }
 
         .xai-nav-btn {
           background: transparent;
-          border: none;
-          color: #94a3b8;
-          font-size: 0.82rem;
-          font-weight: 700;
-          padding: 8px 14px;
+          border: 1px solid transparent;
+          color: #475569;
+          font-size: 0.8rem;
+          font-weight: 600;
+          padding: 6px 12px;
           border-radius: 6px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.15s ease;
         }
 
         .xai-nav-btn:hover {
-          color: #f8fafc;
-          background: rgba(255, 255, 255, 0.06);
+          color: #0f172a;
+          background: rgba(255, 255, 255, 0.7);
         }
 
         .xai-nav-btn.active {
-          color: #ffffff;
-          background: rgba(56, 189, 248, 0.2);
-          border: 1px solid rgba(56, 189, 248, 0.4);
-          box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2);
+          color: #0d7c7a;
+          background: #ffffff;
+          border-color: #cbd5e1;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+          font-weight: 700;
         }
 
-        /* --- UNIFIED ATTRIBUTION STYLES (IMAGES 1, 2, 3) --- */
+        /* --- UNIFIED ATTRIBUTION STYLES --- */
         .xai-attribution-unified {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 18px;
         }
 
-        /* Section 1: Direct Why Header + Ranked Bars (Image 1) */
+        /* Section 1: Direct Why Header + Ranked Bars */
         .xai-why-header-section {
-          background: rgba(15, 23, 42, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 12px;
-          padding: 20px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 18px 20px;
         }
 
         .why-title-row {
@@ -1121,46 +1129,47 @@ export default function AiExplainabilityPanel({
           flex-wrap: wrap;
           margin-bottom: 16px;
           padding-bottom: 12px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          border-bottom: 1px solid #e2e8f0;
         }
 
         .why-kicker {
           font-size: 0.7rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-          color: #38bdf8;
+          font-weight: 700;
+          letter-spacing: 0.07em;
+          color: #0d7c7a;
           margin-bottom: 4px;
         }
 
         .why-main-title {
-          font-size: 1.15rem;
-          font-weight: 800;
-          color: #ffffff;
+          font-size: 1.08rem;
+          font-weight: 700;
+          color: #0f172a;
           margin: 0 0 4px;
         }
 
         .why-subtitle {
-          font-size: 0.84rem;
-          color: #94a3b8;
+          font-size: 0.82rem;
+          color: #64748b;
           margin: 0;
         }
 
         .why-metrics-summary {
           display: flex;
-          gap: 16px;
+          gap: 12px;
         }
 
         .why-mini-stat {
           display: flex;
           flex-direction: column;
-          background: rgba(0, 0, 0, 0.35);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           padding: 6px 12px;
           border-radius: 6px;
+          box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
         }
 
         .why-mini-stat .stat-label {
-          font-size: 0.68rem;
+          font-size: 0.66rem;
           font-weight: 700;
           color: #64748b;
           text-transform: uppercase;
@@ -1168,15 +1177,15 @@ export default function AiExplainabilityPanel({
 
         .why-mini-stat .stat-value {
           font-size: 0.82rem;
-          font-weight: 800;
-          color: #e2e8f0;
+          font-weight: 700;
+          color: #0f172a;
         }
 
         /* Top 5 Ranked Overview Bars */
         .xai-top-bars-card {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 8px;
         }
 
         .top-bar-row {
@@ -1185,9 +1194,14 @@ export default function AiExplainabilityPanel({
           align-items: center;
           gap: 14px;
           padding: 8px 12px;
-          background: rgba(30, 41, 59, 0.4);
+          background: #ffffff;
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.04);
+          border: 1px solid #e2e8f0;
+          transition: border-color 0.15s ease;
+        }
+
+        .top-bar-row:hover {
+          border-color: #cbd5e1;
         }
 
         .top-bar-info {
@@ -1198,28 +1212,30 @@ export default function AiExplainabilityPanel({
         }
 
         .top-bar-rank {
-          font-size: 0.72rem;
-          font-weight: 800;
-          color: #94a3b8;
-          background: rgba(0, 0, 0, 0.3);
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: #475569;
+          background: #f1f5f9;
           padding: 2px 6px;
           border-radius: 4px;
         }
 
         .top-bar-icon {
-          font-size: 1.1rem;
+          font-size: 1.05rem;
         }
 
         .top-bar-name {
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #f1f5f9;
+          font-size: 0.84rem;
+          font-weight: 600;
+          color: #0f172a;
         }
 
         .top-bar-val {
           font-size: 0.72rem;
-          color: #94a3b8;
-          background: rgba(255, 255, 255, 0.06);
+          font-weight: 500;
+          color: #475569;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           padding: 2px 6px;
           border-radius: 4px;
         }
@@ -1234,37 +1250,37 @@ export default function AiExplainabilityPanel({
 
         .top-bar-track {
           flex: 1;
-          height: 10px;
-          background: rgba(0, 0, 0, 0.4);
-          border-radius: 5px;
+          height: 8px;
+          background: #eef2f6;
+          border-radius: 4px;
           overflow: hidden;
           position: relative;
         }
 
         .top-bar-fill {
           height: 100%;
-          border-radius: 5px;
-          transition: width 0.4s ease;
+          border-radius: 4px;
+          transition: width 0.3s ease;
         }
 
         .top-bar-fill.positive {
-          background: linear-gradient(90deg, #f97316, #ef4444);
+          background: #e11d48;
         }
 
         .top-bar-fill.negative {
-          background: linear-gradient(90deg, #059669, #10b981);
+          background: #059669;
         }
 
         .top-bar-pct {
-          font-size: 0.8rem;
-          font-weight: 800;
+          font-size: 0.78rem;
+          font-weight: 700;
           min-width: 48px;
           text-align: right;
-          font-family: monospace;
+          font-family: inherit;
         }
 
-        .top-bar-pct.pos { color: #f87171; }
-        .top-bar-pct.neg { color: #34d399; }
+        .top-bar-pct.pos { color: #be123c; }
+        .top-bar-pct.neg { color: #047857; }
 
         /* Filter Toolbar */
         .xai-filter-toolbar {
@@ -1273,10 +1289,10 @@ export default function AiExplainabilityPanel({
           align-items: center;
           flex-wrap: wrap;
           gap: 12px;
-          background: rgba(15, 23, 42, 0.5);
-          padding: 10px 16px;
+          background: #f8fafc;
+          padding: 10px 14px;
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          border: 1px solid #e2e8f0;
         }
 
         .filter-title-group {
@@ -1286,9 +1302,9 @@ export default function AiExplainabilityPanel({
         }
 
         .filter-label {
-          font-size: 0.78rem;
+          font-size: 0.76rem;
           font-weight: 700;
-          color: #94a3b8;
+          color: #475569;
         }
 
         .filter-count-label {
@@ -1302,55 +1318,58 @@ export default function AiExplainabilityPanel({
         }
 
         .filter-btn {
-          background: rgba(30, 41, 59, 0.6);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #94a3b8;
-          font-size: 0.75rem;
-          font-weight: 700;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          color: #475569;
+          font-size: 0.74rem;
+          font-weight: 600;
           padding: 5px 10px;
           border-radius: 6px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.15s ease;
         }
 
         .filter-btn:hover {
-          color: #f1f5f9;
-          background: rgba(255, 255, 255, 0.08);
+          color: #0f172a;
+          border-color: #cbd5e1;
         }
 
         .filter-btn.active {
-          color: #ffffff;
-          background: rgba(56, 189, 248, 0.2);
-          border-color: rgba(56, 189, 248, 0.5);
+          color: #0d7c7a;
+          background: #e6f7f5;
+          border-color: #bceae5;
+          font-weight: 700;
         }
 
-        /* Feature Cards Grid (Images 2 & 3) */
+        /* Feature Cards Grid */
         .xai-feature-cards-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-          gap: 16px;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 14px;
         }
 
         .xai-feature-card {
-          background: rgba(15, 23, 42, 0.75);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 12px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
           padding: 16px;
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 12px;
           position: relative;
-          transition: transform 0.2s ease, border-color 0.2s ease;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+          transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
         .xai-feature-card:hover {
           transform: translateY(-2px);
-          border-color: rgba(255, 255, 255, 0.2);
+          border-color: #cbd5e1;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
         }
 
         .xai-feature-card.divergent-border {
-          border-color: rgba(245, 158, 11, 0.45);
-          background: linear-gradient(135deg, rgba(245, 158, 11, 0.06), rgba(15, 23, 42, 0.75));
+          border-color: #fcd34d;
+          background: #fffdf5;
         }
 
         .card-top-row {
@@ -1367,18 +1386,21 @@ export default function AiExplainabilityPanel({
         }
 
         .card-medical-icon {
-          font-size: 1.6rem;
-          background: rgba(255, 255, 255, 0.05);
-          padding: 8px;
-          border-radius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          font-size: 1.4rem;
+          background: #f8fafc;
+          padding: 7px;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .card-feat-name {
-          font-size: 0.95rem;
-          font-weight: 800;
-          color: #ffffff;
-          margin: 0 0 4px;
+          font-size: 0.92rem;
+          font-weight: 700;
+          color: #0f172a;
+          margin: 0 0 3px;
         }
 
         .card-feat-meta {
@@ -1391,73 +1413,67 @@ export default function AiExplainabilityPanel({
         .feat-category-tag {
           font-size: 0.65rem;
           font-weight: 700;
-          color: #94a3b8;
+          color: #64748b;
           text-transform: uppercase;
         }
 
         .feat-val-pill {
           font-size: 0.72rem;
-          color: #cbd5e1;
-          background: rgba(0, 0, 0, 0.3);
+          color: #475569;
+          background: #f8fafc;
           padding: 2px 6px;
           border-radius: 4px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          border: 1px solid #e2e8f0;
         }
 
         .feat-val-pill strong {
-          color: #38bdf8;
+          color: #0d7c7a;
         }
 
         /* Badges */
         .card-impact-badge {
           font-size: 0.68rem;
-          font-weight: 800;
-          letter-spacing: 0.05em;
-          padding: 4px 8px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          padding: 3px 8px;
           border-radius: 4px;
           white-space: nowrap;
         }
 
         .card-impact-badge.high {
-          background: rgba(239, 68, 68, 0.2);
-          color: #f87171;
-          border: 1px solid rgba(239, 68, 68, 0.4);
+          background: #fef2f2;
+          color: #991b1b;
+          border: 1px solid #fecaca;
         }
 
         .card-impact-badge.moderate {
-          background: rgba(249, 115, 22, 0.2);
-          color: #fb923c;
-          border: 1px solid rgba(249, 115, 22, 0.4);
+          background: #fff7ed;
+          color: #9a3412;
+          border: 1px solid #fed7aa;
         }
 
         .card-impact-badge.low {
-          background: rgba(148, 163, 184, 0.2);
-          color: #94a3b8;
-          border: 1px solid rgba(148, 163, 184, 0.4);
+          background: #f8fafc;
+          color: #475569;
+          border: 1px solid #e2e8f0;
         }
 
         .card-impact-badge.protective {
-          background: rgba(16, 185, 129, 0.2);
-          color: #34d399;
-          border: 1px solid rgba(16, 185, 129, 0.4);
+          background: #ecfdf5;
+          color: #065f46;
+          border: 1px solid #a7f3d0;
         }
 
         .card-impact-badge.divergent {
-          background: rgba(245, 158, 11, 0.25);
-          color: #fbbf24;
-          border: 1px solid rgba(245, 158, 11, 0.5);
-          animation: pulseDiverge 2s infinite ease-in-out;
+          background: #fffbeb;
+          color: #92400e;
+          border: 1px solid #fde68a;
         }
 
-        @keyframes pulseDiverge {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-          50% { box-shadow: 0 0 8px 2px rgba(245, 158, 11, 0.3); }
-        }
-
-        /* Dual Comparison Bars (Image 3) */
+        /* Dual Comparison Bars */
         .card-dual-bars-box {
-          background: rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           border-radius: 8px;
           padding: 10px 12px;
           display: flex;
@@ -1482,42 +1498,41 @@ export default function AiExplainabilityPanel({
           display: flex;
           align-items: center;
           gap: 6px;
-          font-weight: 700;
+          font-weight: 600;
         }
 
-        .dual-model-label.classical { color: #38bdf8; }
-        .dual-model-label.quantum { color: #c084fc; }
+        .dual-model-label.classical { color: #0284c7; }
+        .dual-model-label.quantum { color: #7c3aed; }
 
         .model-dot {
           width: 7px;
           height: 7px;
           border-radius: 50%;
         }
-        .model-dot.classical { background: #38bdf8; }
-        .model-dot.quantum { background: #c084fc; }
+        .model-dot.classical { background: #0284c7; }
+        .model-dot.quantum { background: #7c3aed; }
 
         .dual-bar-pct {
-          font-weight: 800;
-          font-family: monospace;
-          font-size: 0.78rem;
+          font-weight: 700;
+          font-size: 0.76rem;
         }
-        .dual-bar-pct.classical { color: #7dd3fc; }
-        .dual-bar-pct.quantum { color: #e9d5ff; }
+        .dual-bar-pct.classical { color: #0369a1; }
+        .dual-bar-pct.quantum { color: #6d28d9; }
 
         .dual-bar-track {
-          height: 7px;
-          background: rgba(255, 255, 255, 0.07);
-          border-radius: 4px;
+          height: 6px;
+          background: #e2e8f0;
+          border-radius: 3px;
           overflow: hidden;
         }
 
         .dual-bar-fill {
           height: 100%;
-          border-radius: 4px;
+          border-radius: 3px;
           transition: width 0.3s ease;
         }
-        .dual-bar-fill.classical { background: linear-gradient(90deg, #0284c7, #38bdf8); }
-        .dual-bar-fill.quantum { background: linear-gradient(90deg, #9333ea, #c084fc); }
+        .dual-bar-fill.classical { background: #0ea5e9; }
+        .dual-bar-fill.quantum { background: #8b5cf6; }
 
         /* Micro-Insight Explanation */
         .card-micro-insight {
@@ -1526,11 +1541,12 @@ export default function AiExplainabilityPanel({
           gap: 8px;
           font-size: 0.8rem;
           line-height: 1.5;
-          color: #cbd5e1;
-          background: rgba(255, 255, 255, 0.03);
+          color: #334155;
+          background: #f8fafc;
           padding: 8px 10px;
           border-radius: 6px;
-          border-left: 3px solid rgba(56, 189, 248, 0.5);
+          border: 1px solid #e2e8f0;
+          border-left: 3px solid #0d7c7a;
         }
 
         .card-micro-insight .insight-icon {
@@ -1542,13 +1558,13 @@ export default function AiExplainabilityPanel({
           margin: 0;
         }
 
-        /* Academic Evaluator Scientific Disclaimer (Image 3) */
+        /* Academic Evaluator Scientific Disclaimer */
         .xai-scientific-disclaimer {
-          background: rgba(15, 23, 42, 0.8);
-          border: 1px solid rgba(56, 189, 248, 0.3);
-          border-radius: 10px;
-          padding: 16px 20px;
-          margin-top: 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 14px 18px;
+          margin-top: 6px;
         }
 
         .disclaimer-header {
@@ -1560,52 +1576,53 @@ export default function AiExplainabilityPanel({
 
         .disclaimer-badge {
           font-size: 0.65rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-          background: rgba(56, 189, 248, 0.2);
-          color: #38bdf8;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          background: #e0f2fe;
+          color: #0369a1;
           padding: 2px 6px;
           border-radius: 4px;
-          border: 1px solid rgba(56, 189, 248, 0.35);
+          border: 1px solid #bae6fd;
         }
 
         .disclaimer-title {
-          font-size: 0.88rem;
+          font-size: 0.86rem;
           font-weight: 700;
-          color: #f1f5f9;
+          color: #0f172a;
           margin: 0;
         }
 
         .xai-scientific-disclaimer p {
-          font-size: 0.82rem;
-          line-height: 1.6;
-          color: #94a3b8;
+          font-size: 0.8rem;
+          line-height: 1.55;
+          color: #475569;
           margin: 0;
         }
 
         .xai-scientific-disclaimer strong {
-          color: #e2e8f0;
+          color: #1e293b;
         }
 
         /* --- SUGGESTIONS STYLES --- */
         .xai-suggestions-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 16px;
+          gap: 14px;
         }
 
         .xai-suggestion-card {
-          background: rgba(15, 23, 42, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 10px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
           padding: 16px;
           position: relative;
-          transition: transform 0.2s ease, border-color 0.2s ease;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+          transition: transform 0.15s ease, border-color 0.15s ease;
         }
 
         .xai-suggestion-card:hover {
           transform: translateY(-2px);
-          border-color: rgba(255, 255, 255, 0.2);
+          border-color: #cbd5e1;
         }
 
         .sugg-header {
@@ -1617,36 +1634,36 @@ export default function AiExplainabilityPanel({
 
         .sugg-badge {
           font-size: 0.68rem;
-          font-weight: 800;
-          letter-spacing: 0.05em;
+          font-weight: 700;
+          letter-spacing: 0.04em;
           padding: 3px 8px;
           border-radius: 4px;
         }
 
-        .sugg-badge.urgent { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
-        .sugg-badge.high { background: rgba(249, 115, 22, 0.2); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.4); }
-        .sugg-badge.moderate { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
-        .sugg-badge.routine { background: rgba(148, 163, 184, 0.2); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.4); }
-        .sugg-badge.safe { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-        .sugg-badge.warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .sugg-badge.urgent { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .sugg-badge.high { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+        .sugg-badge.moderate { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .sugg-badge.routine { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+        .sugg-badge.safe { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .sugg-badge.warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
 
         .sugg-num {
           font-size: 0.95rem;
-          font-weight: 900;
-          opacity: 0.3;
+          font-weight: 800;
+          color: #cbd5e1;
         }
 
         .xai-suggestion-card h4 {
-          font-size: 0.95rem;
+          font-size: 0.92rem;
           font-weight: 700;
-          color: #f1f5f9;
+          color: #0f172a;
           margin: 0 0 6px;
           line-height: 1.4;
         }
 
         .xai-suggestion-card p {
-          font-size: 0.84rem;
-          color: #cbd5e1;
+          font-size: 0.82rem;
+          color: #475569;
           margin: 0;
           line-height: 1.55;
         }
@@ -1655,19 +1672,20 @@ export default function AiExplainabilityPanel({
         .mechanism-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 16px;
-          margin-bottom: 16px;
+          gap: 14px;
+          margin-bottom: 14px;
         }
 
         .mech-card {
-          background: rgba(15, 23, 42, 0.7);
-          border-radius: 10px;
+          background: #ffffff;
+          border-radius: 8px;
           padding: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         }
 
-        .mech-card.classical { border-top: 3px solid #38bdf8; }
-        .mech-card.quantum { border-top: 3px solid #c084fc; }
+        .mech-card.classical { border-top: 3px solid #0284c7; }
+        .mech-card.quantum { border-top: 3px solid #7c3aed; }
 
         .mech-header {
           display: flex;
@@ -1677,64 +1695,66 @@ export default function AiExplainabilityPanel({
         }
 
         .mech-badge {
-          font-size: 0.72rem;
-          font-weight: 800;
+          font-size: 0.7rem;
+          font-weight: 700;
           padding: 3px 8px;
           border-radius: 4px;
         }
 
-        .mech-badge.classical { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-        .mech-badge.quantum { background: rgba(192, 132, 252, 0.15); color: #c084fc; }
+        .mech-badge.classical { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .mech-badge.quantum { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
 
         .mech-stat {
-          font-size: 0.75rem;
-          color: #94a3b8;
-          font-weight: 700;
+          font-size: 0.74rem;
+          color: #64748b;
+          font-weight: 600;
         }
 
         .mech-card h4 {
-          font-size: 0.95rem;
+          font-size: 0.92rem;
           font-weight: 700;
-          color: #ffffff;
+          color: #0f172a;
           margin: 0 0 6px;
         }
 
         .mech-card p {
-          font-size: 0.84rem;
-          color: #94a3b8;
+          font-size: 0.82rem;
+          color: #475569;
           margin: 0 0 10px;
           line-height: 1.5;
         }
 
         .mech-card code {
-          background: rgba(0, 0, 0, 0.4);
+          background: #f1f5f9;
           padding: 2px 5px;
           border-radius: 4px;
-          color: #e2e8f0;
-          font-size: 0.8rem;
+          color: #334155;
+          border: 1px solid #e2e8f0;
+          font-size: 0.78rem;
         }
 
         .mech-patient-finding {
-          font-size: 0.82rem;
+          font-size: 0.8rem;
           line-height: 1.5;
-          color: #f1f5f9;
-          background: rgba(0, 0, 0, 0.25);
+          color: #334155;
+          background: #f8fafc;
           padding: 10px;
           border-radius: 6px;
-          border-left: 3px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid #e2e8f0;
+          border-left: 3px solid #0d7c7a;
         }
 
         .mech-divergence-callout {
-          background: rgba(245, 158, 11, 0.1);
-          border: 1px solid rgba(245, 158, 11, 0.3);
+          background: #fffbeb;
+          border: 1px solid #fde68a;
           border-radius: 8px;
           padding: 14px 18px;
-          font-size: 0.85rem;
-          color: #cbd5e1;
+          font-size: 0.84rem;
+          color: #78350f;
           line-height: 1.55;
         }
         .mech-divergence-callout strong {
-          color: #f59e0b;
+          color: #92400e;
           display: block;
           margin-bottom: 4px;
         }
