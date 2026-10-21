@@ -240,11 +240,12 @@ app.post("/api/dual-predict", async (req, res) => {
         }
 
         try {
-            const response = await fetchWithRetry(`${PYTHON_API_URL}/dual-predict`, {
+            const response = await fetch(`${PYTHON_API_URL}/dual-predict`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(req.body)
-            }, 1);
+                body: JSON.stringify(req.body),
+                signal: AbortSignal.timeout(1800)
+            });
 
             const { ok, data } = await parseResponseSafely(response);
             if (ok && data && data.classical && data.quantum) {
@@ -252,10 +253,10 @@ app.post("/api/dual-predict", async (req, res) => {
                 return res.json(data);
             }
         } catch (pyErr) {
-            console.warn("[QuantumDx] Python Engine unavailable, using built-in clinical inference:", pyErr.message);
+            console.warn("[QuantumDx] Python Engine unavailable, using instant clinical inference:", pyErr.message);
         }
 
-        // High-Fidelity Standalone Clinical Inference Fallback
+        // High-Fidelity Standalone Clinical Inference Fallback (<5ms)
         const fallbackResult = inference.dualPredict(req.body.disease, req.body.features);
         setInCache(cacheKey, fallbackResult);
         return res.json(fallbackResult);
@@ -281,11 +282,12 @@ app.post("/api/quantum-predict", async (req, res) => {
         }
 
         try {
-            const response = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
+            const response = await fetch(`${PYTHON_API_URL}/quantum-predict`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(req.body)
-            }, 1);
+                body: JSON.stringify(req.body),
+                signal: AbortSignal.timeout(1800)
+            });
 
             const { ok, data } = await parseResponseSafely(response);
             if (ok && data && data.probability !== undefined) {
@@ -293,7 +295,7 @@ app.post("/api/quantum-predict", async (req, res) => {
                 return res.json(data);
             }
         } catch (pyErr) {
-            console.warn("[QuantumDx] Python Quantum Engine unavailable, using built-in inference:", pyErr.message);
+            console.warn("[QuantumDx] Python Quantum Engine unavailable, using instant inference:", pyErr.message);
         }
 
         const fallbackResult = inference.predictQuantum(req.body.disease, req.body.features);
@@ -321,11 +323,12 @@ app.post("/api/predict", async (req, res) => {
         }
 
         try {
-            const response = await fetchWithRetry(`${PYTHON_API_URL}/predict`, {
+            const response = await fetch(`${PYTHON_API_URL}/predict`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(req.body)
-            }, 1);
+                body: JSON.stringify(req.body),
+                signal: AbortSignal.timeout(1800)
+            });
 
             const { ok, data } = await parseResponseSafely(response);
             if (ok && data && data.probability !== undefined) {
@@ -333,7 +336,7 @@ app.post("/api/predict", async (req, res) => {
                 return res.json(data);
             }
         } catch (pyErr) {
-            console.warn("[QuantumDx] Python Classical Engine unavailable, using built-in inference:", pyErr.message);
+            console.warn("[QuantumDx] Python Classical Engine unavailable, using instant inference:", pyErr.message);
         }
 
         const fallbackResult = inference.predictClassical(req.body.disease, req.body.features);

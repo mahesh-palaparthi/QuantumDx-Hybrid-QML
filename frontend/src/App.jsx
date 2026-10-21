@@ -954,7 +954,7 @@ export default function App() {
               <ClarityDashboard
                 onSelectScreening={(diseaseKey) => {
                   if (diseaseKey) {
-                    setActiveDisease(diseaseKey);
+                    switchDisease(diseaseKey);
                     setClarityStudioStep("form");
                   } else {
                     setClarityStudioStep("hub");
@@ -969,7 +969,7 @@ export default function App() {
             {clarityTab === "studio" && clarityStudioStep === "hub" && (
               <ClarityScreeningHub
                 onSelectScreening={(diseaseKey) => {
-                  setActiveDisease(diseaseKey);
+                  switchDisease(diseaseKey);
                   setClarityStudioStep("form");
                 }}
                 onGoToBenchmarks={() => setClarityTab("benchmarks")}
@@ -1038,7 +1038,7 @@ export default function App() {
                 screeningHistory={screeningHistory}
                 onOpenScreening={(diseaseKey) => {
                   if (diseaseKey) {
-                    setActiveDisease(diseaseKey);
+                    switchDisease(diseaseKey);
                     setClarityStudioStep("form");
                   } else {
                     setClarityStudioStep("hub");

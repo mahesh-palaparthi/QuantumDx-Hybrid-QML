@@ -415,6 +415,22 @@ export default function ClarityFormView({
                       <option value="3">3 vessels</option>
                     </select>
                   </div>
+
+                  <div className="clarity-field-group">
+                    <label className="clarity-field-label">
+                      Thallium stress test (Thal) <span className="clarity-required-star">*</span>
+                    </label>
+                    <select
+                      className="clarity-select"
+                      value={heartData.thal || "3"}
+                      onChange={(e) => updateHeartField("thal", e.target.value)}
+                    >
+                      <option value="3">3 - Normal myocardial perfusion</option>
+                      <option value="6">6 - Fixed defect (Prior infarction)</option>
+                      <option value="7">7 - Reversible defect (Acute ischemia)</option>
+                    </select>
+                    <span className="clarity-field-helper">Nuclear myocardial perfusion scintigraphy.</span>
+                  </div>
                 </div>
               </div>
             </>

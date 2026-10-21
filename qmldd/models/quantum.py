@@ -137,7 +137,8 @@ class VariationalQuantumClassifier(BaseModel):
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         raw = self._decision_values(X)
         threshold = getattr(self, "threshold", 0.0)
-        return 1 / (1 + np.exp(-(raw - threshold)))
+        scale = getattr(self, "temperature_scale", 14.0)
+        return 1.0 / (1.0 + np.exp(-scale * (raw - threshold)))
 
     def metadata(self) -> dict[str, Any]:
         return {
@@ -362,7 +363,8 @@ class QuantumNeuralNetwork(BaseModel):
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         raw = self._decision_values(X)
         threshold = getattr(self, "threshold", 0.0)
-        return 1 / (1 + np.exp(-(raw - threshold)))
+        scale = getattr(self, "temperature_scale", 14.0)
+        return 1.0 / (1.0 + np.exp(-scale * (raw - threshold)))
 
     def metadata(self) -> dict[str, Any]:
         q_params = int(np.size(self.weights)) if self.weights is not None else 0
