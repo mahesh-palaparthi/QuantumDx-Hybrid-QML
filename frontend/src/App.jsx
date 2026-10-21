@@ -294,8 +294,22 @@ export default function App() {
   };
 
   const handleLoginSuccess = (user, token) => {
+    if (user) {
+      try {
+        localStorage.setItem("quantumdx_user", JSON.stringify(user));
+      } catch (e) {
+        console.warn("Could not save user to localStorage", e);
+      }
+    }
+    if (token) {
+      try {
+        localStorage.setItem("quantumdx_token", token);
+      } catch (e) {
+        console.warn("Could not save token to localStorage", e);
+      }
+    }
     setCurrentUser(user);
-    setAuthToken(token);
+    setAuthToken(token || "");
   };
 
   const handleLogout = () => {

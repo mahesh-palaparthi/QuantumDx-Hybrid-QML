@@ -136,6 +136,10 @@ function getInitialData() {
 
 function loadDb() {
   try {
+    const dir = path.dirname(DB_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
     if (!fs.existsSync(DB_FILE)) {
       const init = getInitialData();
       fs.writeFileSync(DB_FILE, JSON.stringify(init, null, 2), "utf8");
@@ -145,14 +149,26 @@ function loadDb() {
     return JSON.parse(raw);
   } catch (err) {
     console.error("Error loading quantumdx_db.json, re-initializing:", err);
-    const init = getInitialData();
-    fs.writeFileSync(DB_FILE, JSON.stringify(init, null, 2), "utf8");
-    return init;
+    try {
+      const dir = path.dirname(DB_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const init = getInitialData();
+      fs.writeFileSync(DB_FILE, JSON.stringify(init, null, 2), "utf8");
+      return init;
+    } catch (writeErr) {
+      return getInitialData();
+    }
   }
 }
 
 function saveDb(data) {
   try {
+    const dir = path.dirname(DB_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), "utf8");
   } catch (err) {
     console.error("Error writing quantumdx_db.json:", err);

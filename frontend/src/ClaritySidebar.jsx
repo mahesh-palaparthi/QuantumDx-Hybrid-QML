@@ -56,6 +56,11 @@ export default function ClaritySidebar({ activeTab, onSelectTab, onLogout, user 
         </div>
 
         <div className="clarity-sidebar-footer">
+          {user && (
+            <div style={{ padding: "0 4px 8px", fontSize: "11.5px", color: "var(--c-text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              Logged in as <strong style={{ color: "var(--c-text-primary)" }}>{user.fullName || user.name || user.email}</strong>
+            </div>
+          )}
           <button
             type="button"
             className="clarity-logout-btn"

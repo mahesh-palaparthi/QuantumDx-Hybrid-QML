@@ -11,65 +11,11 @@ export default function ClarityProfileView({
   onClearHistory,
 }) {
   const [showToken, setShowToken] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("alex.morgan@example.com");
-  const [loginPassword, setLoginPassword] = useState("password123");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [inlineLoading, setInlineLoading] = useState(false);
   const [inlineError, setInlineError] = useState("");
   const [copied, setCopied] = useState(false);
-
-  // Preset demo clinicians for quick 1-click login/switching
-  const DEMO_CLINICIANS = [
-    {
-      name: "Dr. Alex Morgan",
-      email: "alex.morgan@example.com",
-      role: "Chief Medical Officer (Internal Medicine)",
-      avatarIcon: "🩺",
-      department: "Metabolic Endocrinology & Preventative Health",
-      npi: "NPI-1948201948",
-      token: "demo_token_alex_morgan_internal_med",
-    },
-    {
-      name: "Dr. Elena Vance",
-      email: "elena.vance@quantumdx.ai",
-      role: "Lead Clinical Oncologist",
-      avatarIcon: "🎗️",
-      department: "Oncology & Fine-Needle Cytopathology",
-      npi: "NPI-1830294821",
-      token: "demo_token_elena_vance_oncology",
-    },
-    {
-      name: "Dr. Marcus Ray",
-      email: "marcus.ray@unicef-health.org",
-      role: "Pediatric Health & Nutrition Specialist",
-      avatarIcon: "👶",
-      department: "Global Child Growth & SAM Diagnostic Program",
-      npi: "NPI-1492049182",
-      token: "demo_token_marcus_ray_pediatrics",
-    },
-    {
-      name: "Dr. Sarah Chen",
-      email: "sarah.chen@quantum-institute.org",
-      role: "Quantum Computational Biologist",
-      avatarIcon: "🔬",
-      department: "Quantum Machine Learning & Hilbert Space Kernel Lab",
-      npi: "NPI-1049281048",
-      token: "demo_token_sarah_chen_qml",
-    },
-  ];
-
-  const handleQuickLogin = (clinician) => {
-    const userData = {
-      fullName: clinician.name,
-      name: clinician.name,
-      email: clinician.email,
-      role: clinician.role,
-      department: clinician.department,
-      npi: clinician.npi,
-    };
-    if (onLoginSuccess) {
-      onLoginSuccess(userData, clinician.token);
-    }
-  };
 
   const handleInlineLogin = async (e) => {
     e.preventDefault();
@@ -79,7 +25,7 @@ export default function ClarityProfileView({
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+        body: JSON.stringify({ identifier: loginEmail.trim(), email: loginEmail.trim(), password: loginPassword }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -87,14 +33,12 @@ export default function ClarityProfileView({
       }
       if (onLoginSuccess) {
         onLoginSuccess(
-          data.user || { name: loginEmail.split("@")[0], email: loginEmail },
+          data.user || { fullName: loginEmail.split("@")[0], name: loginEmail.split("@")[0], email: loginEmail.trim(), role: "patient" },
           data.token || "session_token_granted"
         );
       }
     } catch (err) {
-      // Fallback for offline or demo testing
-      const foundPreset = DEMO_CLINICIANS.find((c) => c.email === loginEmail) || DEMO_CLINICIANS[0];
-      handleQuickLogin(foundPreset);
+      setInlineError(err.message || "Invalid email or password. Please verify your credentials.");
     } finally {
       setInlineLoading(false);
     }
@@ -107,7 +51,7 @@ export default function ClarityProfileView({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // If user is not logged in, render the login/register landing card with 1-click accounts
+  // If user is not logged in, render the clean login/register landing card
   if (!user) {
     return (
       <div className="clarity-content">
@@ -117,92 +61,13 @@ export default function ClarityProfileView({
 
         <h2 className="clarity-page-title">Clinician Profile &amp; Authentication</h2>
         <p className="clarity-page-subtitle">
-          Sign in to your verified clinical account to access permanent screening audits, patient records, and Qiskit quantum execution.
+          Sign in to your clinical account or create a new account to access personalized screening audits, patient records, and quantum inference.
         </p>
 
-        {/* 1-Click Demo Accounts Selector */}
-        <div className="clarity-num-card" style={{ marginBottom: 24, border: "1.5px solid #0D7C7A" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-            <div>
-              <span className="clarity-tag-pill" style={{ background: "var(--c-mint)", color: "var(--c-teal)", fontWeight: 800 }}>
-                ⚡ INSTANT 1-CLICK ACCESS
-              </span>
-              <h3 style={{ fontSize: "17px", fontWeight: 800, margin: "6px 0 2px", color: "var(--c-navy)" }}>
-                Select a Clinician Account
-              </h3>
-              <p style={{ fontSize: "12.5px", color: "var(--c-text-muted)", margin: 0 }}>
-                Test role-based access immediately without entering credentials:
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-            {DEMO_CLINICIANS.map((clinician) => (
-              <div
-                key={clinician.email}
-                onClick={() => handleQuickLogin(clinician)}
-                style={{
-                  background: "#FFFFFF",
-                  border: "1px solid #E2E8F0",
-                  borderRadius: 10,
-                  padding: "14px",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  display: "flex",
-                  gap: 12,
-                  alignItems: "center",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--c-teal)";
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(13,124,122,0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#E2E8F0";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    background: "var(--c-mint)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 22,
-                    flexShrink: 0,
-                  }}
-                >
-                  {clinician.avatarIcon}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--c-text-primary)" }}>
-                    {clinician.name}
-                  </div>
-                  <div style={{ fontSize: "11.5px", color: "var(--c-teal)", fontWeight: 600 }}>
-                    {clinician.role}
-                  </div>
-                  <div style={{ fontSize: "11px", color: "var(--c-text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {clinician.email}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="clarity-btn-outline"
-                  style={{ padding: "6px 12px", fontSize: "12px", flexShrink: 0 }}
-                >
-                  Sign In →
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Standard Email & Password Login Card */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 24, marginTop: 16 }}>
           <div className="clarity-num-card">
-            <h3 style={{ fontSize: "16px", fontWeight: 800, margin: "0 0 14px", color: "var(--c-text-primary)" }}>
+            <h3 style={{ fontSize: "17px", fontWeight: 800, margin: "0 0 14px", color: "var(--c-text-primary)" }}>
               🔑 Sign in with Credentials
             </h3>
 
@@ -220,7 +85,7 @@ export default function ClarityProfileView({
                   className="clarity-input"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="alex.morgan@example.com"
+                  placeholder="name@example.com"
                   required
                 />
               </div>
@@ -253,7 +118,7 @@ export default function ClarityProfileView({
                     onClick={onOpenAuth}
                     style={{ padding: "12px 18px" }}
                   >
-                    Register New Account
+                    Create Account
                   </button>
                 )}
               </div>
@@ -269,9 +134,9 @@ export default function ClarityProfileView({
               QuantumDx enforces hospital-grade data boundaries and zero-trust authentication protocols:
             </p>
             <ul style={{ paddingLeft: 16, margin: 0, fontSize: "12px", color: "var(--c-text-muted)", lineHeight: 1.8 }}>
-              <li><strong>PBKDF2-HMAC-SHA256:</strong> Cryptographic password hashing with 600,000 work iterations and 32-byte salt.</li>
+              <li><strong>PBKDF2 Hashing:</strong> Cryptographic password hashing with random salt and SHA-512 key stretching.</li>
               <li><strong>Stateless Inference:</strong> Patient biomarkers are evaluated in-memory and discarded post-prediction.</li>
-              <li><strong>Local Persistence:</strong> Screening logs are stored in your secure local session database.</li>
+              <li><strong>Secure Persistence:</strong> Screening logs are stored in your secure local session database.</li>
             </ul>
           </div>
         </div>
@@ -280,18 +145,19 @@ export default function ClarityProfileView({
   }
 
   // LOGGED-IN CLINICIAN VIEW
-  const displayName = user.fullName || user.name || "Dr. Alex Morgan";
-  const displayRole = user.role || "Chief Medical Officer (Internal Medicine)";
-  const displayEmail = user.email || "alex.morgan@example.com";
-  const displayNpi = user.npi || "NPI-1948201948";
-  const displayDepartment = user.department || "Internal Medicine & Metabolic Screening";
+  const displayName = user.fullName || user.name || user.email || "Clinician";
+  const displayRole = user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : "Clinical Practitioner";
+  const displayEmail = user.email || "";
+  const displayNpi = user.npi || `UID-${(user.id || "001").slice(-6)}`;
+  const displayDepartment = user.department || (user.profile?.institution) || (user.profile?.department) || "Clinical Medicine & Screening";
 
   const initials = displayName
     .split(" ")
+    .filter(Boolean)
     .map((n) => n[0])
     .join("")
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 2) || displayName.slice(0, 2).toUpperCase();
 
   const tokenString = authToken || "qdx_demo_bearer_pbkdf2_token_77a982c";
 

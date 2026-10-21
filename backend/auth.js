@@ -32,9 +32,11 @@ function requireAuth(req, res, next) {
 // 1. REGISTER
 router.post("/register", (req, res) => {
   try {
-    const { fullName, email, phone, password, role, profile } = req.body;
+    const { fullName, name, email, phone, password, role, profile } = req.body;
+    const finalFullName = (fullName || name || "").trim();
+    const cleanEmail = (email || "").toLowerCase().trim();
 
-    if (!fullName || !email || !password) {
+    if (!finalFullName || !cleanEmail || !password) {
       return res.status(400).json({
         status: "error",
         message: "Full Name, Email Address, and Password are required.",
@@ -49,9 +51,9 @@ router.post("/register", (req, res) => {
     }
 
     const newUser = db.createUser({
-      fullName,
-      email,
-      phone,
+      fullName: finalFullName,
+      email: cleanEmail,
+      phone: (phone || "").trim(),
       password,
       role: role || "patient",
       profile: profile || {},
@@ -74,12 +76,12 @@ router.post("/register", (req, res) => {
 // 2. LOGIN
 router.post("/login", (req, res) => {
   try {
-    const identifier = req.body.email || req.body.username || req.body.identifier;
+    const identifier = (req.body.email || req.body.username || req.body.identifier || "").trim();
     const { password } = req.body;
     if (!identifier || !password) {
       return res.status(400).json({
         status: "error",
-        message: "Please enter your username or email address and password.",
+        message: "Please enter your email address and password.",
       });
     }
 
@@ -87,7 +89,7 @@ router.post("/login", (req, res) => {
     if (!user) {
       return res.status(401).json({
         status: "error",
-        message: "Invalid username/email or password. Please check your credentials.",
+        message: "Invalid email or password. Please check your credentials.",
       });
     }
 
