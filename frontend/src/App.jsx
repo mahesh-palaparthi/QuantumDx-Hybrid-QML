@@ -1471,9 +1471,9 @@ export default function App() {
                 cursor: "pointer",
                 padding: "6px 14px",
               }}
-              title="Switch to Clarity Health Figma Design"
+              title="Switch to QuantumDx Modern Design"
             >
-              ✨ Switch to Clarity UI
+              ✨ Switch to QuantumDx UI
             </button>
 
             <button

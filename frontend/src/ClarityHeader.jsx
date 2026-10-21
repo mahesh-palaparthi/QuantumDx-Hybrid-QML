@@ -18,18 +18,18 @@ export default function ClarityHeader({
   return (
     <header className="clarity-header">
       <div className="clarity-header-title">
-        Your health, with clarity
+        QuantumDx · Intelligent Clinical Screening
       </div>
 
       <div className="clarity-header-actions">
         {/* Dual-Mode UI Switcher */}
-        <div className="clarity-mode-toggle" title="Switch between new Clarity Figma design and the original Classic Studio">
+        <div className="clarity-mode-toggle" title="Switch between QuantumDx modern design and Classic Studio">
           <button
             type="button"
             className={`clarity-toggle-btn ${uiMode === "clarity" ? "active" : ""}`}
             onClick={() => setUiMode("clarity")}
           >
-            ✨ Clarity UI
+            ✨ QuantumDx UI
           </button>
           <button
             type="button"
@@ -41,7 +41,7 @@ export default function ClarityHeader({
         </div>
 
         {/* Demo Workspace badge */}
-        <span className="clarity-workspace-pill">DEMO WORKSPACE</span>
+        <span className="clarity-workspace-pill">QUANTUMDX WORKSPACE</span>
 
         {/* Notification Bell */}
         <button

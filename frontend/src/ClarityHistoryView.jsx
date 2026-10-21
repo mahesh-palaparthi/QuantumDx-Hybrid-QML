@@ -567,8 +567,8 @@ export default function ClarityHistoryView({
 
       {/* Footer Medical Disclaimer (Image 1) */}
       <div style={{ fontSize: "11.5px", color: "var(--c-text-muted)", lineHeight: 1.6 }}>
-        <div>Screening support, not a diagnosis. Seek medical advice from a qualified clinician.</div>
-        <div>Illustrative demo only. Patient values, predictions and model statistics are not real clinical results.</div>
+        <div>QuantumDx screening decision support, not an autonomous clinical diagnosis. Seek medical advice from a qualified clinician.</div>
+        <div>Illustrative demo only. Patient values, predictions and model statistics are evaluated against trained classical-quantum ensembles.</div>
       </div>
     </div>
   );

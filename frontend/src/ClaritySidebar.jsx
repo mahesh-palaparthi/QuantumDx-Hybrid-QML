@@ -19,8 +19,8 @@ export default function ClaritySidebar({ activeTab, onSelectTab, onLogout, user 
             <span>∿</span>
           </div>
           <div>
-            <h1 className="clarity-brand-title">clarity</h1>
-            <div className="clarity-brand-sub">HEALTH SCREENING</div>
+            <h1 className="clarity-brand-title">QuantumDx</h1>
+            <div className="clarity-brand-sub">HYBRID QUANTUM AI</div>
           </div>
         </div>
 
@@ -49,7 +49,7 @@ export default function ClaritySidebar({ activeTab, onSelectTab, onLogout, user 
       {/* Bottom section */}
       <div>
         <div className="clarity-sidebar-callout">
-          <div className="clarity-callout-title">A little clarity. A better next step.</div>
+          <div className="clarity-callout-title">Quantum precision. A clearer next step.</div>
           <div className="clarity-callout-desc">
             Use your screening to start a conversation with a clinician.
           </div>
@@ -65,7 +65,7 @@ export default function ClaritySidebar({ activeTab, onSelectTab, onLogout, user 
             <span>{user ? "Sign Out" : "Sign In / Register"}</span>
           </button>
           <div className="clarity-sidebar-caption">
-            Clarity Health · Demo workspace
+            QuantumDx · Clinical workspace
           </div>
         </div>
       </div>

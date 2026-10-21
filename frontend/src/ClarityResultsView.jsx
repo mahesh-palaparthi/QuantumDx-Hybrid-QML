@@ -257,7 +257,7 @@ export default function ClarityResultsView({
                 gap: "8px",
               }}
             >
-              <span>Download Official Clinical Summary (PDF)</span>
+              <span>Download Official QuantumDx Clinical Summary (PDF)</span>
               <span>📄</span>
             </button>
           </div>

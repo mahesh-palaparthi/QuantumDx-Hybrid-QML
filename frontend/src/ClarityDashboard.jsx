@@ -44,11 +44,11 @@ export default function ClarityDashboard({
     <div className="clarity-content">
       {/* Top Title */}
       <div className="clarity-breadcrumb">
-        <span className="clarity-breadcrumb-text">YOUR HEALTH WORKSPACE</span>
+        <span className="clarity-breadcrumb-text">QUANTUMDX CLINICAL WORKSPACE</span>
       </div>
-      <h2 className="clarity-page-title">Welcome to Your Health Screening Dashboard.</h2>
+      <h2 className="clarity-page-title">Welcome to QuantumDx Health Screening.</h2>
       <p className="clarity-page-subtitle">
-        Hello, {userName}. Take a small step toward understanding your health.
+        Hello, {userName}. High-precision hybrid classical-quantum medical decision support.
       </p>
 
       {/* Hero Navy Card */}

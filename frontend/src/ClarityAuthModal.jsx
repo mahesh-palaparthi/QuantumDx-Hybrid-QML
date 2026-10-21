@@ -115,7 +115,7 @@ export default function ClarityAuthModal({ isOpen, onClose, onAuthSuccess }) {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
               <div className="clarity-brand-icon">∿</div>
-              <span style={{ fontSize: "20px", fontWeight: 800 }}>clarity</span>
+              <span style={{ fontSize: "20px", fontWeight: 800 }}>QuantumDx</span>
             </div>
 
             <div className="clarity-hero-tag" style={{ color: "#7DD3FC", marginBottom: 12 }}>
@@ -289,7 +289,7 @@ export default function ClarityAuthModal({ isOpen, onClose, onAuthSuccess }) {
               </span>
             ) : (
               <span style={{ color: "var(--c-text-muted)" }}>
-                New to Clarity Health?{" "}
+                New to QuantumDx?{" "}
                 <strong
                   style={{ color: "var(--c-teal)", cursor: "pointer" }}
                   onClick={() => setIsRegister(true)}
