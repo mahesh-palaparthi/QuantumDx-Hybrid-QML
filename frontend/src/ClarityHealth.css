@@ -42,30 +42,40 @@
 }
 
 /* Clarity Container Shell */
-.clarity-app {
-  display: flex;
-  min-height: 100vh;
-  background-color: var(--c-bg);
+.clarity-app,
+.clarity-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100vw !important;
+  max-width: 100% !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  background-color: var(--c-bg) !important;
   color: var(--c-text-primary);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow: hidden !important;
+  box-sizing: border-box;
 }
 
 /* Sidebar */
 .clarity-sidebar {
   width: 250px;
   min-width: 250px;
+  max-width: 250px;
   background: var(--c-sidebar-bg);
   border-right: 1px solid var(--c-card-border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 24px 16px;
-  position: sticky;
-  top: 0;
   height: 100vh;
   box-sizing: border-box;
+  flex-shrink: 0 !important;
   z-index: 40;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 .clarity-brand {
@@ -207,12 +217,26 @@
 }
 
 /* Main Workspace */
-.clarity-main {
+.clarity-main,
+.clarity-main-col {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  height: 100vh !important;
+  background: var(--c-bg) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.clarity-main-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: var(--c-bg);
+  width: 100%;
 }
 
 /* Top Header */

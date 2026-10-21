@@ -213,6 +213,16 @@ export default function App() {
     try {
       localStorage.setItem("quantumdx_ui_mode", uiMode);
     } catch {}
+
+    if (uiMode === "clarity") {
+      document.body.style.backgroundColor = "#F8FAFC";
+      document.body.style.color = "#0F172A";
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.backgroundColor = "";
+      document.body.style.color = "";
+      document.body.style.overflow = "";
+    }
   }, [uiMode]);
   const [clarityTab, setClarityTab] = useState("dashboard"); // "dashboard" | "studio" | "history" | "benchmarks" | "about" | "profile"
   const [clarityStudioStep, setClarityStudioStep] = useState("hub"); // "hub" | "form" | "results"
@@ -1077,7 +1087,7 @@ export default function App() {
   // =========================================================================
   if (uiMode === "clarity") {
     return (
-      <div className="clarity-layout">
+      <div className="clarity-app clarity-layout">
         <ClarityAuthModal
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
@@ -1098,7 +1108,7 @@ export default function App() {
           user={currentUser}
         />
 
-        <div className="clarity-main-col">
+        <div className="clarity-main clarity-main-col">
           <ClarityHeader
             uiMode={uiMode}
             setUiMode={setUiMode}

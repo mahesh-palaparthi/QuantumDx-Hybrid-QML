@@ -93,50 +93,81 @@ export default function ClarityHistoryView({
 
   // Map real database records if available, otherwise prepend them to sample items
   const combinedRecords = useMemo(() => {
-    const liveItems = screeningHistory.map((item, idx) => {
-      const d = item.timestamp ? new Date(item.timestamp) : new Date();
-      const dateStr = d.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
-      const timeStr = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+    const list = Array.isArray(screeningHistory) ? screeningHistory : [];
+    const liveItems = list
+      .map((item, idx) => {
+        try {
+          if (!item) return null;
+          const d = item.timestamp ? new Date(item.timestamp) : new Date();
+          const isValidDate = !isNaN(d.getTime());
+          const dateStr = isValidDate
+            ? d.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
+            : "21 Oct 2026";
+          const timeStr = isValidDate
+            ? d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })
+            : "14:32";
 
-      const cProb = item.classicalProbability != null ? Number(item.classicalProbability) : 0.5;
-      const qProb = item.quantumProbability != null ? Number(item.quantumProbability) : 0.5;
+          const cProb =
+            item.classicalProbability != null && !isNaN(Number(item.classicalProbability))
+              ? Number(item.classicalProbability)
+              : 0.5;
+          const qProb =
+            item.quantumProbability != null && !isNaN(Number(item.quantumProbability))
+              ? Number(item.quantumProbability)
+              : 0.5;
 
-      const isPos = item.consensusVerdict === "Positive";
-      const isInconclusive = item.consensusVerdict === "Inconclusive";
+          const isPos = item.consensusVerdict === "Positive";
+          const isInconclusive = item.consensusVerdict === "Inconclusive";
 
-      const cPct = Math.round(cProb * 100);
-      const qPct = Math.round(qProb * 100);
+          const cPct = Math.round(cProb * 100);
+          const qPct = Math.round(qProb * 100);
 
-      const dName = item.disease || "Heart Disease";
-      const isHeart = dName.toLowerCase().includes("heart");
-      const isCancer = dName.toLowerCase().includes("cancer");
-      const isDiabetes = dName.toLowerCase().includes("diabetes");
-      const isMalnutrition = dName.toLowerCase().includes("malnutrition");
+          const dName = typeof item.disease === "string" ? item.disease : "Heart Disease";
+          const isHeart = dName.toLowerCase().includes("heart");
+          const isCancer = dName.toLowerCase().includes("cancer");
+          const isDiabetes = dName.toLowerCase().includes("diabetes");
+          const isMalnutrition = dName.toLowerCase().includes("malnutrition");
 
-      const icon = isHeart ? "🫀" : isCancer ? "🎗️" : isMalnutrition ? "👶" : "💧";
-      const diseaseKey = isHeart ? "heart_disease" : isCancer ? "breast_cancer" : isMalnutrition ? "child_malnutrition" : "diabetes";
+          const icon = isHeart ? "🫀" : isCancer ? "🎗️" : isMalnutrition ? "👶" : "💧";
+          const diseaseKey = isHeart
+            ? "heart_disease"
+            : isCancer
+            ? "breast_cancer"
+            : isMalnutrition
+            ? "child_malnutrition"
+            : "diabetes";
 
-      return {
-        id: item._id || item.patientId || `live-${idx}`,
-        diseaseKey,
-        diseaseName: isHeart ? "Heart Disease" : isCancer ? "Breast Cancer" : isMalnutrition ? "Pediatric Malnutrition" : "Diabetes",
-        icon,
-        subject: item.patientName || "Alex Morgan · Patient",
-        dateFormatted: dateStr,
-        timeFormatted: timeStr,
-        classicalPct: cPct,
-        quantumPct: qPct,
-        status: isInconclusive ? "inconclusive" : isPos ? "follow_up" : "lower_score",
-        statusLabel: isInconclusive ? "Inconclusive review" : isPos ? "Follow-up suggested" : "Lower model score",
-        classicalPrediction: item.classicalPrediction,
-        classicalProbability: cProb,
-        quantumPrediction: item.quantumPrediction,
-        quantumProbability: qProb,
-        consensusVerdict: item.consensusVerdict,
-        confidencePercent: item.confidencePercent,
-        rawRecord: item,
-      };
-    });
+          return {
+            id: item._id || item.patientId || `live-${idx}`,
+            diseaseKey,
+            diseaseName: isHeart
+              ? "Heart Disease"
+              : isCancer
+              ? "Breast Cancer"
+              : isMalnutrition
+              ? "Pediatric Malnutrition"
+              : "Diabetes",
+            icon,
+            subject: item.patientName || "Alex Morgan · Patient",
+            dateFormatted: dateStr,
+            timeFormatted: timeStr,
+            classicalPct: cPct,
+            quantumPct: qPct,
+            status: isInconclusive ? "inconclusive" : isPos ? "follow_up" : "lower_score",
+            statusLabel: isInconclusive ? "Inconclusive review" : isPos ? "Follow-up suggested" : "Lower model score",
+            classicalPrediction: item.classicalPrediction || "Negative",
+            classicalProbability: cProb,
+            quantumPrediction: item.quantumPrediction || "Negative",
+            quantumProbability: qProb,
+            consensusVerdict: item.consensusVerdict || "Negative",
+            confidencePercent: item.confidencePercent || 70,
+            rawRecord: item,
+          };
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
 
     return [...liveItems, ...DEFAULT_SAMPLE_HISTORY];
   }, [screeningHistory]);
