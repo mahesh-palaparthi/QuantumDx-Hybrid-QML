@@ -342,9 +342,10 @@ export default function ClarityHistoryView({
             type="button"
             className="clarity-btn-outline"
             onClick={clearFilters}
-            style={{ padding: "11px 18px", height: "42px" }}
+            style={{ padding: "9px 16px", height: "42px" }}
           >
-            Clear filters
+            <span>✕</span>
+            <span>Clear filters</span>
           </button>
         </div>
       </div>

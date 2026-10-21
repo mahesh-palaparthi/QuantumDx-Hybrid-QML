@@ -178,11 +178,11 @@ export default function ClarityProfileView({
         <div style={{ display: "flex", gap: 10 }}>
           <button
             type="button"
-            className="clarity-btn-outline"
+            className="clarity-btn-danger-outline"
             onClick={onLogout}
-            style={{ color: "#dc2626", borderColor: "#fca5a5" }}
           >
-            Sign Out
+            <span>⎋</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </div>
@@ -280,17 +280,18 @@ export default function ClarityProfileView({
                 <div style={{ display: "flex", gap: 8 }}>
                   <button
                     type="button"
+                    className="clarity-btn-pill"
                     onClick={() => setShowToken(!showToken)}
-                    style={{ background: "none", border: "none", color: "var(--c-teal)", fontSize: "11.5px", cursor: "pointer", fontWeight: 700 }}
                   >
-                    {showToken ? "Hide Token" : "Reveal Token"}
+                    <span>{showToken ? "🙈" : "👁️"}</span>
+                    <span>{showToken ? "Hide Token" : "Reveal Token"}</span>
                   </button>
                   <button
                     type="button"
+                    className="clarity-btn-pill"
                     onClick={copyTokenToClipboard}
-                    style={{ background: "none", border: "none", color: "var(--c-teal)", fontSize: "11.5px", cursor: "pointer", fontWeight: 700 }}
                   >
-                    {copied ? "✓ Copied" : "Copy Token"}
+                    <span>{copied ? "✓ Copied" : "📋 Copy Token"}</span>
                   </button>
                 </div>
               </div>
@@ -351,14 +352,15 @@ export default function ClarityProfileView({
             </div>
 
             {screeningHistory.length > 0 && onClearHistory && (
-              <div style={{ marginTop: 6 }}>
+              <div style={{ marginTop: 8 }}>
                 <button
                   type="button"
-                  className="clarity-btn-outline"
+                  className="clarity-btn-danger-outline"
                   onClick={onClearHistory}
-                  style={{ width: "100%", justifyContent: "center", color: "#dc2626", borderColor: "#fca5a5" }}
+                  style={{ width: "100%" }}
                 >
-                  🗑️ Clear My Saved Screening Records
+                  <span>🗑️</span>
+                  <span>Clear My Saved Screening Records</span>
                 </button>
               </div>
             )}
@@ -378,9 +380,8 @@ export default function ClarityProfileView({
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
           <button
             type="button"
-            className="clarity-btn-outline"
+            className="clarity-btn-danger-outline"
             onClick={onLogout}
-            style={{ color: "#dc2626", borderColor: "#fca5a5", padding: "10px 18px", fontSize: "13px" }}
           >
             <span>⎋</span>
             <span>Sign Out of Current Account</span>
@@ -391,7 +392,6 @@ export default function ClarityProfileView({
               type="button"
               className="clarity-btn-outline"
               onClick={onOpenAuth}
-              style={{ padding: "10px 18px", fontSize: "13px" }}
             >
               <span>👤</span>
               <span>Switch or Register New Account</span>
