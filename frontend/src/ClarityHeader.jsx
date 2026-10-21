@@ -1,11 +1,6 @@
 import React from "react";
 
-export default function ClarityHeader({
-  uiMode,
-  setUiMode,
-  user,
-  onOpenAuth,
-}) {
+export default function ClarityHeader({ user, onOpenAuth }) {
   const getInitials = (name) => {
     if (!name) return "AM";
     const parts = name.trim().split(" ");
@@ -13,7 +8,7 @@ export default function ClarityHeader({
     return name.slice(0, 2).toUpperCase();
   };
 
-  const displayName = user?.name || user?.email?.split("@")[0] || "Alex Morgan";
+  const displayName = user?.name || user?.fullName || user?.email?.split("@")[0] || "Alex Morgan";
 
   return (
     <header className="clarity-header">
@@ -22,25 +17,7 @@ export default function ClarityHeader({
       </div>
 
       <div className="clarity-header-actions">
-        {/* Dual-Mode UI Switcher */}
-        <div className="clarity-mode-toggle" title="Switch between QuantumDx modern design and Classic Studio">
-          <button
-            type="button"
-            className={`clarity-toggle-btn ${uiMode === "clarity" ? "active" : ""}`}
-            onClick={() => setUiMode("clarity")}
-          >
-            ✨ QuantumDx UI
-          </button>
-          <button
-            type="button"
-            className={`clarity-toggle-btn ${uiMode === "classic" ? "active" : ""}`}
-            onClick={() => setUiMode("classic")}
-          >
-            🏛️ Classic Studio
-          </button>
-        </div>
-
-        {/* Demo Workspace badge */}
+        {/* Workspace badge */}
         <span className="clarity-workspace-pill">QUANTUMDX WORKSPACE</span>
 
         {/* Notification Bell */}
@@ -48,13 +25,16 @@ export default function ClarityHeader({
           type="button"
           className="clarity-bell-btn"
           title="System notifications"
-          onClick={() => {}}
         >
-          🔔
+          <span style={{ fontSize: "15px" }}>🔔</span>
         </button>
 
-        {/* User Badge */}
-        <div className="clarity-user-badge" onClick={onOpenAuth}>
+        {/* User Profile avatar */}
+        <div
+          className="clarity-user-badge"
+          onClick={onOpenAuth}
+          title="Account profile"
+        >
           <div className="clarity-user-avatar">
             {getInitials(displayName)}
           </div>

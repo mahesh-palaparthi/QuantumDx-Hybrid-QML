@@ -153,7 +153,9 @@ export default function ClarityDashboard({
                 {latestScreening?.diseaseType || "Heart Disease"}
               </div>
               <div style={{ fontSize: "12px", color: "var(--c-text-muted)", marginTop: 2 }}>
-                {latestScreening ? new Date(latestScreening.timestamp || Date.now()).toLocaleDateString() : "21 Oct 2026 · 14:32"} · {userName} (demo)
+                {latestScreening?.timestamp && !isNaN(new Date(latestScreening.timestamp).getTime())
+                  ? new Date(latestScreening.timestamp).toLocaleDateString()
+                  : "21 Oct 2026 · 14:32"} · {userName} (demo)
               </div>
               <span className="clarity-badge-pill positive" style={{ marginTop: 6 }}>
                 {latestScreening?.consensusVerdict || "Follow-up suggested"}
@@ -163,7 +165,7 @@ export default function ClarityDashboard({
 
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--c-text-primary)" }}>
-              Classical ML {latestScreening ? `${Math.round(latestScreening.classicalProbability * 100)}%` : "72%"} · QML {latestScreening ? `${Math.round(latestScreening.quantumProbability * 100)}%` : "68%"}
+              Classical ML {Number.isFinite(Number(latestScreening?.classicalProbability)) ? `${Math.round(Number(latestScreening.classicalProbability) * 100)}%` : "72%"} · QML {Number.isFinite(Number(latestScreening?.quantumProbability)) ? `${Math.round(Number(latestScreening.quantumProbability) * 100)}%` : "68%"}
             </div>
             <div style={{ fontSize: "11px", color: "var(--c-text-muted)", marginTop: 2 }}>
               Dual model scores, not diagnosis

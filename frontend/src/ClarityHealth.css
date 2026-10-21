@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CLARITY HEALTH DESIGN SYSTEM (FIGMA SPECIFICATION)
+   QUANTUMDX DESIGN SYSTEM (FIGMA SPECIFICATION)
    ========================================================================== */
 
 :root {
@@ -46,36 +46,35 @@
 .clarity-layout {
   display: flex !important;
   flex-direction: row !important;
-  width: 100vw !important;
-  max-width: 100% !important;
+  width: 100% !important;
   min-height: 100vh !important;
   height: 100vh !important;
-  background-color: var(--c-bg) !important;
-  color: var(--c-text-primary);
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   position: relative;
   overflow: hidden !important;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 /* Sidebar */
 .clarity-sidebar {
-  width: 250px;
-  min-width: 250px;
-  max-width: 250px;
-  background: var(--c-sidebar-bg);
-  border-right: 1px solid var(--c-card-border);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 24px 16px;
-  height: 100vh;
-  box-sizing: border-box;
+  width: 260px !important;
+  min-width: 260px !important;
+  max-width: 260px !important;
+  background: #FFFFFF !important;
+  border-right: 1px solid #E2E8F0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 24px 16px !important;
+  height: 100vh !important;
+  box-sizing: border-box !important;
   flex-shrink: 0 !important;
-  z-index: 40;
-  overflow-y: auto;
-  scroll-behavior: smooth;
+  z-index: 40 !important;
+  overflow-y: auto !important;
+  scroll-behavior: smooth !important;
 }
 
 .clarity-brand {
@@ -219,38 +218,43 @@
 /* Main Workspace */
 .clarity-main,
 .clarity-main-col {
-  flex: 1 !important;
+  flex: 1 1 auto !important;
   display: flex !important;
   flex-direction: column !important;
   min-width: 0 !important;
   height: 100vh !important;
-  background: var(--c-bg) !important;
+  background-color: #F8FAFC !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   scroll-behavior: smooth !important;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch !important;
+  box-sizing: border-box !important;
 }
 
 .clarity-main-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  width: 100%;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  background-color: #F8FAFC !important;
+  box-sizing: border-box !important;
 }
 
 /* Top Header */
 .clarity-header {
-  height: 64px;
-  background: #FFFFFF;
-  border-bottom: 1px solid var(--c-card-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 36px;
-  position: sticky;
-  top: 0;
-  z-index: 30;
+  height: 64px !important;
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 36px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 30 !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .clarity-header-title {
@@ -349,11 +353,12 @@
 
 /* Page Content Wrapper */
 .clarity-content {
-  padding: 32px 40px 60px;
-  max-width: 1240px;
-  width: 100%;
-  box-sizing: border-box;
-  margin: 0 auto;
+  padding: 32px 40px 60px !important;
+  max-width: 1240px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 auto !important;
+  background-color: #F8FAFC !important;
 }
 
 /* Breadcrumb */

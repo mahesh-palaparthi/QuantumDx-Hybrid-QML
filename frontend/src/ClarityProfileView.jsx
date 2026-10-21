@@ -7,7 +7,6 @@ export default function ClarityProfileView({
   onLogout,
   onLoginSuccess,
   onOpenAuth,
-  onToggleUiMode,
   screeningHistory = [],
   onClearHistory,
 }) {
@@ -311,16 +310,6 @@ export default function ClarityProfileView({
           </p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          {onToggleUiMode && (
-            <button
-              type="button"
-              className="clarity-btn-outline"
-              onClick={onToggleUiMode}
-              title="Switch to original Classic Studio"
-            >
-              🏛️ Classic Studio
-            </button>
-          )}
           <button
             type="button"
             className="clarity-btn-outline"
