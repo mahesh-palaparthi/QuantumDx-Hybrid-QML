@@ -38,7 +38,64 @@ export default function ClarityDashboard({
     },
   ];
 
-  const latestScreening = screeningHistory.length > 0 ? screeningHistory[0] : null;
+  const latestScreening = Array.isArray(screeningHistory) && screeningHistory.length > 0
+    ? screeningHistory[0]
+    : null;
+
+  // Resolve disease details accurately from any field format
+  const rawDisease = String(
+    latestScreening?.diseaseName ||
+    latestScreening?.diseaseType ||
+    latestScreening?.disease ||
+    latestScreening?.diseaseKey ||
+    "Heart Disease"
+  );
+
+  const isCancer = rawDisease.toLowerCase().includes("cancer");
+  const isMalnutrition = rawDisease.toLowerCase().includes("malnutrition") || rawDisease.toLowerCase().includes("pediatric");
+  const isDiabetes = rawDisease.toLowerCase().includes("diabetes");
+
+  const diseaseDisplayName = isCancer
+    ? "Breast Cancer"
+    : isMalnutrition
+    ? "Pediatric Malnutrition"
+    : isDiabetes
+    ? "Early Stage Diabetes"
+    : "Heart Disease";
+
+  const pathwayKey = isCancer
+    ? "breast_cancer"
+    : isMalnutrition
+    ? "child_malnutrition"
+    : isDiabetes
+    ? "diabetes"
+    : "heart_disease";
+
+  const diseaseIcon = isCancer ? "🎗️" : isMalnutrition ? "👶" : isDiabetes ? "💧" : "❤️";
+
+  // Consensus verdict & badge styling
+  const rawVerdict = String(latestScreening?.consensusVerdict || "Negative").trim();
+  const isPos = rawVerdict.toLowerCase().includes("pos") || rawVerdict.toLowerCase().includes("follow");
+  const isInconc = rawVerdict.toLowerCase().includes("inconc") || rawVerdict.toLowerCase().includes("safety");
+
+  const badgeClass = isPos ? "positive" : isInconc ? "inconclusive" : "negative";
+  const badgeLabel = isPos
+    ? "Follow-up suggested"
+    : isInconc
+    ? "Inconclusive review"
+    : "Lower model score";
+
+  // Probabilities
+  const cProbVal = latestScreening?.classicalProbability ?? latestScreening?.classicalProb;
+  const qProbVal = latestScreening?.quantumProbability ?? latestScreening?.quantumProb;
+  const cProbPct = Number.isFinite(Number(cProbVal)) ? Math.round(Number(cProbVal) * 100) : 72;
+  const qProbPct = Number.isFinite(Number(qProbVal)) ? Math.round(Number(qProbVal) * 100) : 68;
+
+  // Timestamp formatting
+  const ts = latestScreening?.timestamp ? new Date(latestScreening.timestamp) : new Date();
+  const dateFormatted = !isNaN(ts.getTime())
+    ? ts.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })
+    : "10/21/2026";
 
   return (
     <div className="clarity-content">
@@ -136,39 +193,74 @@ export default function ClarityDashboard({
 
       {/* Latest Screening Card */}
       <div style={{ marginTop: 24 }}>
-        <h3 style={{ fontSize: "16px", fontWeight: 800, margin: "0 0 4px", color: "var(--c-text-primary)" }}>
-          Your latest screening
-        </h3>
-        <p style={{ fontSize: "12px", color: "var(--c-text-muted)", margin: "0 0 14px" }}>
-          Illustrative sample · Not a real clinical result
-        </p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "0 0 14px" }}>
+          <div>
+            <h3 style={{ fontSize: "16px", fontWeight: 800, margin: "0 0 4px", color: "var(--c-text-primary)" }}>
+              Your latest screening
+            </h3>
+            <p style={{ fontSize: "12px", color: "var(--c-text-muted)", margin: 0 }}>
+              {latestScreening ? "Real-time clinical screening record from active session" : "Illustrative sample · Not a real clinical result"}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onSelectScreening(pathwayKey)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--c-navy)",
+              fontSize: "12px",
+              fontWeight: 700,
+              cursor: "pointer",
+              padding: "4px 8px",
+              borderRadius: "6px",
+            }}
+          >
+            Open in Studio →
+          </button>
+        </div>
 
-        <div className="clarity-num-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px" }}>
+        <div
+          className="clarity-num-card"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "18px 24px",
+            cursor: "pointer",
+            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+          onClick={() => onSelectScreening(pathwayKey)}
+          title={`Click to open ${diseaseDisplayName} in screening studio`}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div className="clarity-pathway-icon">
-              {latestScreening?.diseaseType?.includes("Cancer") ? "🎗️" : latestScreening?.diseaseType?.includes("Malnutrition") ? "👶" : latestScreening?.diseaseType?.includes("Diabetes") ? "💧" : "❤️"}
+              {diseaseIcon}
             </div>
             <div>
               <div style={{ fontSize: "15px", fontWeight: 800, color: "var(--c-text-primary)" }}>
-                {latestScreening?.diseaseType || "Heart Disease"}
+                {diseaseDisplayName}
               </div>
               <div style={{ fontSize: "12px", color: "var(--c-text-muted)", marginTop: 2 }}>
-                {latestScreening?.timestamp && !isNaN(new Date(latestScreening.timestamp).getTime())
-                  ? new Date(latestScreening.timestamp).toLocaleDateString()
-                  : "21 Oct 2026 · 14:32"} · {userName} (demo)
+                {dateFormatted} · {userName} (demo)
               </div>
-              <span className="clarity-badge-pill positive" style={{ marginTop: 6 }}>
-                {latestScreening?.consensusVerdict || "Follow-up suggested"}
+              <span className={`clarity-badge-pill ${badgeClass}`} style={{ marginTop: 6 }}>
+                {badgeLabel}
               </span>
             </div>
           </div>
 
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--c-text-primary)" }}>
-              Classical ML {Number.isFinite(Number(latestScreening?.classicalProbability)) ? `${Math.round(Number(latestScreening.classicalProbability) * 100)}%` : "72%"} · QML {Number.isFinite(Number(latestScreening?.quantumProbability)) ? `${Math.round(Number(latestScreening.quantumProbability) * 100)}%` : "68%"}
+          <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: 16 }}>
+            <div>
+              <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--c-text-primary)" }}>
+                Classical ML {cProbPct}% · QML {qProbPct}%
+              </div>
+              <div style={{ fontSize: "11px", color: "var(--c-text-muted)", marginTop: 2 }}>
+                Dual model scores, not diagnosis
+              </div>
             </div>
-            <div style={{ fontSize: "11px", color: "var(--c-text-muted)", marginTop: 2 }}>
-              Dual model scores, not diagnosis
+            <div style={{ fontSize: "18px", color: "var(--c-navy)", fontWeight: 700 }}>
+              →
             </div>
           </div>
         </div>

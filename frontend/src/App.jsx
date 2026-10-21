@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { API_BASE_URL, STREAMLIT_URL } from "./config";
 import QuantumBioCanvas from "./QuantumBioCanvas";
 import JudgeComparisonStudio from "./JudgeComparisonStudio";
@@ -257,8 +257,19 @@ export default function App() {
     ? CHILD_MALNUTRITION_COHORTS
     : CANCER_COHORTS;
 
-  // Load Screening History on mount
+  // Load Screening History on mount with localStorage caching for instant reactivity
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem("quantumdx_screenings");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setScreeningHistory(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not read local screening cache:", e);
+    }
     fetchScreeningHistory();
   }, [authToken]);
 
@@ -268,8 +279,22 @@ export default function App() {
       const res = await fetch(`${API_BASE_URL}/api/auth/screenings`, { headers });
       if (res.ok) {
         const data = await res.json();
-        if (data.screenings) {
-          setScreeningHistory(data.screenings);
+        if (data.screenings && Array.isArray(data.screenings)) {
+          setScreeningHistory((prev) => {
+            const map = new Map();
+            data.screenings.forEach((s) => map.set(s.id || s.timestamp, s));
+            prev.forEach((s) => {
+              const k = s.id || s.timestamp;
+              if (!map.has(k)) map.set(k, s);
+            });
+            const merged = Array.from(map.values()).sort(
+              (a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime()
+            );
+            try {
+              localStorage.setItem("quantumdx_screenings", JSON.stringify(merged.slice(0, 50)));
+            } catch (_) {}
+            return merged;
+          });
         }
       }
     } catch (err) {
@@ -280,14 +305,13 @@ export default function App() {
   const handleClearHistory = async () => {
     if (!window.confirm("Are you sure you want to delete all saved screening records? This cannot be undone.")) return;
     try {
+      localStorage.removeItem("quantumdx_screenings");
+      setScreeningHistory([]);
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
-      const res = await fetch(`${API_BASE_URL}/api/auth/screenings`, {
+      await fetch(`${API_BASE_URL}/api/auth/screenings`, {
         method: "DELETE",
         headers,
       });
-      if (res.ok) {
-        setScreeningHistory([]);
-      }
     } catch (err) {
       console.warn("Could not clear screening history:", err);
     }
@@ -589,19 +613,54 @@ export default function App() {
         ? Math.max(51, Math.min(99, Math.round((1 - hScore) * 100)))
         : Math.max(50, Math.min(75, Math.round((1 - delta) * 100)));
 
+      const diseaseName = isDiabetes
+        ? "Early Stage Diabetes"
+        : isHeart
+        ? "Heart Disease"
+        : isMalnutrition
+        ? "Pediatric Malnutrition"
+        : "Breast Cancer";
+      const diseaseDisplay = isDiabetes
+        ? "Diabetes (16 Symptoms)"
+        : isHeart
+        ? "Heart Disease (Statlog)"
+        : isMalnutrition
+        ? "Child Malnutrition (WHO/UNICEF)"
+        : "Breast Cancer (Diagnostic)";
+
       const patientRecord = {
+        id: `scr-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
         patientId: `PT-${Math.floor(10000 + Math.random() * 90000)}`,
-        patientName: currentUser ? currentUser.fullName : "Outpatient Screened",
-        disease: isDiabetes ? "Diabetes (16 Symptoms)" : isHeart ? "Heart Disease (Statlog)" : isMalnutrition ? "Child Malnutrition (WHO/UNICEF)" : "Breast Cancer (Diagnostic)",
+        patientName: currentUser ? (currentUser.fullName || currentUser.name) : "Alex Morgan · Patient",
+        disease: diseaseDisplay,
+        diseaseType: diseaseName,
+        diseaseName: diseaseName,
+        diseaseKey: currentDiseaseKey,
+        timestamp: new Date().toISOString(),
         classicalPrediction: cPred === 1 ? "Positive" : "Negative",
         classicalProbability: cProb,
+        classicalProb: cProb,
         quantumPrediction: qPred === 1 ? "Positive" : "Negative",
         quantumProbability: qProb,
+        quantumProb: qProb,
         consensusVerdict: outcome,
         confidencePercent: overallConf,
         symptoms: isDiabetes ? { ...diabetesData } : isHeart ? { ...heartData } : isMalnutrition ? { ...malnutritionData } : { count: 30 },
       };
 
+      // 1. Immediately update local React state so dashboard reflects this test instantly with zero lag
+      setScreeningHistory((prev) => [patientRecord, ...prev.filter((p) => p.id !== patientRecord.id)]);
+
+      // 2. Persist to localStorage for offline reliability and survival across page refreshes
+      try {
+        const stored = JSON.parse(localStorage.getItem("quantumdx_screenings") || "[]");
+        const nextStored = [patientRecord, ...stored.filter((p) => p.id !== patientRecord.id)].slice(0, 50);
+        localStorage.setItem("quantumdx_screenings", JSON.stringify(nextStored));
+      } catch (lsErr) {
+        console.warn("Could not save to localStorage:", lsErr);
+      }
+
+      // 3. Persist to backend database asynchronously
       try {
         const headers = { "Content-Type": "application/json" };
         if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
@@ -611,11 +670,10 @@ export default function App() {
           body: JSON.stringify(patientRecord),
         });
         if (saveRes.ok) {
-          setSaveBanner("âœ… Screening saved to QuantumDx Database.");
-          fetchScreeningHistory();
+          setSaveBanner("✅ Screening saved to QuantumDx Database.");
         }
       } catch (saveErr) {
-        console.warn("Could not save screening record:", saveErr);
+        console.warn("Could not save screening record to backend:", saveErr);
       }
 
       return true;
