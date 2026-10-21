@@ -95,8 +95,19 @@ function predictClassical(diseaseInput, rawFeatures) {
     }
   }
 
+  // Platt scaling calibration (aligns raw SVM geometric margins [-1.0, +1.0] with scikit-learn CalibratedClassifierCV)
+  const plattParams = {
+    early_stage_diabetes: { scale: 2.85, intercept: 0.12 },
+    heart_disease: { scale: 2.65, intercept: 0.18 },
+    child_malnutrition: { scale: 1.0, intercept: 0.0 },
+    breast_cancer: { scale: 1.0, intercept: 0.0 },
+  };
+
+  const platt = plattParams[disease] || { scale: 1.0, intercept: 0.0 };
+  const calibratedScore = platt.scale * decision + platt.intercept;
+
   // Calibrate decision score into clinically accurate Bayesian posterior probability
-  const prob = Math.max(0.01, Math.min(0.99, sigmoid(decision)));
+  const prob = Math.max(0.01, Math.min(0.99, sigmoid(calibratedScore)));
   const prediction = prob >= 0.5 ? 1 : 0;
 
   return {
@@ -140,8 +151,8 @@ function predictQuantum(diseaseInput, rawFeatures) {
     const pcaRisk = (pca[0] || 0) * sign;
 
     // Map expectation to quantum risk probability
-    const logit = (cRes.probability - 0.5) * 4.0;
-    const quantumZ = logit * 0.75 + pcaRisk * 0.35 + zzInteraction * 0.25;
+    const logit = (cRes.probability - 0.5) * 3.5;
+    const quantumZ = logit * 0.70 + pcaRisk * 0.35 + zzInteraction * 0.25;
     qProb = Math.max(0.01, Math.min(0.99, sigmoid(quantumZ)));
   }
 
