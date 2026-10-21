@@ -596,7 +596,7 @@ export default function ClarityFormView({
             >
               {loading ? (
                 <>
-                  <span className="qdx-spin-icon">⏳</span>
+                  <span className="qdx-spin-icon" style={{ fontSize: "16px" }}>⚛️</span>
                   <span>Executing Dual QML Inference...</span>
                 </>
               ) : (

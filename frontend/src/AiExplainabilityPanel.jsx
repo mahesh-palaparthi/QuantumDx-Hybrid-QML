@@ -67,7 +67,7 @@ export default function AiExplainabilityPanel({
 
   // Compute detailed feature attributions dynamically based on patientData & diseaseKey
   const featureAttributions = useMemo(() => {
-    if (diseaseKey === "early_stage_diabetes") {
+    if (diseaseKey === "early_stage_diabetes" || diseaseKey === "diabetes") {
       const data = patientData || {};
       const polyuriaPresent = checkYes(data.Polyuria);
       const polydipsiaPresent = checkYes(data.Polydipsia);

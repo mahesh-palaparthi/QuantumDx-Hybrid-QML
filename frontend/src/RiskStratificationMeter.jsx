@@ -112,7 +112,7 @@ export default function RiskStratificationMeter({
           <path
             d="M 30 120 A 90 90 0 0 1 210 120"
             fill="none"
-            stroke="rgba(255, 255, 255, 0.08)"
+            stroke="#E2E8F0"
             strokeWidth="16"
             strokeLinecap="round"
           />
@@ -124,7 +124,7 @@ export default function RiskStratificationMeter({
             stroke="url(#lowGrad)"
             strokeWidth="16"
             strokeLinecap="round"
-            opacity="0.85"
+            opacity="0.9"
           />
 
           {/* Zone 2: Moderate Risk (40 - 65%) */}
@@ -133,7 +133,7 @@ export default function RiskStratificationMeter({
             fill="none"
             stroke="url(#modGrad)"
             strokeWidth="16"
-            opacity="0.85"
+            opacity="0.9"
           />
 
           {/* Zone 3: High Risk (65 - 100%) */}
@@ -143,18 +143,18 @@ export default function RiskStratificationMeter({
             stroke="url(#highGrad)"
             strokeWidth="16"
             strokeLinecap="round"
-            opacity="0.85"
+            opacity="0.9"
           />
 
           {/* Tick marks */}
-          <line x1="30" y1="120" x2="42" y2="120" stroke="#cbd5e1" strokeWidth="1.5" />
-          <line x1="120" y1="30" x2="120" y2="42" stroke="#cbd5e1" strokeWidth="1.5" />
-          <line x1="210" y1="120" x2="198" y2="120" stroke="#cbd5e1" strokeWidth="1.5" />
+          <line x1="30" y1="120" x2="42" y2="120" stroke="#94A3B8" strokeWidth="1.5" />
+          <line x1="120" y1="30" x2="120" y2="42" stroke="#94A3B8" strokeWidth="1.5" />
+          <line x1="210" y1="120" x2="198" y2="120" stroke="#94A3B8" strokeWidth="1.5" />
 
           {/* Labels on Gauge */}
-          <text x="32" y="132" fill="#10b981" fontSize="9" fontWeight="700" textAnchor="middle">0%</text>
-          <text x="120" y="24" fill="#f59e0b" fontSize="9" fontWeight="700" textAnchor="middle">50%</text>
-          <text x="208" y="132" fill="#ef4444" fontSize="9" fontWeight="700" textAnchor="middle">100%</text>
+          <text x="32" y="132" fill="#10B981" fontSize="9" fontWeight="700" textAnchor="middle">0%</text>
+          <text x="120" y="24" fill="#F59E0B" fontSize="9" fontWeight="700" textAnchor="middle">50%</text>
+          <text x="208" y="132" fill="#EF4444" fontSize="9" fontWeight="700" textAnchor="middle">100%</text>
 
           {/* Animated Needle */}
           <g
@@ -163,11 +163,11 @@ export default function RiskStratificationMeter({
             filter="url(#gaugeGlow)"
           >
             {/* Needle line */}
-            <line x1="120" y1="120" x2="120" y2="38" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
-            <polygon points="120,32 116,42 124,42" fill="#ffffff" />
+            <line x1="120" y1="120" x2="120" y2="38" stroke="#0F172A" strokeWidth="3" strokeLinecap="round" />
+            <polygon points="120,32 116,42 124,42" fill="#0F172A" />
             {/* Center Pivot Point */}
-            <circle cx="120" cy="120" r="8" fill="#0f1f3d" stroke={triage.color} strokeWidth="2.5" />
-            <circle cx="120" cy="120" r="3.5" fill="#ffffff" />
+            <circle cx="120" cy="120" r="8" fill="#FFFFFF" stroke={triage.color} strokeWidth="2.5" />
+            <circle cx="120" cy="120" r="3.5" fill={triage.color} />
           </g>
         </svg>
 

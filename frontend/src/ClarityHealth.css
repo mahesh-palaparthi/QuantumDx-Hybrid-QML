@@ -1205,3 +1205,474 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================================================
+   RISK STRATIFICATION METER & CLINICAL TRIAGE GAUGE (LIGHT DESIGN SYSTEM)
+   ========================================================================== */
+.qdx-risk-meter-container {
+  background: #FFFFFF !important;
+  border: 1px solid var(--c-card-border) !important;
+  border-radius: var(--c-radius-card) !important;
+  padding: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  box-shadow: var(--c-shadow-sm) !important;
+}
+
+.qdx-meter-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  padding-bottom: 14px !important;
+}
+
+.qdx-meter-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.qdx-meter-badge-icon {
+  font-size: 22px !important;
+}
+
+.qdx-meter-title {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: var(--c-text-primary) !important;
+  margin: 0 !important;
+}
+
+.qdx-meter-subtitle {
+  font-size: 12px !important;
+  color: var(--c-text-muted) !important;
+  margin-top: 2px !important;
+}
+
+.qdx-triage-tag {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 5px 12px !important;
+  border-radius: var(--c-radius-pill) !important;
+  border: 1px solid !important;
+  letter-spacing: 0.05em !important;
+  white-space: nowrap !important;
+}
+
+.qdx-gauge-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  padding: 8px 0 !important;
+}
+
+.qdx-gauge-svg {
+  width: 280px !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.qdx-gauge-score-box {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  margin-top: -10px !important;
+}
+
+.qdx-gauge-numeric {
+  font-size: 36px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.qdx-gauge-triage-sub {
+  font-size: 12.5px !important;
+  color: var(--c-text-muted) !important;
+  font-weight: 600 !important;
+  margin-top: 6px !important;
+}
+
+.qdx-gauge-dual-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+  margin-top: 8px !important;
+  border-top: 1px solid #F1F5F9 !important;
+  padding-top: 16px !important;
+}
+
+@media (max-width: 580px) {
+  .qdx-gauge-dual-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.qdx-gauge-stat-box {
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.qdx-gauge-stat-label {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: var(--c-text-muted) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.qdx-gauge-stat-val {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: var(--c-text-primary) !important;
+}
+
+.qdx-gauge-stat-meter {
+  height: 6px !important;
+  background: #E2E8F0 !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+}
+
+.qdx-gauge-bar-fill {
+  height: 100% !important;
+  border-radius: 9999px !important;
+  transition: width 0.6s ease !important;
+}
+
+/* ==========================================================================
+   QUANTUM CIRCUIT EXPLORER (LIGHT DESIGN SYSTEM)
+   ========================================================================== */
+.qdx-circuit-explorer-card {
+  background: #FFFFFF !important;
+  border: 1px solid var(--c-card-border) !important;
+  border-radius: var(--c-radius-card) !important;
+  padding: 24px !important;
+  box-shadow: var(--c-shadow-sm) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+.qdx-circuit-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 14px !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  padding-bottom: 16px !important;
+}
+
+.qdx-circuit-title-grp {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.qdx-circuit-icon {
+  font-size: 24px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 10px !important;
+  background: #F0FDFA !important;
+  border: 1px solid #CCFBF1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.qdx-circuit-main-title {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: var(--c-text-primary) !important;
+  margin: 0 !important;
+}
+
+.qdx-gradient-text {
+  color: var(--c-teal) !important;
+}
+
+.qdx-circuit-sub {
+  font-size: 12px !important;
+  color: var(--c-text-muted) !important;
+  margin: 4px 0 0 0 !important;
+}
+
+.qdx-circuit-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.qdx-rep-selector {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: #F1F5F9 !important;
+  border: 1px solid #CBD5E1 !important;
+  padding: 4px !important;
+  border-radius: var(--c-radius-pill) !important;
+}
+
+.qdx-rep-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--c-text-muted) !important;
+  padding-left: 8px !important;
+}
+
+.qdx-preset-btn {
+  padding: 5px 12px !important;
+  border-radius: var(--c-radius-pill) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer !important;
+  background: transparent !important;
+  color: var(--c-text-muted) !important;
+  transition: all 0.15s ease !important;
+}
+
+.qdx-preset-btn.diabetic-preset {
+  background: #FFFFFF !important;
+  color: var(--c-teal) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.qdx-circuit-param-strip {
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.qdx-param-strip-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--c-text-primary) !important;
+}
+
+.qdx-p-pill {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  background: #E0F2FE !important;
+  color: #0369A1 !important;
+  padding: 3px 10px !important;
+  border-radius: var(--c-radius-pill) !important;
+  border: 1px solid #BAE6FD !important;
+}
+
+.qdx-param-pills-row {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.qdx-param-pill-box {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+}
+
+.qdx-pill-q-wire {
+  font-weight: 800 !important;
+  color: var(--c-teal) !important;
+  font-family: monospace !important;
+}
+
+.qdx-pill-name {
+  color: var(--c-text-secondary) !important;
+}
+
+.qdx-pill-val {
+  margin-left: auto !important;
+  color: var(--c-text-primary) !important;
+}
+
+.qdx-circuit-viewport {
+  background: #FAFAFA !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  overflow-x: auto !important;
+  box-sizing: border-box !important;
+}
+
+.qdx-gate-inspector-panel {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 10px !important;
+  padding: 16px !important;
+  margin-top: 14px !important;
+}
+
+.qdx-inspector-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+.qdx-inspector-title {
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  color: var(--c-text-primary) !important;
+}
+
+.qdx-inspector-close {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  color: var(--c-text-muted) !important;
+}
+
+.qdx-inspector-body {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.qdx-inspector-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--c-text-muted) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 4px !important;
+  display: block !important;
+}
+
+.qdx-inspector-code {
+  background: #F1F5F9 !important;
+  border: 1px solid #E2E8F0 !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-family: monospace !important;
+  color: var(--c-teal) !important;
+  display: inline-block !important;
+}
+
+.qdx-inspector-desc {
+  font-size: 12px !important;
+  color: var(--c-text-secondary) !important;
+  margin: 0 !important;
+  line-height: 1.45 !important;
+}
+
+.qdx-inspector-val {
+  font-size: 13px !important;
+  color: var(--c-text-primary) !important;
+}
+
+.qdx-circuit-hint {
+  font-size: 11.5px !important;
+  color: var(--c-text-muted) !important;
+  text-align: center !important;
+  margin-top: 10px !important;
+}
+
+.qdx-circuit-stats-row {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.qdx-cstat-card {
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.qdx-cstat-icon {
+  font-size: 20px !important;
+}
+
+.qdx-cstat-val {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: var(--c-text-primary) !important;
+  display: block !important;
+}
+
+.qdx-cstat-lbl {
+  font-size: 10.5px !important;
+  color: var(--c-text-muted) !important;
+  display: block !important;
+}
+
+/* ==========================================================================
+   FOCUS VISIBILITY, ACCESSIBILITY & ANIMATION
+   ========================================================================== */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--c-teal) !important;
+  outline-offset: 2px !important;
+}
+
+@keyframes clarity-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.qdx-spin-icon {
+  display: inline-block;
+  animation: clarity-spin 1s linear infinite;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE REFINEMENTS
+   ========================================================================== */
+@media (max-width: 768px) {
+  .clarity-header {
+    padding: 0 16px !important;
+  }
+  .clarity-header-title {
+    font-size: 13px !important;
+  }
+  .clarity-workspace-pill {
+    display: none !important;
+  }
+  .clarity-content {
+    padding: 20px 16px 40px !important;
+  }
+  .clarity-dual-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .clarity-stats-row {
+    grid-template-columns: 1fr !important;
+  }
+}

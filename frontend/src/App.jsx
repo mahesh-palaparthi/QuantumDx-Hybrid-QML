@@ -1007,6 +1007,10 @@ export default function App() {
                 }}
                 selectedCohortCase={selectedCohortCase}
                 onExportPdf={() => window.print()}
+                diabetesData={diabetesData}
+                heartData={heartData}
+                malnutritionData={malnutritionData}
+                cancerFeatures={cancerFeatures}
               />
             )}
 

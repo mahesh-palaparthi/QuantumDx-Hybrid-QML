@@ -431,7 +431,7 @@ export default function QuantumCircuitExplorer({
               </text>
 
               {/* Barrier Line between Rep 1 and Rep 2 */}
-              <line x1="518" y1="20" x2="518" y2="215" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1.2" strokeDasharray="4 4" />
+              <line x1="518" y1="20" x2="518" y2="215" stroke="#94A3B8" strokeWidth="1.2" strokeDasharray="4 4" />
               <text x="518" y="15" fill="#94a3b8" fontSize="8" fontWeight="800" textAnchor="middle">
                 REP 2 BARRIER
               </text>
@@ -506,14 +506,14 @@ export default function QuantumCircuitExplorer({
                   width="36"
                   height="28"
                   rx="6"
-                  fill="#071226"
-                  stroke="#38bdf8"
-                  strokeWidth="1.2"
+                  fill="#FFFFFF"
+                  stroke="#0D9488"
+                  strokeWidth="1.5"
                 />
                 <text
                   x="28"
                   y={y + 4}
-                  fill="#38bdf8"
+                  fill="#0D9488"
                   fontSize="12"
                   fontWeight="700"
                   textAnchor="middle"
