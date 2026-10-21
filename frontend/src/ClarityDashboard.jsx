@@ -62,7 +62,7 @@ export default function ClarityDashboard({
           <button
             type="button"
             className="clarity-hero-btn"
-            onClick={() => onSelectScreening("diabetes")}
+            onClick={() => onSelectScreening("")}
           >
             <span>Choose a screening</span>
             <span>→</span>

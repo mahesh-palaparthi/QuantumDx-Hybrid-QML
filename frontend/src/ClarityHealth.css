@@ -239,6 +239,7 @@
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior-y: contain !important;
+  scroll-behavior: smooth !important;
   box-sizing: border-box !important;
 }
 
