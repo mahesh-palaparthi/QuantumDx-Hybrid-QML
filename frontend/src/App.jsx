@@ -391,7 +391,7 @@ export default function App() {
 
   // Prediction Inference
   const analyze = async () => {
-    if (loading || cooldown) return;
+    if (loading || cooldown) return false;
     setError("");
     setResult(null);
     setClassicalResult(null);
@@ -618,8 +618,12 @@ export default function App() {
         console.warn("Could not save screening record:", saveErr);
       }
 
+      return true;
+
     } catch (err) {
+      console.error("Prediction inference error:", err);
       setError(err.message || "Unable to connect to prediction service. Check that backend is running.");
+      return false;
     } finally {
       setLoading(false);
       setCooldown(true);
@@ -975,11 +979,7 @@ export default function App() {
             {clarityTab === "studio" && clarityStudioStep === "form" && (
               <ClarityFormView
                 activeDisease={activeDisease}
-                onSelectDisease={(d) => {
-                  setActiveDisease(d);
-                  setSelectedCohortCase(null);
-                  setError("");
-                }}
+                onSelectDisease={(d) => switchDisease(d)}
                 onBackToHub={() => setClarityStudioStep("hub")}
                 onGoToBenchmarks={() => setClarityTab("benchmarks")}
                 diabetesData={diabetesData}
@@ -1001,8 +1001,10 @@ export default function App() {
                   setCancerFeatures(copy);
                 }}
                 onAnalyze={async () => {
-                  await analyze();
-                  setClarityStudioStep("results");
+                  const success = await analyze();
+                  if (success) {
+                    setClarityStudioStep("results");
+                  }
                 }}
                 loading={loading}
                 error={error}

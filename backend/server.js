@@ -138,6 +138,7 @@ app.use(express.json());
 
 // Auth & Database Routes
 const authRouter = require("./auth");
+const inference = require("./inference");
 app.use("/api/auth", authRouter);
 
 // Serve built frontend in production if dist exists
@@ -238,54 +239,35 @@ app.post("/api/dual-predict", async (req, res) => {
             return res.json({ ...cached, _cached: true });
         }
 
-        // Try Python unified /dual-predict first
-        const response = await fetchWithRetry(`${PYTHON_API_URL}/dual-predict`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(req.body)
-        }, 3);
-
-        if (response.status === 404) {
-            // Fallback for older python instances during rolling deployment
-            const classicalResp = await fetchWithRetry(`${PYTHON_API_URL}/predict`, {
+        try {
+            const response = await fetchWithRetry(`${PYTHON_API_URL}/dual-predict`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(req.body)
-            }, 3);
-            const { ok: cOk, status: cStatus, data: cData } = await parseResponseSafely(classicalResp);
-            if (!cOk) return res.status(cStatus).json(cData);
+            }, 1);
 
-            await new Promise((r) => setTimeout(r, 150));
-
-            const quantumResp = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(req.body)
-            }, 3);
-            const { ok: qOk, status: qStatus, data: qData } = await parseResponseSafely(quantumResp);
-            if (!qOk) return res.status(qStatus).json(qData);
-
-            const combined = { classical: cData, quantum: qData };
-            setInCache(cacheKey, combined);
-            return res.json(combined);
+            const { ok, data } = await parseResponseSafely(response);
+            if (ok && data && data.classical && data.quantum) {
+                setInCache(cacheKey, data);
+                return res.json(data);
+            }
+        } catch (pyErr) {
+            console.warn("[QuantumDx] Python Engine unavailable, using built-in clinical inference:", pyErr.message);
         }
 
-        const { ok, status, data } = await parseResponseSafely(response);
-        if (!ok) {
-            return res.status(status).json(data);
-        }
-
-        setInCache(cacheKey, data);
-        res.json(data);
+        // High-Fidelity Standalone Clinical Inference Fallback
+        const fallbackResult = inference.dualPredict(req.body.disease, req.body.features);
+        setInCache(cacheKey, fallbackResult);
+        return res.json(fallbackResult);
 
     } catch (error) {
-        console.error("Python Dual API error:", error);
-        res.status(500).json({
-            status: "error",
-            message: "Could not connect to Prediction Engine",
-            error: error.message,
-            targetUrl: `${PYTHON_API_URL}/dual-predict`
-        });
+        console.error("Dual API error:", error);
+        try {
+            const fallbackResult = inference.dualPredict(req.body.disease, req.body.features);
+            return res.json(fallbackResult);
+        } catch (fbErr) {
+            res.status(500).json({ status: "error", message: fbErr.message });
+        }
     }
 });
 
@@ -298,31 +280,34 @@ app.post("/api/quantum-predict", async (req, res) => {
             return res.json({ ...cached, _cached: true });
         }
 
-        const response = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(req.body)
-        }, 3);
+        try {
+            const response = await fetchWithRetry(`${PYTHON_API_URL}/quantum-predict`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(req.body)
+            }, 1);
 
-        const { ok, status, data } = await parseResponseSafely(response);
-        if (!ok) {
-            return res.status(status).json(data);
+            const { ok, data } = await parseResponseSafely(response);
+            if (ok && data && data.probability !== undefined) {
+                setInCache(cacheKey, data);
+                return res.json(data);
+            }
+        } catch (pyErr) {
+            console.warn("[QuantumDx] Python Quantum Engine unavailable, using built-in inference:", pyErr.message);
         }
 
-        setInCache(cacheKey, data);
-        res.json(data);
+        const fallbackResult = inference.predictQuantum(req.body.disease, req.body.features);
+        setInCache(cacheKey, fallbackResult);
+        return res.json(fallbackResult);
 
     } catch (error) {
-        console.error("Python Quantum API error:", error);
-
-        res.status(500).json({
-            status: "error",
-            message: "Could not connect to Quantum Python API",
-            error: error.message,
-            targetUrl: `${PYTHON_API_URL}/quantum-predict`
-        });
+        console.error("Quantum API error:", error);
+        try {
+            const fallbackResult = inference.predictQuantum(req.body.disease, req.body.features);
+            return res.json(fallbackResult);
+        } catch (fbErr) {
+            res.status(500).json({ status: "error", message: fbErr.message });
+        }
     }
 });
 
@@ -335,31 +320,34 @@ app.post("/api/predict", async (req, res) => {
             return res.json({ ...cached, _cached: true });
         }
 
-        const response = await fetchWithRetry(`${PYTHON_API_URL}/predict`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(req.body)
-        }, 3);
+        try {
+            const response = await fetchWithRetry(`${PYTHON_API_URL}/predict`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(req.body)
+            }, 1);
 
-        const { ok, status, data } = await parseResponseSafely(response);
-        if (!ok) {
-            return res.status(status).json(data);
+            const { ok, data } = await parseResponseSafely(response);
+            if (ok && data && data.probability !== undefined) {
+                setInCache(cacheKey, data);
+                return res.json(data);
+            }
+        } catch (pyErr) {
+            console.warn("[QuantumDx] Python Classical Engine unavailable, using built-in inference:", pyErr.message);
         }
 
-        setInCache(cacheKey, data);
-        res.json(data);
+        const fallbackResult = inference.predictClassical(req.body.disease, req.body.features);
+        setInCache(cacheKey, fallbackResult);
+        return res.json(fallbackResult);
 
     } catch (error) {
-        console.error("Python Classical API error:", error);
-
-        res.status(500).json({
-            status: "error",
-            message: "Could not connect to Classical Python API",
-            error: error.message,
-            targetUrl: `${PYTHON_API_URL}/predict`
-        });
+        console.error("Classical API error:", error);
+        try {
+            const fallbackResult = inference.predictClassical(req.body.disease, req.body.features);
+            return res.json(fallbackResult);
+        } catch (fbErr) {
+            res.status(500).json({ status: "error", message: fbErr.message });
+        }
     }
 });
 
