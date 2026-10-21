@@ -264,7 +264,7 @@ export default function ClarityProfileView({
             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", paddingBottom: 8 }}>
               <span style={{ color: "var(--c-text-muted)" }}>Session ID:</span>
               <code style={{ background: "#F1F5F9", padding: "2px 6px", borderRadius: 4, fontSize: "12px" }}>
-                sess_qdx_{Math.abs(displayEmail.split("").reduce((a, b) => (a << 5) - a + b.charCodeAt(0), 0))}
+                sess_qdx_{Math.abs((displayEmail || "user").split("").reduce((a, b) => (a << 5) - a + b.charCodeAt(0), 0))}
               </code>
             </div>
 
@@ -366,41 +366,37 @@ export default function ClarityProfileView({
         </div>
       </div>
 
-      {/* Switch Clinician Role (1-Click) */}
+      {/* Account & Session Controls */}
       <div className="clarity-num-card">
         <h4 style={{ fontSize: "15px", fontWeight: 800, margin: "0 0 6px", color: "var(--c-text-primary)" }}>
-          Switch Active Clinician Role
+          🛡️ Account &amp; Workspace Management
         </h4>
-        <p style={{ fontSize: "12.5px", color: "var(--c-text-muted)", margin: "0 0 14px" }}>
-          Quickly switch personas to test different medical specialty pathways and audit trails:
+        <p style={{ fontSize: "12.5px", color: "var(--c-text-muted)", margin: "0 0 16px" }}>
+          Manage your verified session, security credentials, and access permissions:
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-          {DEMO_CLINICIANS.map((clinician) => {
-            const isCurrent = clinician.email === displayEmail;
-            return (
-              <div
-                key={clinician.email}
-                onClick={() => handleQuickLogin(clinician)}
-                style={{
-                  background: isCurrent ? "var(--c-mint)" : "#FFFFFF",
-                  border: isCurrent ? "2px solid var(--c-teal)" : "1px solid #E2E8F0",
-                  borderRadius: 8,
-                  padding: "10px",
-                  cursor: isCurrent ? "default" : "pointer",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ fontSize: "22px", marginBottom: 4 }}>{clinician.avatarIcon}</div>
-                <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--c-text-primary)" }}>
-                  {clinician.name}
-                </div>
-                <div style={{ fontSize: "11px", color: "var(--c-teal)", marginTop: 2 }}>
-                  {isCurrent ? "✓ Active Account" : clinician.role.split("(")[0]}
-                </div>
-              </div>
-            );
-          })}
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+          <button
+            type="button"
+            className="clarity-btn-outline"
+            onClick={onLogout}
+            style={{ color: "#dc2626", borderColor: "#fca5a5", padding: "10px 18px", fontSize: "13px" }}
+          >
+            <span>⎋</span>
+            <span>Sign Out of Current Account</span>
+          </button>
+
+          {onOpenAuth && (
+            <button
+              type="button"
+              className="clarity-btn-outline"
+              onClick={onOpenAuth}
+              style={{ padding: "10px 18px", fontSize: "13px" }}
+            >
+              <span>👤</span>
+              <span>Switch or Register New Account</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
