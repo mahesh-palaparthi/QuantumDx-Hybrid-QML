@@ -7,6 +7,18 @@ import Quantum3DLanding from "./Quantum3DLanding";
 import QuantumCircuitExplorer from "./QuantumCircuitExplorer";
 import VerifiedPatientPicker from "./VerifiedPatientPicker";
 import "./QuantumDx.css";
+import "./ClarityHealth.css";
+import ClaritySidebar from "./ClaritySidebar";
+import ClarityHeader from "./ClarityHeader";
+import ClarityDashboard from "./ClarityDashboard";
+import ClarityScreeningHub from "./ClarityScreeningHub";
+import ClarityFormView from "./ClarityFormView";
+import ClarityResultsView from "./ClarityResultsView";
+import ClarityBenchmarksView from "./ClarityBenchmarksView";
+import ClarityAboutView from "./ClarityAboutView";
+import ClarityAuthModal from "./ClarityAuthModal";
+import ClarityHistoryView from "./ClarityHistoryView";
+import ClarityProfileView from "./ClarityProfileView";
 import {
   DIABETES_COHORTS,
   CANCER_COHORTS,
@@ -189,6 +201,21 @@ const CANCER_FEATURE_NAMES = [
 
 export default function App() {
   // Navigation & User State
+  const [uiMode, setUiMode] = useState(() => {
+    try {
+      return localStorage.getItem("quantumdx_ui_mode") || "clarity";
+    } catch {
+      return "clarity";
+    }
+  }); // "clarity" | "classic"
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("quantumdx_ui_mode", uiMode);
+    } catch {}
+  }, [uiMode]);
+  const [clarityTab, setClarityTab] = useState("dashboard"); // "dashboard" | "studio" | "history" | "benchmarks" | "about" | "profile"
+  const [clarityStudioStep, setClarityStudioStep] = useState("hub"); // "hub" | "form" | "results"
   const [activeSidebarTab, setActiveSidebarTab] = useState("landing"); // "landing" | "prediction" | "dashboard" | "history" | "studio" | "profile"
   const [currentUser, setCurrentUser] = useState(() => {
     try {
@@ -1045,6 +1072,153 @@ export default function App() {
 
   const dynamicXaiBars = calculateConnectedXaiBars();
 
+  // =========================================================================
+  // DUAL-MODE UI: Clarity Health Figma Design System
+  // =========================================================================
+  if (uiMode === "clarity") {
+    return (
+      <div className="clarity-layout">
+        <ClarityAuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          onAuthSuccess={({ user, token }) => handleLoginSuccess(user, token)}
+        />
+
+        <ClaritySidebar
+          activeTab={clarityTab}
+          onSelectTab={(tab) => {
+            setClarityTab(tab);
+            if (tab === "studio") {
+              if (!result && !classicalResult) {
+                setClarityStudioStep("hub");
+              }
+            }
+          }}
+          onLogout={handleLogout}
+          user={currentUser}
+        />
+
+        <div className="clarity-main-col">
+          <ClarityHeader
+            uiMode={uiMode}
+            setUiMode={setUiMode}
+            user={currentUser}
+            onOpenAuth={() => setIsAuthModalOpen(true)}
+          />
+
+          <main className="clarity-main-body">
+            {clarityTab === "dashboard" && (
+              <ClarityDashboard
+                onSelectScreening={(diseaseKey) => {
+                  if (diseaseKey) {
+                    setActiveDisease(diseaseKey);
+                    setClarityStudioStep("form");
+                  } else {
+                    setClarityStudioStep("hub");
+                  }
+                  setClarityTab("studio");
+                }}
+                screeningHistory={screeningHistory}
+                user={currentUser}
+              />
+            )}
+
+            {clarityTab === "studio" && clarityStudioStep === "hub" && (
+              <ClarityScreeningHub
+                onSelectScreening={(diseaseKey) => {
+                  setActiveDisease(diseaseKey);
+                  setClarityStudioStep("form");
+                }}
+                onGoToBenchmarks={() => setClarityTab("benchmarks")}
+              />
+            )}
+
+            {clarityTab === "studio" && clarityStudioStep === "form" && (
+              <ClarityFormView
+                activeDisease={activeDisease}
+                onBackToHub={() => setClarityStudioStep("hub")}
+                onGoToBenchmarks={() => setClarityTab("benchmarks")}
+                diabetesData={diabetesData}
+                updateDiabetesField={(field, val) =>
+                  setDiabetesData((prev) => ({ ...prev, [field]: val }))
+                }
+                heartData={heartData}
+                updateHeartField={(field, val) =>
+                  setHeartData((prev) => ({ ...prev, [field]: val }))
+                }
+                malnutritionData={malnutritionData}
+                updateMalnutritionField={(field, val) =>
+                  setMalnutritionData((prev) => ({ ...prev, [field]: val }))
+                }
+                cancerFeatures={cancerFeatures}
+                updateCancerField={(idx, val) => {
+                  const copy = [...cancerFeatures];
+                  copy[idx] = val;
+                  setCancerFeatures(copy);
+                }}
+                onAnalyze={async () => {
+                  await analyze();
+                  setClarityStudioStep("results");
+                }}
+                loading={loading}
+                error={error}
+                activeCohorts={activeCohorts}
+                selectedCohortCase={selectedCohortCase}
+                onSelectCohortCase={handleSelectVerifiedCase}
+              />
+            )}
+
+            {clarityTab === "studio" && clarityStudioStep === "results" && (
+              <ClarityResultsView
+                activeDisease={activeDisease}
+                classicalResult={classicalResult}
+                quantumResult={result}
+                onNewScreening={() => {
+                  setResult(null);
+                  setClassicalResult(null);
+                  setClarityStudioStep("form");
+                }}
+                selectedCohortCase={selectedCohortCase}
+                onExportPdf={() => window.print()}
+              />
+            )}
+
+            {clarityTab === "history" && (
+              <ClarityHistoryView
+                screeningHistory={screeningHistory}
+                fetchScreeningHistory={fetchScreeningHistory}
+                handleClearHistory={handleClearHistory}
+                onOpenScreening={() => {
+                  setClarityTab("studio");
+                  setClarityStudioStep("hub");
+                }}
+              />
+            )}
+
+            {clarityTab === "benchmarks" && <ClarityBenchmarksView />}
+
+            {clarityTab === "about" && (
+              <ClarityAboutView
+                onGoToScreening={() => {
+                  setClarityTab("studio");
+                  setClarityStudioStep("hub");
+                }}
+              />
+            )}
+
+            {clarityTab === "profile" && (
+              <ClarityProfileView
+                user={currentUser}
+                onLogout={handleLogout}
+                onOpenAuth={() => setIsAuthModalOpen(true)}
+              />
+            )}
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="qdx-app">
       <QuantumBioCanvas isPaused={canvasPaused} />
@@ -1261,6 +1435,25 @@ export default function App() {
         <main className="qdx-main-content">
           {/* Top Status Header */}
           <header className="qdx-top-header">
+            {/* Dual Mode UI Switcher (Figma Clarity vs Classic Studio) */}
+            <button
+              type="button"
+              className="qdx-preset-btn"
+              onClick={() => setUiMode("clarity")}
+              style={{
+                background: "linear-gradient(135deg, #0D7C7A, #0A6B68)",
+                color: "#FFFFFF",
+                border: "1px solid #14B8A6",
+                boxShadow: "0 2px 8px rgba(13, 124, 122, 0.35)",
+                fontWeight: 700,
+                cursor: "pointer",
+                padding: "6px 14px",
+              }}
+              title="Switch to Clarity Health Figma Design"
+            >
+              ✨ Switch to Clarity UI
+            </button>
+
             <button
               type="button"
               className="qdx-preset-btn"

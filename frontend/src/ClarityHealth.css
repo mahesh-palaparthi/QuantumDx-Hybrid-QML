@@ -1,0 +1,1178 @@
+/* ==========================================================================
+   CLARITY HEALTH DESIGN SYSTEM (FIGMA SPECIFICATION)
+   ========================================================================== */
+
+:root {
+  --c-teal: #0D7C7A;
+  --c-teal-dark: #0A6B68;
+  --c-teal-light: #129E9B;
+  --c-mint: #E6F7F5;
+  --c-mint-border: #BCEAE5;
+  --c-mint-text: #0D7C7A;
+  --c-navy: #0E2942;
+  --c-navy-surface: #143554;
+  --c-bg: #F8FAFC;
+  --c-sidebar-bg: #FFFFFF;
+  --c-card-bg: #FFFFFF;
+  --c-card-border: #E2E8F0;
+  --c-card-hover-border: #CBD5E1;
+  --c-text-primary: #0F172A;
+  --c-text-secondary: #334155;
+  --c-text-muted: #64748B;
+  --c-amber-bg: #FFFBEB;
+  --c-amber-border: #FDE68A;
+  --c-amber-text: #92400E;
+  --c-blue-bg: #EFF6FF;
+  --c-blue-border: #BFDBFE;
+  --c-blue-text: #1E40AF;
+  --c-purple-bg: #F5F3FF;
+  --c-purple-border: #DDD6FE;
+  --c-purple-text: #5B21B6;
+  --c-danger-bg: #FEF2F2;
+  --c-danger-border: #FECACA;
+  --c-danger-text: #991B1B;
+  --c-success-bg: #ECFDF5;
+  --c-success-border: #A7F3D0;
+  --c-success-text: #065F46;
+  --c-radius-card: 14px;
+  --c-radius-input: 8px;
+  --c-radius-pill: 9999px;
+  --c-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --c-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* Clarity Container Shell */
+.clarity-app {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--c-bg);
+  color: var(--c-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Sidebar */
+.clarity-sidebar {
+  width: 250px;
+  min-width: 250px;
+  background: var(--c-sidebar-bg);
+  border-right: 1px solid var(--c-card-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-sizing: border-box;
+  z-index: 40;
+}
+
+.clarity-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px 24px;
+  cursor: pointer;
+}
+
+.clarity-brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--c-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.clarity-brand-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.clarity-brand-sub {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.clarity-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clarity-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--c-radius-input);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.clarity-nav-item:hover {
+  background: #F1F5F9;
+  color: var(--c-text-primary);
+}
+
+.clarity-nav-item.active {
+  background: var(--c-mint);
+  color: var(--c-mint-text);
+  font-weight: 700;
+}
+
+.clarity-nav-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+}
+
+/* Sidebar Callout Card */
+.clarity-sidebar-callout {
+  background: #F8FAFC;
+  border: 1px solid var(--c-card-border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: auto;
+  margin-bottom: 16px;
+}
+
+.clarity-callout-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-text-primary);
+  margin-bottom: 4px;
+}
+
+.clarity-callout-desc {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  line-height: 1.45;
+}
+
+.clarity-sidebar-footer {
+  border-top: 1px solid var(--c-card-border);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clarity-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  color: var(--c-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.clarity-logout-btn:hover {
+  color: #EF4444;
+  background: #FEF2F2;
+}
+
+.clarity-sidebar-caption {
+  font-size: 10.5px;
+  color: #94A3B8;
+  padding: 0 10px;
+}
+
+/* Main Workspace */
+.clarity-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--c-bg);
+}
+
+/* Top Header */
+.clarity-header {
+  height: 64px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--c-card-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.clarity-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text-secondary);
+}
+
+.clarity-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Dual Mode Toggle Switcher */
+.clarity-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  border-radius: var(--c-radius-pill);
+  padding: 3px;
+  gap: 3px;
+}
+
+.clarity-toggle-btn {
+  padding: 5px 12px;
+  border-radius: var(--c-radius-pill);
+  font-size: 11.5px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: var(--c-text-muted);
+}
+
+.clarity-toggle-btn.active {
+  background: #FFFFFF;
+  color: var(--c-teal);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.clarity-workspace-pill {
+  background: #E0F2FE;
+  color: #0369A1;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--c-radius-pill);
+  letter-spacing: 0.5px;
+}
+
+.clarity-bell-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clarity-bell-btn:hover {
+  background: #F1F5F9;
+}
+
+.clarity-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.clarity-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--c-mint);
+  color: var(--c-teal);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clarity-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text-primary);
+}
+
+/* Page Content Wrapper */
+.clarity-content {
+  padding: 32px 40px 60px;
+  max-width: 1240px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+/* Breadcrumb */
+.clarity-breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.clarity-breadcrumb-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.clarity-tag-pill {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  background: #E0F2FE;
+  color: #0369A1;
+}
+
+.clarity-page-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
+}
+
+.clarity-page-subtitle {
+  font-size: 14px;
+  color: var(--c-text-muted);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+/* 3-Step Process Track */
+.clarity-steps-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: 12px;
+  padding: 14px 24px;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.clarity-step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.clarity-step-item.active {
+  color: var(--c-teal);
+  font-weight: 700;
+}
+
+.clarity-step-item.completed {
+  color: #10B981;
+}
+
+.clarity-step-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid #CBD5E1;
+  color: #64748B;
+}
+
+.clarity-step-item.active .clarity-step-dot {
+  border-color: var(--c-teal);
+  color: var(--c-teal);
+  background: var(--c-mint);
+}
+
+.clarity-step-item.completed .clarity-step-dot {
+  border-color: #10B981;
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+/* Alert Banners */
+.clarity-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.clarity-alert-blue {
+  background: var(--c-blue-bg);
+  border: 1px solid var(--c-blue-border);
+  color: var(--c-blue-text);
+}
+
+.clarity-alert-amber {
+  background: var(--c-amber-bg);
+  border: 1px solid var(--c-amber-border);
+  color: var(--c-amber-text);
+}
+
+/* Hero Navy Card (Dashboard & About) */
+.clarity-hero-card {
+  background: var(--c-navy);
+  border-radius: var(--c-radius-card);
+  padding: 32px 36px;
+  color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  overflow: hidden;
+  position: relative;
+}
+
+.clarity-hero-text {
+  max-width: 580px;
+}
+
+.clarity-hero-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #7DD3FC;
+  margin-bottom: 8px;
+}
+
+.clarity-hero-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 10px;
+  letter-spacing: -0.4px;
+}
+
+.clarity-hero-desc {
+  font-size: 13.5px;
+  color: #94A3B8;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.clarity-hero-btn {
+  background: var(--c-teal);
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.clarity-hero-btn:hover {
+  background: var(--c-teal-dark);
+}
+
+/* Orbital Graphic */
+.clarity-orbital-graphic {
+  position: relative;
+  width: 220px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clarity-orbital-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.clarity-orbital-c1 {
+  width: 140px;
+  height: 140px;
+}
+
+.clarity-orbital-c2 {
+  width: 190px;
+  height: 190px;
+}
+
+.clarity-pulse-center {
+  width: 48px;
+  height: 48px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-teal);
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.clarity-chip-classical {
+  position: absolute;
+  top: 10px;
+  left: -20px;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #E2E8F0;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.clarity-chip-quantum {
+  position: absolute;
+  bottom: 10px;
+  right: -10px;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #A7F3D0;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Quick Stats Bar */
+.clarity-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.clarity-stat-box {
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-card);
+  padding: 18px 24px;
+}
+
+.clarity-stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  margin-bottom: 4px;
+}
+
+.clarity-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+/* 4-Pathway Grid (Choose Your Screening) */
+.clarity-pathways-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.clarity-pathway-card {
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+  box-shadow: var(--c-shadow-sm);
+}
+
+.clarity-pathway-card:hover {
+  border-color: var(--c-teal);
+  box-shadow: var(--c-shadow-md);
+  transform: translateY(-2px);
+}
+
+.clarity-pathway-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.clarity-pathway-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--c-mint);
+  color: var(--c-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.clarity-pathway-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  margin: 0;
+}
+
+.clarity-pathway-desc {
+  font-size: 13px;
+  color: var(--c-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 16px;
+  min-height: 40px;
+}
+
+.clarity-pathway-info-block {
+  margin-bottom: 20px;
+}
+
+.clarity-pathway-info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.clarity-pathway-info-val {
+  font-size: 12.5px;
+  color: var(--c-text-muted);
+}
+
+.clarity-pathway-meta {
+  font-size: 11.5px;
+  color: var(--c-text-muted);
+  margin-bottom: 16px;
+}
+
+.clarity-pathway-btn {
+  background: var(--c-teal);
+  color: #FFFFFF;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.clarity-pathway-btn:hover {
+  background: var(--c-teal-dark);
+}
+
+/* Screening Form Layout (2-Column Studio) */
+.clarity-studio-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.clarity-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Numbered Card */
+.clarity-num-card {
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-card);
+  padding: 24px;
+  box-shadow: var(--c-shadow-sm);
+}
+
+.clarity-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.clarity-num-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-teal);
+  background: var(--c-mint);
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-top: 2px;
+}
+
+.clarity-card-titles {
+  flex: 1;
+}
+
+.clarity-card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  margin: 0 0 3px;
+}
+
+.clarity-card-desc {
+  font-size: 12.5px;
+  color: var(--c-text-muted);
+  margin: 0;
+}
+
+/* Form Input Grid */
+.clarity-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.clarity-field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.clarity-field-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.clarity-required-star {
+  color: #DC2626;
+  font-weight: 800;
+}
+
+.clarity-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clarity-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-input);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-text-primary);
+  background: #FFFFFF;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.clarity-input:focus {
+  border-color: var(--c-teal);
+  box-shadow: 0 0 0 3px rgba(13, 124, 122, 0.1);
+}
+
+.clarity-input-unit {
+  position: absolute;
+  right: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  pointer-events: none;
+}
+
+.clarity-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-input);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-text-primary);
+  background: #FFFFFF;
+  outline: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.clarity-select:focus {
+  border-color: var(--c-teal);
+  box-shadow: 0 0 0 3px rgba(13, 124, 122, 0.1);
+}
+
+.clarity-field-helper {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  margin-top: 5px;
+  line-height: 1.35;
+}
+
+/* Form Action Bar */
+.clarity-action-card {
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-card);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--c-shadow-sm);
+}
+
+.clarity-submit-btn {
+  background: var(--c-teal);
+  color: #FFFFFF;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+}
+
+.clarity-submit-btn:hover:not(:disabled) {
+  background: var(--c-teal-dark);
+}
+
+.clarity-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Right Support Column */
+.clarity-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.clarity-support-card {
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-card);
+  padding: 20px;
+  box-shadow: var(--c-shadow-sm);
+}
+
+.clarity-support-card.amber {
+  background: var(--c-amber-bg);
+  border-color: var(--c-amber-border);
+}
+
+.clarity-support-card.blue {
+  background: var(--c-blue-bg);
+  border-color: var(--c-blue-border);
+}
+
+.clarity-support-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clarity-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clarity-check-item {
+  font-size: 12.5px;
+  color: var(--c-text-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.clarity-check-icon {
+  color: var(--c-teal);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.clarity-support-note {
+  font-size: 11.5px;
+  color: var(--c-text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Results Screen (Your screening, explained.) */
+.clarity-results-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.clarity-dual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.clarity-dual-card {
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-card);
+  padding: 26px;
+  box-shadow: var(--c-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.clarity-dual-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.clarity-dual-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.clarity-dual-icon.classical {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.clarity-dual-icon.quantum {
+  background: var(--c-mint);
+  color: var(--c-teal);
+}
+
+.clarity-dual-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  margin: 0;
+}
+
+.clarity-dual-sub {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  margin: 2px 0 0;
+}
+
+.clarity-big-score {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+
+.clarity-score-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  margin-bottom: 16px;
+}
+
+.clarity-progress-track {
+  width: 100%;
+  height: 8px;
+  background: #E2E8F0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.clarity-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.clarity-progress-bar.classical {
+  background: #2563EB;
+}
+
+.clarity-progress-bar.quantum {
+  background: var(--c-teal);
+}
+
+.clarity-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--c-radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.clarity-badge-pill.positive {
+  background: var(--c-amber-bg);
+  color: var(--c-amber-text);
+}
+
+.clarity-badge-pill.negative {
+  background: var(--c-success-bg);
+  color: var(--c-success-text);
+}
+
+.clarity-badge-pill.inconclusive {
+  background: var(--c-purple-bg);
+  color: var(--c-purple-text);
+}
+
+.clarity-dual-desc {
+  font-size: 12.5px;
+  color: var(--c-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.clarity-dual-footer {
+  border-top: 1px solid var(--c-card-border);
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--c-text-muted);
+}
+
+/* Consensus Safety Gate Card */
+.clarity-consensus-card {
+  background: #FFFFFF;
+  border: 2px solid var(--c-teal);
+  border-radius: var(--c-radius-card);
+  padding: 24px 28px;
+  box-shadow: var(--c-shadow-md);
+}
+
+.clarity-consensus-card.inconclusive {
+  border-color: #8B5CF6;
+  background: linear-gradient(180deg, #FFFFFF, #FAF5FF);
+}
+
+.clarity-consensus-card.positive {
+  border-color: #F59E0B;
+  background: linear-gradient(180deg, #FFFFFF, #FFFBEB);
+}
+
+.clarity-consensus-card.negative {
+  border-color: #10B981;
+  background: linear-gradient(180deg, #FFFFFF, #F0FDF4);
+}
+
+/* Benchmarks View Table */
+.clarity-table-wrap {
+  background: #FFFFFF;
+  border: 1px solid var(--c-card-border);
+  border-radius: var(--c-radius-card);
+  overflow: hidden;
+  box-shadow: var(--c-shadow-sm);
+}
+
+.clarity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.clarity-table th {
+  background: #F8FAFC;
+  padding: 12px 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--c-card-border);
+}
+
+.clarity-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--c-card-border);
+  color: var(--c-text-secondary);
+}
+
+.clarity-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .clarity-studio-layout {
+    grid-template-columns: 1fr;
+  }
+  .clarity-pathways-grid {
+    grid-template-columns: 1fr;
+  }
+}
