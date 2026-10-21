@@ -9,20 +9,6 @@ export default function ClarityDashboard({
 
   const pathways = [
     {
-      key: "heart_disease",
-      title: "Heart Disease",
-      icon: "❤️",
-      desc: "Explore heart health using symptoms, blood pressure and cholesterol.",
-      meta: "About 4 minutes · Adults",
-    },
-    {
-      key: "breast_cancer",
-      title: "Breast Cancer",
-      icon: "🎗️",
-      desc: "Review breast changes and relevant history to support an informed next step.",
-      meta: "About 4 minutes · Adults",
-    },
-    {
       key: "diabetes",
       title: "Diabetes",
       icon: "💧",
@@ -35,6 +21,20 @@ export default function ClarityDashboard({
       icon: "👶",
       desc: "Support a child's growth with age-appropriate nutrition and measurement inputs.",
       meta: "About 5 minutes · Ages 6–59 months",
+    },
+    {
+      key: "heart_disease",
+      title: "Heart Disease",
+      icon: "❤️",
+      desc: "Explore heart health using symptoms, blood pressure and cholesterol.",
+      meta: "About 4 minutes · Adults",
+    },
+    {
+      key: "breast_cancer",
+      title: "Breast Cancer",
+      icon: "🎗️",
+      desc: "Review breast changes and relevant history to support an informed next step.",
+      meta: "About 4 minutes · Adults",
     },
   ];
 
@@ -62,7 +62,7 @@ export default function ClarityDashboard({
           <button
             type="button"
             className="clarity-hero-btn"
-            onClick={() => onSelectScreening("heart_disease")}
+            onClick={() => onSelectScreening("diabetes")}
           >
             <span>Choose a screening</span>
             <span>→</span>

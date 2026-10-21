@@ -6,22 +6,6 @@ export default function ClarityScreeningHub({
 }) {
   const pathways = [
     {
-      key: "heart_disease",
-      title: "Heart Disease",
-      icon: "❤️",
-      desc: "Explore heart health using symptoms, blood pressure and cholesterol.",
-      readyLabel: "Blood pressure, cholesterol and recent test results",
-      meta: "About 4 minutes · Adults",
-    },
-    {
-      key: "breast_cancer",
-      title: "Breast Cancer",
-      icon: "🎗️",
-      desc: "Review breast changes and relevant history to support an informed next step.",
-      readyLabel: "Breast symptoms, personal and family history",
-      meta: "About 4 minutes · Adults",
-    },
-    {
       key: "diabetes",
       title: "Diabetes",
       icon: "💧",
@@ -36,6 +20,22 @@ export default function ClarityScreeningHub({
       desc: "Support a child's growth with age-appropriate nutrition and measurement inputs.",
       readyLabel: "Child's age in months, weight, height and arm circumference",
       meta: "About 5 minutes · Ages 6–59 months",
+    },
+    {
+      key: "heart_disease",
+      title: "Heart Disease",
+      icon: "❤️",
+      desc: "Explore heart health using symptoms, blood pressure and cholesterol.",
+      readyLabel: "Blood pressure, cholesterol and recent test results",
+      meta: "About 4 minutes · Adults",
+    },
+    {
+      key: "breast_cancer",
+      title: "Breast Cancer",
+      icon: "🎗️",
+      desc: "Review breast changes and relevant history to support an informed next step.",
+      readyLabel: "Breast symptoms, personal and family history",
+      meta: "About 4 minutes · Adults",
     },
   ];
 

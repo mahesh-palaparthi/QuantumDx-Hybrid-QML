@@ -1,6 +1,40 @@
 import React from "react";
 import VerifiedPatientPicker from "./VerifiedPatientPicker";
 
+const WDBC_FEATURE_NAMES = [
+  "Mean Radius",
+  "Mean Texture",
+  "Mean Perimeter",
+  "Mean Area",
+  "Mean Smoothness",
+  "Mean Compactness",
+  "Mean Concavity",
+  "Mean Concave Points",
+  "Mean Symmetry",
+  "Mean Fractal Dimension",
+  "Radius SE (Error)",
+  "Texture SE (Error)",
+  "Perimeter SE (Error)",
+  "Area SE (Error)",
+  "Smoothness SE (Error)",
+  "Compactness SE (Error)",
+  "Concavity SE (Error)",
+  "Concave Points SE",
+  "Symmetry SE (Error)",
+  "Fractal Dimension SE",
+  "Worst Radius",
+  "Worst Texture",
+  "Worst Perimeter",
+  "Worst Area",
+  "Worst Smoothness",
+  "Worst Compactness",
+  "Worst Concavity",
+  "Worst Concave Points",
+  "Worst Symmetry",
+  "Worst Fractal Dimension",
+];
+
+
 export default function ClarityFormView({
   activeDisease,
   onSelectDisease,
@@ -56,32 +90,8 @@ export default function ClarityFormView({
       <h2 className="clarity-page-title">{diseaseTitles[activeDisease]}</h2>
       <p className="clarity-page-subtitle">{diseaseSubtitles[activeDisease]}</p>
 
-      {/* 4 Disease Pathway Selector Bar */}
+      {/* 4 Disease Pathway Selector Bar (Priority: Diabetes, Malnutrition, Heart, Cancer) */}
       <div className="clarity-disease-selector-bar">
-        <button
-          type="button"
-          className={`clarity-disease-pill ${isHeart ? "active" : ""}`}
-          onClick={() => onSelectDisease && onSelectDisease("heart_disease")}
-        >
-          <span className="disease-pill-icon">❤️</span>
-          <div className="disease-pill-text">
-            <span className="disease-pill-title">Heart Disease</span>
-            <span className="disease-pill-sub">Cardiovascular QNN</span>
-          </div>
-        </button>
-
-        <button
-          type="button"
-          className={`clarity-disease-pill ${isCancer ? "active" : ""}`}
-          onClick={() => onSelectDisease && onSelectDisease("breast_cancer")}
-        >
-          <span className="disease-pill-icon">🎗️</span>
-          <div className="disease-pill-text">
-            <span className="disease-pill-title">Breast Cancer</span>
-            <span className="disease-pill-sub">QSVM Kernel Map</span>
-          </div>
-        </button>
-
         <button
           type="button"
           className={`clarity-disease-pill ${isDiabetes ? "active" : ""}`}
@@ -103,6 +113,30 @@ export default function ClarityFormView({
           <div className="disease-pill-text">
             <span className="disease-pill-title">Pediatric Malnutrition</span>
             <span className="disease-pill-sub">WHO/UNICEF Q-Classifier</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={`clarity-disease-pill ${isHeart ? "active" : ""}`}
+          onClick={() => onSelectDisease && onSelectDisease("heart_disease")}
+        >
+          <span className="disease-pill-icon">❤️</span>
+          <div className="disease-pill-text">
+            <span className="disease-pill-title">Heart Disease</span>
+            <span className="disease-pill-sub">Cardiovascular QNN</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={`clarity-disease-pill ${isCancer ? "active" : ""}`}
+          onClick={() => onSelectDisease && onSelectDisease("breast_cancer")}
+        >
+          <span className="disease-pill-icon">🎗️</span>
+          <div className="disease-pill-text">
+            <span className="disease-pill-title">Breast Cancer</span>
+            <span className="disease-pill-sub">QSVM Kernel Map</span>
           </div>
         </button>
       </div>
@@ -595,35 +629,97 @@ export default function ClarityFormView({
           )}
 
           {/* =========================================================
-              BREAST CANCER FORM
+              BREAST CANCER FORM (30 Wisconsin FNA Morphometric Features)
               ========================================================= */}
           {isCancer && (
-            <div className="clarity-num-card">
-              <div className="clarity-card-head">
-                <div className="clarity-num-badge">01</div>
-                <div className="clarity-card-titles">
-                  <h3 className="clarity-card-title">Cellular Morphometric Attributes</h3>
-                  <p className="clarity-card-desc">Wisconsin Diagnostic Breast Cancer (WDBC) 30 fine needle aspirate (FNA) measurements.</p>
+            <>
+              {/* Card 01: Nuclear Mean Dimensions (Features 0-9) */}
+              <div className="clarity-num-card">
+                <div className="clarity-card-head">
+                  <div className="clarity-num-badge">01</div>
+                  <div className="clarity-card-titles">
+                    <h3 className="clarity-card-title">Nuclear Mean Dimensions (FNA Cytology)</h3>
+                    <p className="clarity-card-desc">Mean cell nucleus geometry from digitized aspirate images.</p>
+                  </div>
+                </div>
+
+                <div className="clarity-inputs-grid">
+                  {cancerFeatures.slice(0, 10).map((val, i) => {
+                    const idx = i;
+                    return (
+                      <div key={idx} className="clarity-field-group">
+                        <label className="clarity-field-label">{WDBC_FEATURE_NAMES[idx] || `Feature #${idx + 1}`} *</label>
+                        <input
+                          type="number"
+                          step="any"
+                          className="clarity-input"
+                          value={val}
+                          onChange={(e) => updateCancerField(idx, e.target.value)}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              <div style={{ maxHeight: 380, overflowY: "auto", paddingRight: 6 }}>
+              {/* Card 02: Standard Error (SE) Variance (Features 10-19) */}
+              <div className="clarity-num-card">
+                <div className="clarity-card-head">
+                  <div className="clarity-num-badge">02</div>
+                  <div className="clarity-card-titles">
+                    <h3 className="clarity-card-title">Standard Error Margins (SE Variance)</h3>
+                    <p className="clarity-card-desc">Measurement variation across specimen cell populations.</p>
+                  </div>
+                </div>
+
                 <div className="clarity-inputs-grid">
-                  {cancerFeatures.map((val, idx) => (
-                    <div key={idx} className="clarity-field-group">
-                      <label className="clarity-field-label">Feature #{idx + 1}</label>
-                      <input
-                        type="number"
-                        step="any"
-                        className="clarity-input"
-                        value={val}
-                        onChange={(e) => updateCancerField(idx, e.target.value)}
-                      />
-                    </div>
-                  ))}
+                  {cancerFeatures.slice(10, 20).map((val, i) => {
+                    const idx = i + 10;
+                    return (
+                      <div key={idx} className="clarity-field-group">
+                        <label className="clarity-field-label">{WDBC_FEATURE_NAMES[idx] || `Feature #${idx + 1}`} *</label>
+                        <input
+                          type="number"
+                          step="any"
+                          className="clarity-input"
+                          value={val}
+                          onChange={(e) => updateCancerField(idx, e.target.value)}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
+
+              {/* Card 03: Worst / Extreme Nuclear Atypia (Features 20-29) */}
+              <div className="clarity-num-card">
+                <div className="clarity-card-head">
+                  <div className="clarity-num-badge">03</div>
+                  <div className="clarity-card-titles">
+                    <h3 className="clarity-card-title">Worst / Extreme Nuclear Extremes</h3>
+                    <p className="clarity-card-desc">Mean of the three largest (most severe) atypical cell values.</p>
+                  </div>
+                </div>
+
+                <div className="clarity-inputs-grid">
+                  {cancerFeatures.slice(20, 30).map((val, i) => {
+                    const idx = i + 20;
+                    return (
+                      <div key={idx} className="clarity-field-group">
+                        <label className="clarity-field-label">{WDBC_FEATURE_NAMES[idx] || `Feature #${idx + 1}`} *</label>
+                        <input
+                          type="number"
+                          step="any"
+                          className="clarity-input"
+                          value={val}
+                          onChange={(e) => updateCancerField(idx, e.target.value)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
           )}
 
           {/* Action Card: Cohort Picker & Submit */}
