@@ -918,9 +918,7 @@ export default function App() {
         onSelectTab={(tab) => {
           setClarityTab(tab);
           if (tab === "studio") {
-            if (!result && !classicalResult) {
-              setClarityStudioStep("hub");
-            }
+            setClarityStudioStep("form");
           }
         }}
         onLogout={handleLogout}
@@ -963,6 +961,11 @@ export default function App() {
             {clarityTab === "studio" && clarityStudioStep === "form" && (
               <ClarityFormView
                 activeDisease={activeDisease}
+                onSelectDisease={(d) => {
+                  setActiveDisease(d);
+                  setSelectedCohortCase(null);
+                  setError("");
+                }}
                 onBackToHub={() => setClarityStudioStep("hub")}
                 onGoToBenchmarks={() => setClarityTab("benchmarks")}
                 diabetesData={diabetesData}

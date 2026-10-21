@@ -1712,3 +1712,149 @@ textarea:focus-visible {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* ==========================================================================
+   DISEASE PATHWAY SELECTOR BAR (ON SCREENING FORM)
+   ========================================================================== */
+.clarity-disease-selector-bar {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 12px !important;
+  margin: 16px 0 24px !important;
+}
+
+@media (max-width: 900px) {
+  .clarity-disease-selector-bar {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .clarity-disease-selector-bar {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.clarity-disease-pill {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 14px !important;
+  background: #FFFFFF !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  text-align: left !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.clarity-disease-pill:hover {
+  border-color: #CBD5E1 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+}
+
+.clarity-disease-pill.active {
+  background: #F0FDFA !important;
+  border-color: var(--c-teal) !important;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.15) !important;
+}
+
+.disease-pill-icon {
+  font-size: 22px !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 10px !important;
+  background: #F8FAFC !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.clarity-disease-pill.active .disease-pill-icon {
+  background: #CCFBF1 !important;
+}
+
+.disease-pill-text {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+}
+
+.disease-pill-title {
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  color: var(--c-text-primary) !important;
+  line-height: 1.25 !important;
+}
+
+.clarity-disease-pill.active .disease-pill-title {
+  color: var(--c-teal) !important;
+}
+
+.disease-pill-sub {
+  font-size: 11px !important;
+  color: var(--c-text-muted) !important;
+  margin-top: 2px !important;
+}
+
+/* ==========================================================================
+   SMOOTH TRANSITIONS & REFINED MEDICAL POLISH
+   ========================================================================== */
+@keyframes clarityGlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.clarity-content {
+  animation: clarityGlideIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.clarity-num-card,
+.clarity-hero-card,
+.clarity-pathway-card,
+.clarity-stat-box,
+.clarity-dual-card,
+.clarity-consensus-card {
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.clarity-num-card:hover,
+.clarity-pathway-card:hover {
+  box-shadow: 0 6px 20px -2px rgba(15, 23, 42, 0.08) !important;
+}
+
+.clarity-input,
+.clarity-select {
+  transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.clarity-input:focus,
+.clarity-select:focus {
+  border-color: var(--c-teal) !important;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12) !important;
+}
+
+.clarity-btn-primary,
+.clarity-hero-btn,
+.clarity-submit-btn {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.clarity-btn-primary:hover,
+.clarity-hero-btn:hover,
+.clarity-submit-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25) !important;
+}

@@ -3,6 +3,7 @@ import VerifiedPatientPicker from "./VerifiedPatientPicker";
 
 export default function ClarityFormView({
   activeDisease,
+  onSelectDisease,
   onBackToHub,
   onGoToBenchmarks,
   diabetesData,
@@ -54,6 +55,57 @@ export default function ClarityFormView({
 
       <h2 className="clarity-page-title">{diseaseTitles[activeDisease]}</h2>
       <p className="clarity-page-subtitle">{diseaseSubtitles[activeDisease]}</p>
+
+      {/* 4 Disease Pathway Selector Bar */}
+      <div className="clarity-disease-selector-bar">
+        <button
+          type="button"
+          className={`clarity-disease-pill ${isHeart ? "active" : ""}`}
+          onClick={() => onSelectDisease && onSelectDisease("heart_disease")}
+        >
+          <span className="disease-pill-icon">❤️</span>
+          <div className="disease-pill-text">
+            <span className="disease-pill-title">Heart Disease</span>
+            <span className="disease-pill-sub">Cardiovascular QNN</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={`clarity-disease-pill ${isCancer ? "active" : ""}`}
+          onClick={() => onSelectDisease && onSelectDisease("breast_cancer")}
+        >
+          <span className="disease-pill-icon">🎗️</span>
+          <div className="disease-pill-text">
+            <span className="disease-pill-title">Breast Cancer</span>
+            <span className="disease-pill-sub">QSVM Kernel Map</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={`clarity-disease-pill ${isDiabetes ? "active" : ""}`}
+          onClick={() => onSelectDisease && onSelectDisease("diabetes")}
+        >
+          <span className="disease-pill-icon">💧</span>
+          <div className="disease-pill-text">
+            <span className="disease-pill-title">Diabetes</span>
+            <span className="disease-pill-sub">Metabolic VQC</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={`clarity-disease-pill ${isMalnutrition ? "active" : ""}`}
+          onClick={() => onSelectDisease && onSelectDisease("child_malnutrition")}
+        >
+          <span className="disease-pill-icon">👶</span>
+          <div className="disease-pill-text">
+            <span className="disease-pill-title">Pediatric Malnutrition</span>
+            <span className="disease-pill-sub">WHO/UNICEF Q-Classifier</span>
+          </div>
+        </button>
+      </div>
 
       {/* 3-Step Process Track */}
       <div className="clarity-steps-track">

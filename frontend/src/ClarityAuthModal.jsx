@@ -178,6 +178,86 @@ export default function ClarityAuthModal({ isOpen, onClose, onAuthSuccess }) {
             </div>
           )}
 
+          {/* 1-Click Quick Tester Access */}
+          <div style={{
+            background: "#F8FAFC",
+            border: "1px solid #E2E8F0",
+            borderRadius: "12px",
+            padding: "14px 16px",
+            marginBottom: "16px",
+          }}>
+            <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--c-teal)", letterSpacing: "0.6px", marginBottom: "8px", textTransform: "uppercase" }}>
+              ⚡ Quick Tester Access (1-Click Instant Entry)
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  onAuthSuccess({
+                    token: "demo_token_alex_morgan",
+                    user: { name: "Dr. Alex Morgan", email: "alex.morgan@example.com", role: "Chief Medical Officer" }
+                  });
+                  onClose();
+                }}
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid #CBD5E1",
+                  borderRadius: "8px",
+                  padding: "9px 10px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  color: "var(--c-text-primary)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                  transition: "all 0.15s ease"
+                }}
+              >
+                <span>🩺</span>
+                <span>Dr. Alex Morgan</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onAuthSuccess({
+                    token: "demo_token_guest_tester",
+                    user: { name: "Clinical Tester", email: "tester@quantumdx.ai", role: "Clinical Evaluator" }
+                  });
+                  onClose();
+                }}
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid #CBD5E1",
+                  borderRadius: "8px",
+                  padding: "9px 10px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  color: "var(--c-text-primary)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                  transition: "all 0.15s ease"
+                }}
+              >
+                <span>🧪</span>
+                <span>Guest Tester</span>
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 16px" }}>
+            <div style={{ flex: 1, height: 1, background: "#E2E8F0" }} />
+            <span style={{ fontSize: "10.5px", color: "var(--c-text-muted)", fontWeight: 700, letterSpacing: "0.5px" }}>OR LOG IN WITH CREDENTIALS</span>
+            <div style={{ flex: 1, height: 1, background: "#E2E8F0" }} />
+          </div>
+
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {isRegister && (
               <div className="clarity-field-group">
