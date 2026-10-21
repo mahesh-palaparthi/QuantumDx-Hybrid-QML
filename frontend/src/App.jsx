@@ -1186,12 +1186,29 @@ export default function App() {
             {clarityTab === "history" && (
               <ClarityHistoryView
                 screeningHistory={screeningHistory}
-                fetchScreeningHistory={fetchScreeningHistory}
-                handleClearHistory={handleClearHistory}
-                onOpenScreening={() => {
+                onOpenScreening={(diseaseKey) => {
+                  if (diseaseKey) {
+                    setActiveDisease(diseaseKey);
+                    setClarityStudioStep("form");
+                  } else {
+                    setClarityStudioStep("hub");
+                  }
                   setClarityTab("studio");
-                  setClarityStudioStep("hub");
                 }}
+                onViewResultItem={(item) => {
+                  setActiveDisease(item.diseaseKey);
+                  setClassicalResult({
+                    prediction: item.classicalPrediction === "Positive" ? 1 : 0,
+                    probability: item.classicalProbability,
+                  });
+                  setResult({
+                    prediction: item.quantumPrediction === "Positive" ? 1 : 0,
+                    probability: item.quantumProbability,
+                  });
+                  setClarityStudioStep("results");
+                  setClarityTab("studio");
+                }}
+                onGoToProfile={() => setClarityTab("profile")}
               />
             )}
 
@@ -1209,8 +1226,13 @@ export default function App() {
             {clarityTab === "profile" && (
               <ClarityProfileView
                 user={currentUser}
+                authToken={authToken}
                 onLogout={handleLogout}
+                onLoginSuccess={(user, token) => handleLoginSuccess(user, token)}
                 onOpenAuth={() => setIsAuthModalOpen(true)}
+                onToggleUiMode={() => setUiMode("classic")}
+                screeningHistory={screeningHistory}
+                onClearHistory={handleClearHistory}
               />
             )}
           </main>
