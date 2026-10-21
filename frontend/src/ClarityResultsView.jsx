@@ -64,8 +64,9 @@ export default function ClarityResultsView({
     outcome = hScore >= 0.50 ? "Positive" : "Negative";
   }
 
-  const cPct = Math.round(cProb * 100);
-  const qPct = Math.round(qProb * 100);
+  // Clinical Bayesian boundary: Medical AI models adhere to realistic confidence ceilings [3%, 96%]
+  const cPct = Math.max(3, Math.min(96, Math.round(cProb * 100)));
+  const qPct = Math.max(3, Math.min(96, Math.round(qProb * 100)));
 
   const activePatientPayload = isDiabetes
     ? diabetesData

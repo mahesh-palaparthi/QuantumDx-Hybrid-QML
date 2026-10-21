@@ -107,7 +107,7 @@ function predictClassical(diseaseInput, rawFeatures) {
   const calibratedScore = platt.scale * decision + platt.intercept;
 
   // Calibrate decision score into clinically accurate Bayesian posterior probability
-  const prob = Math.max(0.01, Math.min(0.99, sigmoid(calibratedScore)));
+  const prob = Math.max(0.02, Math.min(0.96, sigmoid(calibratedScore)));
   const prediction = prob >= 0.5 ? 1 : 0;
 
   return {
@@ -153,7 +153,7 @@ function predictQuantum(diseaseInput, rawFeatures) {
     // Map expectation to quantum risk probability
     const logit = (cRes.probability - 0.5) * 3.5;
     const quantumZ = logit * 0.70 + pcaRisk * 0.35 + zzInteraction * 0.25;
-    qProb = Math.max(0.01, Math.min(0.99, sigmoid(quantumZ)));
+    qProb = Math.max(0.02, Math.min(0.96, sigmoid(quantumZ)));
   }
 
   const prediction = qProb >= 0.5 ? 1 : 0;

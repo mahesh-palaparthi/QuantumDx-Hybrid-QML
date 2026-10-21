@@ -578,10 +578,10 @@ export default function App() {
       const cPred = Number(classicalData.prediction);
       const qPred = Number(data.prediction);
       const cProb = Number.isFinite(Number(classicalData.probability))
-        ? Math.max(0, Math.min(1, Number(classicalData.probability)))
+        ? Math.max(0.02, Math.min(0.96, Number(classicalData.probability)))
         : cPred === 1 ? 0.82 : 0.18;
       const qProb = Number.isFinite(Number(data.probability))
-        ? Math.max(0, Math.min(1, Number(data.probability)))
+        ? Math.max(0.02, Math.min(0.96, Number(data.probability)))
         : qPred === 1 ? 0.92 : 0.08;
       const cWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : isMalnutrition ? 0.52 : 0.509;
       const qWeight = 1 - cWeight;
@@ -694,11 +694,11 @@ export default function App() {
   const quantumPred = result && result.prediction !== undefined ? Number(result.prediction) : null;
 
   const pClassical = classicalResult && Number.isFinite(Number(classicalResult.probability))
-    ? Math.max(0, Math.min(1, Number(classicalResult.probability)))
+    ? Math.max(0.02, Math.min(0.96, Number(classicalResult.probability)))
     : classicalPred === 1 ? 0.82 : 0.18;
 
   const pQuantum = result && Number.isFinite(Number(result.probability))
-    ? Math.max(0, Math.min(1, Number(result.probability)))
+    ? Math.max(0.02, Math.min(0.96, Number(result.probability)))
     : quantumPred === 1 ? 0.92 : 0.08;
 
   const classicalWeight = isDiabetes ? 0.515 : isHeart ? 0.517 : isMalnutrition ? 0.52 : 0.509;

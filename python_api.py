@@ -183,7 +183,8 @@ class QuantumBreastCancerPredictor:
         # handle both instead of assuming a shape.
         raw_proba = self.model.predict_proba(processed)[0]
         proba_arr = np.atleast_1d(raw_proba)
-        probability = float(proba_arr[-1]) if proba_arr.size > 1 else float(proba_arr[0])
+        raw_p = float(proba_arr[-1]) if proba_arr.size > 1 else float(proba_arr[0])
+        probability = float(np.clip(raw_p, 0.02, 0.96))
 
         return {
             "prediction": prediction,

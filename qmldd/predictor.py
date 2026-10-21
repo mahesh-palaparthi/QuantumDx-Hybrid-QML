@@ -299,7 +299,8 @@ class QuantumEarlyStageDiabetesPredictor:
         prediction = int(self.model.predict(X_proc)[0])
         proba_raw = self.model.predict_proba(X_proc)[0]
         proba_arr = np.atleast_1d(proba_raw)
-        probability = float(proba_arr[-1]) if proba_arr.size > 1 else float(proba_arr[0])
+        raw_p = float(proba_arr[-1]) if proba_arr.size > 1 else float(proba_arr[0])
+        probability = float(np.clip(raw_p, 0.02, 0.96))
         healthy_confidence = float(1.0 - probability)
 
         return {
@@ -483,7 +484,8 @@ class QuantumHeartDiseasePredictor:
 
         proba_raw = self.model.predict_proba(processed)[0]
         proba_arr = np.atleast_1d(proba_raw)
-        probability = float(proba_arr[-1]) if proba_arr.size > 1 else float(proba_arr[0])
+        raw_p = float(proba_arr[-1]) if proba_arr.size > 1 else float(proba_arr[0])
+        probability = float(np.clip(raw_p, 0.02, 0.96))
 
         return {
             "prediction": prediction,
@@ -656,7 +658,7 @@ class QuantumChildMalnutritionPredictor:
 
         expvals = np.array(circuit(self.weights, angles))
         logit = float(np.dot(self.nn_weights, expvals) + self.nn_bias)
-        probability = float(1.0 / (1.0 + np.exp(-logit)))
+        probability = float(np.clip(1.0 / (1.0 + np.exp(-logit)), 0.02, 0.96))
         thresh = getattr(self, "threshold", 0.52)
         prediction = 1 if probability >= thresh else 0
 
