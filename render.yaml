@@ -16,9 +16,9 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    buildCommand: cd frontend && npm install --include=dev && npm run build && cd ../backend && npm install
     startCommand: cd backend && node server.js
-    healthCheckPath: /api/health
+    healthCheckPath: /health
     autoDeploy: true
     envVars:
       - key: PYTHON_API_URL

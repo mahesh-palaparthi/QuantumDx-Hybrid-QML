@@ -157,7 +157,7 @@ app.get("/api", (req, res) => {
 });
 
 // Health check (instant response for Render deployment health probe)
-app.get("/api/health", (req, res) => {
+app.get(["/health", "/api/health"], (req, res) => {
     res.status(200).json({
         status: "ok",
         service: "QuantumDx Node.js API Gateway",
@@ -373,6 +373,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start Node.js server
-app.listen(PORT, () => {
-    console.log(`Node.js backend running at http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Node.js backend running at http://0.0.0.0:${PORT}`);
 });

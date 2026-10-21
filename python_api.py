@@ -204,15 +204,26 @@ quantum_predictor = QuantumBreastCancerPredictor()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Warmup all predictors in background threads so first queries don't hang
-    threading.Thread(target=classical_diabetes_predictor.train, daemon=True).start()
-    threading.Thread(target=quantum_diabetes_predictor.train, daemon=True).start()
-    threading.Thread(target=classical_cancer_predictor.train, daemon=True).start()
-    threading.Thread(target=quantum_predictor.train, daemon=True).start()
-    threading.Thread(target=classical_heart_predictor.train, daemon=True).start()
-    threading.Thread(target=quantum_heart_predictor.train, daemon=True).start()
-    threading.Thread(target=classical_malnutrition_predictor.train, daemon=True).start()
-    threading.Thread(target=quantum_malnutrition_predictor.train, daemon=True).start()
+    def warmup():
+        predictors = [
+            classical_cancer_predictor,
+            quantum_predictor,
+            classical_diabetes_predictor,
+            quantum_diabetes_predictor,
+            classical_heart_predictor,
+            quantum_heart_predictor,
+            classical_malnutrition_predictor,
+            quantum_malnutrition_predictor,
+        ]
+        for p in predictors:
+            try:
+                p.train()
+            except Exception as e:
+                logger.warning(f"Predictor warmup notice ({p.__class__.__name__}): {e}")
+        logger.info("All predictors initialized successfully.")
+
+    # Run warmup sequentially in one thread to stay well within Render 512MB RAM
+    threading.Thread(target=warmup, daemon=True).start()
     logger.info("FastAPI service started and ready.")
     yield
 
