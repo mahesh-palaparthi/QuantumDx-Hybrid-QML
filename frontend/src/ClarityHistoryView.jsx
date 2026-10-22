@@ -21,95 +21,7 @@ export default function ClarityHistoryView({
     }
   });
 
-  const [isHistoryCleared, setIsHistoryCleared] = useState(() => {
-    try {
-      return localStorage.getItem("quantumdx_history_cleared") === "true";
-    } catch {
-      return false;
-    }
-  });
-
-  // Default sample history from the Figma design (Image 1) so it matches the visual reference perfectly
-  const DEFAULT_SAMPLE_HISTORY = [
-    {
-      id: "sample-1",
-      diseaseKey: "heart_disease",
-      diseaseName: "Heart Disease",
-      icon: "🫀",
-      subject: "Alex Morgan · Demo",
-      dateFormatted: "21 Oct 2026",
-      timeFormatted: "14:32",
-      classicalPct: 72,
-      quantumPct: 68,
-      status: "follow_up",
-      statusLabel: "Follow-up suggested",
-      classicalPrediction: "Positive",
-      classicalProbability: 0.72,
-      quantumPrediction: "Positive",
-      quantumProbability: 0.68,
-      consensusVerdict: "Positive",
-      confidencePercent: 70,
-    },
-    {
-      id: "sample-2",
-      diseaseKey: "diabetes",
-      diseaseName: "Diabetes",
-      icon: "💧",
-      subject: "Alex Morgan · Demo",
-      dateFormatted: "18 Oct 2026",
-      timeFormatted: "09:15",
-      classicalPct: 24,
-      quantumPct: 28,
-      status: "lower_score",
-      statusLabel: "Lower model score",
-      classicalPrediction: "Negative",
-      classicalProbability: 0.24,
-      quantumPrediction: "Negative",
-      quantumProbability: 0.28,
-      consensusVerdict: "Negative",
-      confidencePercent: 74,
-    },
-    {
-      id: "sample-3",
-      diseaseKey: "breast_cancer",
-      diseaseName: "Breast Cancer",
-      icon: "🎗️",
-      subject: "Sample adult · Demo",
-      dateFormatted: "12 Oct 2026",
-      timeFormatted: "16:08",
-      classicalPct: 31,
-      quantumPct: 35,
-      status: "lower_score",
-      statusLabel: "Lower model score",
-      classicalPrediction: "Negative",
-      classicalProbability: 0.31,
-      quantumPrediction: "Negative",
-      quantumProbability: 0.35,
-      consensusVerdict: "Negative",
-      confidencePercent: 67,
-    },
-    {
-      id: "sample-4",
-      diseaseKey: "child_malnutrition",
-      diseaseName: "Pediatric Malnutrition",
-      icon: "👶",
-      subject: "Child A · Demo",
-      dateFormatted: "08 Oct 2026",
-      timeFormatted: "11:40",
-      classicalPct: 61,
-      quantumPct: 57,
-      status: "follow_up",
-      statusLabel: "Follow-up suggested",
-      classicalPrediction: "Positive",
-      classicalProbability: 0.61,
-      quantumPrediction: "Positive",
-      quantumProbability: 0.57,
-      consensusVerdict: "Positive",
-      confidencePercent: 59,
-    },
-  ];
-
-  // Map real database records if available, otherwise prepend them to sample items
+  // Map real database records
   const combinedRecords = useMemo(() => {
     const list = Array.isArray(screeningHistory) ? screeningHistory : [];
     const liveItems = list
@@ -120,10 +32,10 @@ export default function ClarityHistoryView({
           const isValidDate = !isNaN(d.getTime());
           const dateStr = isValidDate
             ? d.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
-            : "21 Oct 2026";
+            : "—";
           const timeStr = isValidDate
             ? d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })
-            : "14:32";
+            : "—";
 
           const cProb =
             item.classicalProbability != null && !isNaN(Number(item.classicalProbability))
@@ -143,7 +55,6 @@ export default function ClarityHistoryView({
           const dName = typeof item.disease === "string" ? item.disease : "Heart Disease";
           const isHeart = dName.toLowerCase().includes("heart");
           const isCancer = dName.toLowerCase().includes("cancer");
-          const isDiabetes = dName.toLowerCase().includes("diabetes");
           const isMalnutrition = dName.toLowerCase().includes("malnutrition");
 
           const icon = isHeart ? "🫀" : isCancer ? "🎗️" : isMalnutrition ? "👶" : "💧";
@@ -189,9 +100,8 @@ export default function ClarityHistoryView({
       })
       .filter(Boolean);
 
-    const baseItems = isHistoryCleared ? liveItems : [...liveItems, ...DEFAULT_SAMPLE_HISTORY];
-    return baseItems.filter((r) => !deletedIds.has(r.id));
-  }, [screeningHistory, deletedIds, isHistoryCleared]);
+    return liveItems.filter((r) => !deletedIds.has(r.id));
+  }, [screeningHistory, deletedIds]);
 
   // Filter and sort
   const filteredRecords = useMemo(() => {
@@ -212,7 +122,7 @@ export default function ClarityHistoryView({
   }, [combinedRecords, searchTerm, selectedDisease]);
 
   const followUpCount = filteredRecords.filter((r) => r.status === "follow_up" || r.status === "inconclusive").length;
-  const latestDateStr = filteredRecords.length > 0 ? filteredRecords[0].dateFormatted : "21 Oct 2026";
+  const latestDateStr = filteredRecords.length > 0 ? filteredRecords[0].dateFormatted : "—";
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -246,7 +156,6 @@ export default function ClarityHistoryView({
     } catch (e) {
       console.warn("Storage write error:", e);
     }
-    setIsHistoryCleared(true);
     setDeletedIds(new Set());
     if (onClearHistory) {
       onClearHistory();
@@ -346,7 +255,7 @@ export default function ClarityHistoryView({
             {filteredRecords.length}
           </div>
           <div style={{ fontSize: "12.5px", color: "var(--c-text-muted)", marginTop: 8 }}>
-            Sample screenings
+            Recorded screenings
           </div>
         </div>
 
@@ -364,7 +273,7 @@ export default function ClarityHistoryView({
             {followUpCount}
           </div>
           <div style={{ fontSize: "12.5px", color: "var(--c-text-muted)", marginTop: 8 }}>
-            Samples suggesting follow-up
+            Records suggesting follow-up
           </div>
         </div>
       </div>
