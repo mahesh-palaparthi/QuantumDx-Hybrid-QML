@@ -5,11 +5,14 @@ export default function ClarityHistoryView({
   onOpenScreening,
   onViewResultItem,
   onGoToProfile,
+  onDeleteRecord,
+  onClearHistory,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDisease, setSelectedDisease] = useState("all");
   const [dateFilter, setDateFilter] = useState("oct_2026");
   const [sortBy, setSortBy] = useState("newest");
+  const [deletedIds, setDeletedIds] = useState(() => new Set());
 
   // Default sample history from the Figma design (Image 1) so it matches the visual reference perfectly
   const DEFAULT_SAMPLE_HISTORY = [
@@ -137,8 +140,10 @@ export default function ClarityHistoryView({
             ? "child_malnutrition"
             : "diabetes";
 
+          const recordId = item.id || item._id || item.patientId || `live-${idx}`;
+
           return {
-            id: item._id || item.patientId || `live-${idx}`,
+            id: recordId,
             diseaseKey,
             diseaseName: isHeart
               ? "Heart Disease"
@@ -169,8 +174,9 @@ export default function ClarityHistoryView({
       })
       .filter(Boolean);
 
-    return [...liveItems, ...DEFAULT_SAMPLE_HISTORY];
-  }, [screeningHistory]);
+    const merged = [...liveItems, ...DEFAULT_SAMPLE_HISTORY];
+    return merged.filter((r) => !deletedIds.has(r.id));
+  }, [screeningHistory, deletedIds]);
 
   // Filter and sort
   const filteredRecords = useMemo(() => {
@@ -199,6 +205,23 @@ export default function ClarityHistoryView({
     setDateFilter("oct_2026");
   };
 
+  const handleDelete = (item) => {
+    if (!window.confirm(`Delete screening record for "${item.diseaseName}" (${item.dateFormatted})?`)) return;
+    setDeletedIds((prev) => new Set([...prev, item.id]));
+    if (onDeleteRecord) {
+      const recordId = item.rawRecord?.id || item.id;
+      onDeleteRecord(recordId);
+    }
+  };
+
+  const handleClearAll = () => {
+    if (!window.confirm("Are you sure you want to delete all screening records? This cannot be undone.")) return;
+    setDeletedIds(new Set(combinedRecords.map((r) => r.id)));
+    if (onClearHistory) {
+      onClearHistory();
+    }
+  };
+
   return (
     <div className="clarity-content">
       {/* Breadcrumb */}
@@ -214,25 +237,51 @@ export default function ClarityHistoryView({
             Return to previous comparisons and the information behind each result.
           </p>
         </div>
-        {onOpenScreening && (
-          <button
-            type="button"
-            className="clarity-btn-primary"
-            onClick={onOpenScreening}
-            style={{
-              padding: "10px 20px",
-              fontSize: "14px",
-              fontWeight: 700,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              borderRadius: 8,
-            }}
-          >
-            <span>New screening</span>
-            <span style={{ fontSize: "16px" }}>+</span>
-          </button>
-        )}
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {onClearHistory && (screeningHistory.length > 0 || combinedRecords.length > 0) && (
+            <button
+              type="button"
+              onClick={handleClearAll}
+              style={{
+                background: "#FEF2F2",
+                border: "1px solid #FECACA",
+                color: "#DC2626",
+                padding: "9px 15px",
+                fontSize: "13.5px",
+                fontWeight: 600,
+                borderRadius: "8px",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                transition: "all 0.15s ease",
+              }}
+              title="Delete all screening records"
+            >
+              <span>🗑️</span>
+              <span>Clear History</span>
+            </button>
+          )}
+          {onOpenScreening && (
+            <button
+              type="button"
+              className="clarity-btn-primary"
+              onClick={onOpenScreening}
+              style={{
+                padding: "10px 20px",
+                fontSize: "14px",
+                fontWeight: 700,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                borderRadius: 8,
+              }}
+            >
+              <span>New screening</span>
+              <span style={{ fontSize: "16px" }}>+</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Informative Blue / Mint Advisory Banner (Image 1) */}
@@ -477,31 +526,57 @@ export default function ClarityHistoryView({
 
                   {/* Action Link (Image 1) */}
                   <td style={{ textAlign: "right" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onViewResultItem) {
-                          onViewResultItem(item);
-                        } else if (onOpenScreening) {
-                          onOpenScreening(item.diseaseKey);
-                        }
-                      }}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: "var(--c-teal)",
-                        fontWeight: 700,
-                        fontSize: "12.5px",
-                        cursor: "pointer",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 3,
-                        padding: 0,
-                      }}
-                    >
-                      <span>View results</span>
-                      <span style={{ fontSize: "13px" }}>↗</span>
-                    </button>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", justifyContent: "flex-end" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onViewResultItem) {
+                            onViewResultItem(item);
+                          } else if (onOpenScreening) {
+                            onOpenScreening(item.diseaseKey);
+                          }
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "var(--c-teal)",
+                          fontWeight: 700,
+                          fontSize: "12.5px",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 3,
+                          padding: 0,
+                        }}
+                      >
+                        <span>View results</span>
+                        <span style={{ fontSize: "13px" }}>↗</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(item)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#94A3B8",
+                          fontSize: "13.5px",
+                          cursor: "pointer",
+                          padding: "4px 6px",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          transition: "color 0.15s ease",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "#94A3B8")}
+                        title="Delete this record"
+                        aria-label="Delete screening record"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

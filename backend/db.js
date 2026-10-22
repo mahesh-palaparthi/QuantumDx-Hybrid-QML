@@ -325,6 +325,21 @@ const db = {
     return true;
   },
 
+  deleteScreeningRecord(id, userId = null) {
+    const data = loadDb();
+    const initialLength = data.screenings.length;
+    data.screenings = data.screenings.filter((s) => {
+      if (s.id !== id) return true;
+      if (userId && s.userId && s.userId !== userId) return true;
+      return false;
+    });
+    if (data.screenings.length !== initialLength) {
+      saveDb(data);
+      return true;
+    }
+    return false;
+  },
+
   hashPassword,
   verifyPassword,
   generateToken,

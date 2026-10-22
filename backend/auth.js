@@ -183,7 +183,7 @@ router.get("/screenings", (req, res) => {
   }
 });
 
-// 7. CLEAR SCREENING HISTORY
+// 7. CLEAR ALL SCREENING HISTORY
 router.delete("/screenings", (req, res) => {
   try {
     let userId = null;
@@ -201,6 +201,35 @@ router.delete("/screenings", (req, res) => {
   } catch (err) {
     console.error("Clear screenings error:", err);
     res.status(500).json({ status: "error", message: "Failed to clear screening history" });
+  }
+});
+
+// 8. DELETE INDIVIDUAL SCREENING RECORD BY ID
+router.delete("/screenings/:id", (req, res) => {
+  try {
+    let userId = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const payload = db.verifyToken(authHeader.split(" ")[1]);
+      if (payload) userId = payload.userId;
+    }
+
+    const { id } = req.params;
+    const deleted = db.deleteScreeningRecord(id, userId);
+    if (!deleted) {
+      return res.status(404).json({
+        status: "error",
+        message: "Screening record not found or unauthorized to delete",
+      });
+    }
+
+    res.json({
+      status: "success",
+      message: `Screening record ${id} deleted successfully`,
+    });
+  } catch (err) {
+    console.error("Delete single screening error:", err);
+    res.status(500).json({ status: "error", message: "Failed to delete screening record" });
   }
 });
 

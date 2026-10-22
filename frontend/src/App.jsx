@@ -319,6 +319,28 @@ export default function App() {
     }
   };
 
+  const handleDeleteSingleRecord = async (recordId) => {
+    try {
+      setScreeningHistory((prev) => {
+        const updated = prev.filter((r) => (r.id || r._id) !== recordId);
+        try {
+          localStorage.setItem("quantumdx_screenings", JSON.stringify(updated.slice(0, 50)));
+        } catch (e) {
+          console.warn("Storage update error:", e);
+        }
+        return updated;
+      });
+
+      const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+      await fetch(`${API_BASE_URL}/api/auth/screenings/${recordId}`, {
+        method: "DELETE",
+        headers,
+      });
+    } catch (err) {
+      console.warn("Could not delete screening record:", err);
+    }
+  };
+
   const handleLoginSuccess = (user, token) => {
     if (user) {
       try {
@@ -1119,6 +1141,8 @@ export default function App() {
                   setClarityTab("studio");
                 }}
                 onGoToProfile={() => setClarityTab("profile")}
+                onClearHistory={handleClearHistory}
+                onDeleteRecord={handleDeleteSingleRecord}
               />
             )}
 

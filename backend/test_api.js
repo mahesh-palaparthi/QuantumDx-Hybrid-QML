@@ -110,14 +110,15 @@ test("Screenings history API allows saving and querying records", async () => {
   assert.ok(Array.isArray(getRes.body.screenings));
   assert.ok(getRes.body.screenings.length > 0);
 
-  // Clean up synthetic test record from JSON storage
+  // Test deletion of synthetic test record via DELETE /api/auth/screenings/:id
   const savedId = saveRes.body.record.id;
-  const fs = require("fs");
-  const path = require("path");
-  const dbFile = path.join(__dirname, "data", "quantumdx_db.json");
-  const data = JSON.parse(fs.readFileSync(dbFile, "utf8"));
-  data.screenings = data.screenings.filter((s) => s.id !== savedId);
-  fs.writeFileSync(dbFile, JSON.stringify(data, null, 2), "utf8");
+  const deleteRes = await request(app).delete(`/api/auth/screenings/${savedId}`);
+  assert.equal(deleteRes.status, 200);
+  assert.equal(deleteRes.body.status, "success");
+
+  // Verify deletion: querying deleted record should not return it or 404 on re-delete
+  const deleteNotFound = await request(app).delete(`/api/auth/screenings/${savedId}`);
+  assert.equal(deleteNotFound.status, 404);
 });
 
 test("Prediction route contracts: /api/dual-predict returns valid classical and quantum results", async () => {
