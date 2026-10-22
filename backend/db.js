@@ -308,16 +308,16 @@ const db = {
 
   getScreeningHistory(userId = null, limit = 50) {
     const data = loadDb();
-    if (!userId) return data.screenings.slice(0, limit);
+    if (!userId) return data.screenings.filter((s) => !s.userId).slice(0, limit);
     return data.screenings
-      .filter((s) => !s.userId || s.userId === userId)
+      .filter((s) => s.userId === userId)
       .slice(0, limit);
   },
 
   clearScreeningHistory(userId = null) {
     const data = loadDb();
     if (!userId) {
-      data.screenings = [];
+      data.screenings = data.screenings.filter((s) => Boolean(s.userId));
     } else {
       data.screenings = data.screenings.filter((s) => s.userId !== userId);
     }

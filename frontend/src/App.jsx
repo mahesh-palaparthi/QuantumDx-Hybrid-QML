@@ -237,6 +237,7 @@ export default function App() {
   // Screening History State with instant localStorage initialization
   const [screeningHistory, setScreeningHistory] = useState(() => {
     try {
+      if (localStorage.getItem("quantumdx_history_cleared") === "true") return [];
       const cached = localStorage.getItem("quantumdx_screenings");
       if (cached) {
         const parsed = JSON.parse(cached);
@@ -270,28 +271,31 @@ export default function App() {
 
   const fetchScreeningHistory = React.useCallback(async () => {
     try {
+      const isExplicitlyCleared = localStorage.getItem("quantumdx_history_cleared") === "true";
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
       const res = await fetch(`${API_BASE_URL}/api/auth/screenings`, { headers });
       if (res.ok) {
         const data = await res.json();
         if (data.screenings && Array.isArray(data.screenings)) {
-          setScreeningHistory((prev) => {
-            const map = new Map();
-            data.screenings.forEach((s) => map.set(s.id || s.timestamp, s));
-            prev.forEach((s) => {
-              const k = s.id || s.timestamp;
-              if (!map.has(k)) map.set(k, s);
-            });
-            const merged = Array.from(map.values()).sort(
-              (a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime()
-            );
+          if (data.screenings.length === 0) {
+            setScreeningHistory([]);
             try {
-              localStorage.setItem("quantumdx_screenings", JSON.stringify(merged.slice(0, 50)));
+              localStorage.removeItem("quantumdx_screenings");
             } catch (storageErr) {
-              console.debug("Screening cache write notice:", storageErr);
+              console.debug("Clean cache notice:", storageErr);
             }
-            return merged;
-          });
+            return;
+          }
+          if (isExplicitlyCleared) {
+            setScreeningHistory([]);
+            return;
+          }
+          setScreeningHistory(data.screenings);
+          try {
+            localStorage.setItem("quantumdx_screenings", JSON.stringify(data.screenings.slice(0, 50)));
+          } catch (storageErr) {
+            console.debug("Screening cache write notice:", storageErr);
+          }
         }
       }
     } catch (err) {
@@ -308,6 +312,7 @@ export default function App() {
     if (!window.confirm("Are you sure you want to delete all saved screening records? This cannot be undone.")) return;
     try {
       localStorage.removeItem("quantumdx_screenings");
+      localStorage.setItem("quantumdx_history_cleared", "true");
       setScreeningHistory([]);
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
       await fetch(`${API_BASE_URL}/api/auth/screenings`, {
@@ -677,6 +682,7 @@ export default function App() {
 
       // 2. Persist to localStorage for offline reliability and survival across page refreshes
       try {
+        localStorage.removeItem("quantumdx_history_cleared");
         const stored = JSON.parse(localStorage.getItem("quantumdx_screenings") || "[]");
         const nextStored = [patientRecord, ...stored.filter((p) => p.id !== patientRecord.id)].slice(0, 50);
         localStorage.setItem("quantumdx_screenings", JSON.stringify(nextStored));

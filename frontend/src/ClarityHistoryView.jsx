@@ -12,7 +12,22 @@ export default function ClarityHistoryView({
   const [selectedDisease, setSelectedDisease] = useState("all");
   const [dateFilter, setDateFilter] = useState("oct_2026");
   const [sortBy, setSortBy] = useState("newest");
-  const [deletedIds, setDeletedIds] = useState(() => new Set());
+  const [deletedIds, setDeletedIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem("quantumdx_deleted_screening_ids");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  const [isHistoryCleared, setIsHistoryCleared] = useState(() => {
+    try {
+      return localStorage.getItem("quantumdx_history_cleared") === "true";
+    } catch {
+      return false;
+    }
+  });
 
   // Default sample history from the Figma design (Image 1) so it matches the visual reference perfectly
   const DEFAULT_SAMPLE_HISTORY = [
@@ -174,9 +189,9 @@ export default function ClarityHistoryView({
       })
       .filter(Boolean);
 
-    const merged = [...liveItems, ...DEFAULT_SAMPLE_HISTORY];
-    return merged.filter((r) => !deletedIds.has(r.id));
-  }, [screeningHistory, deletedIds]);
+    const baseItems = isHistoryCleared ? liveItems : [...liveItems, ...DEFAULT_SAMPLE_HISTORY];
+    return baseItems.filter((r) => !deletedIds.has(r.id));
+  }, [screeningHistory, deletedIds, isHistoryCleared]);
 
   // Filter and sort
   const filteredRecords = useMemo(() => {
@@ -207,7 +222,15 @@ export default function ClarityHistoryView({
 
   const handleDelete = (item) => {
     if (!window.confirm(`Delete screening record for "${item.diseaseName}" (${item.dateFormatted})?`)) return;
-    setDeletedIds((prev) => new Set([...prev, item.id]));
+    setDeletedIds((prev) => {
+      const next = new Set([...prev, item.id]);
+      try {
+        localStorage.setItem("quantumdx_deleted_screening_ids", JSON.stringify([...next]));
+      } catch (e) {
+        console.warn("Storage write error:", e);
+      }
+      return next;
+    });
     if (onDeleteRecord) {
       const recordId = item.rawRecord?.id || item.id;
       onDeleteRecord(recordId);
@@ -216,7 +239,15 @@ export default function ClarityHistoryView({
 
   const handleClearAll = () => {
     if (!window.confirm("Are you sure you want to delete all screening records? This cannot be undone.")) return;
-    setDeletedIds(new Set(combinedRecords.map((r) => r.id)));
+    try {
+      localStorage.setItem("quantumdx_history_cleared", "true");
+      localStorage.removeItem("quantumdx_screenings");
+      localStorage.removeItem("quantumdx_deleted_screening_ids");
+    } catch (e) {
+      console.warn("Storage write error:", e);
+    }
+    setIsHistoryCleared(true);
+    setDeletedIds(new Set());
     if (onClearHistory) {
       onClearHistory();
     }
@@ -439,9 +470,33 @@ export default function ClarityHistoryView({
             </tr>
           </thead>
           <tbody>
-            {filteredRecords.map((item) => {
-              const isFollowUp = item.status === "follow_up";
-              const isInconclusive = item.status === "inconclusive";
+            {filteredRecords.length === 0 ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center", padding: "48px 20px" }}>
+                  <div style={{ fontSize: "32px", marginBottom: "8px" }}>📋</div>
+                  <div style={{ fontWeight: 700, fontSize: "15px", color: "var(--c-text-primary)", marginBottom: "4px" }}>
+                    No screening records
+                  </div>
+                  <div style={{ fontSize: "13px", color: "var(--c-text-muted)", marginBottom: "16px" }}>
+                    Your screening history has been cleared. Run a new screening test anytime.
+                  </div>
+                  {onOpenScreening && (
+                    <button
+                      type="button"
+                      className="clarity-btn-primary"
+                      onClick={onOpenScreening}
+                      style={{ padding: "8px 18px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: 6 }}
+                    >
+                      <span>New screening</span>
+                      <span style={{ fontSize: "15px" }}>+</span>
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ) : (
+              filteredRecords.map((item) => {
+                const isFollowUp = item.status === "follow_up";
+                const isInconclusive = item.status === "inconclusive";
 
               return (
                 <tr key={item.id}>
@@ -580,7 +635,7 @@ export default function ClarityHistoryView({
                   </td>
                 </tr>
               );
-            })}
+            }))}
           </tbody>
         </table>
 
