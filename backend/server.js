@@ -37,7 +37,8 @@ function resolvePythonApiUrl(input) {
 }
 
 const PYTHON_API_URL = resolvePythonApiUrl(process.env.PYTHON_API_URL);
-console.log(`[QuantumDx] Configured Python API backend: ${PYTHON_API_URL}`);
+const PYTHON_TIMEOUT_MS = parseInt(process.env.PYTHON_TIMEOUT_MS, 10) || 12000;
+console.log(`[QuantumDx] Configured Python API backend: ${PYTHON_API_URL} (timeout: ${PYTHON_TIMEOUT_MS}ms)`);
 
 // Helper to gracefully handle Render free tier cold starts and burst rate limits
 async function fetchWithRetry(url, options, maxRetries = 3) {
@@ -244,7 +245,7 @@ app.post("/api/dual-predict", async (req, res) => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(req.body),
-                signal: AbortSignal.timeout(1800)
+                signal: AbortSignal.timeout(PYTHON_TIMEOUT_MS)
             });
 
             const { ok, data } = await parseResponseSafely(response);
@@ -286,7 +287,7 @@ app.post("/api/quantum-predict", async (req, res) => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(req.body),
-                signal: AbortSignal.timeout(1800)
+                signal: AbortSignal.timeout(PYTHON_TIMEOUT_MS)
             });
 
             const { ok, data } = await parseResponseSafely(response);
@@ -327,7 +328,7 @@ app.post("/api/predict", async (req, res) => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(req.body),
-                signal: AbortSignal.timeout(1800)
+                signal: AbortSignal.timeout(PYTHON_TIMEOUT_MS)
             });
 
             const { ok, data } = await parseResponseSafely(response);
@@ -372,7 +373,11 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start Node.js server
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Node.js backend running at http://0.0.0.0:${PORT}`);
-});
+// Start Node.js server if run directly
+if (require.main === module) {
+    app.listen(PORT, "0.0.0.0", () => {
+        console.log(`Node.js backend running at http://0.0.0.0:${PORT}`);
+    });
+}
+
+module.exports = app;

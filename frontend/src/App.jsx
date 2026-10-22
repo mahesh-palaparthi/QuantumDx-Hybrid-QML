@@ -234,8 +234,19 @@ export default function App() {
   const [error, setError] = useState("");
   const [showFullDecisionMatrix, setShowFullDecisionMatrix] = useState(false);
 
-  // Screening History State
-  const [screeningHistory, setScreeningHistory] = useState([]);
+  // Screening History State with instant localStorage initialization
+  const [screeningHistory, setScreeningHistory] = useState(() => {
+    try {
+      const cached = localStorage.getItem("quantumdx_screenings");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn("Could not read local screening cache:", e);
+    }
+    return [];
+  });
   const [saveBanner, setSaveBanner] = useState("");
 
   const isDiabetes = activeDisease === "diabetes";
@@ -257,23 +268,7 @@ export default function App() {
     ? CHILD_MALNUTRITION_COHORTS
     : CANCER_COHORTS;
 
-  // Load Screening History on mount with localStorage caching for instant reactivity
-  useEffect(() => {
-    try {
-      const cached = localStorage.getItem("quantumdx_screenings");
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setScreeningHistory(parsed);
-        }
-      }
-    } catch (e) {
-      console.warn("Could not read local screening cache:", e);
-    }
-    fetchScreeningHistory();
-  }, [authToken]);
-
-  const fetchScreeningHistory = async () => {
+  const fetchScreeningHistory = React.useCallback(async () => {
     try {
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
       const res = await fetch(`${API_BASE_URL}/api/auth/screenings`, { headers });
@@ -292,7 +287,9 @@ export default function App() {
             );
             try {
               localStorage.setItem("quantumdx_screenings", JSON.stringify(merged.slice(0, 50)));
-            } catch (_) {}
+            } catch (storageErr) {
+              console.debug("Screening cache write notice:", storageErr);
+            }
             return merged;
           });
         }
@@ -300,7 +297,12 @@ export default function App() {
     } catch (err) {
       console.warn("Could not load screening history:", err);
     }
-  };
+  }, [authToken]);
+
+  // Sync latest screenings from backend on mount or auth change
+  useEffect(() => {
+    fetchScreeningHistory();
+  }, [fetchScreeningHistory]);
 
   const handleClearHistory = async () => {
     if (!window.confirm("Are you sure you want to delete all saved screening records? This cannot be undone.")) return;

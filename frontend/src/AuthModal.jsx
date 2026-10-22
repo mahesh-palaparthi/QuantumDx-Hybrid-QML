@@ -23,7 +23,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
  
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     setIsSuccess(false);
     setError("");
     setPassword("");
@@ -31,18 +31,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     setStep(1);
     setAuthMode("signin");
     onClose();
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      setIsSuccess(false);
-      setError("");
-      setPassword("");
-      setConfirmPassword("");
-      setStep(1);
-      setAuthMode("signin");
-    }
-  }, [isOpen]);
+  }, [onClose]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -53,7 +42,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
 

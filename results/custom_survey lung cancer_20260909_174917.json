@@ -1,0 +1,40 @@
+{
+  "dataset": "custom_survey lung cancer",
+  "n_train": 231,
+  "n_test": 78,
+  "raw_feature_count": 16,
+  "n_components": 4,
+  "preprocessing_summary": {
+    "method": "pca",
+    "n_components": 4,
+    "explained_variance_ratio": 0.5380201027251833
+  },
+  "results": [
+    {
+      "model_name": "classical_logreg",
+      "is_quantum": false,
+      "accuracy": 0.9102564102564102,
+      "sensitivity": 0.9558823529411765,
+      "specificity": 0.6,
+      "precision": 0.9420289855072463,
+      "f1": 0.948905109489051,
+      "roc_auc": 0.9029411764705882,
+      "training_time_seconds": 0.021634817123413086,
+      "inference_time_seconds": 0.001988649368286133,
+      "metadata": {
+        "n_params": 5
+      }
+    }
+  ],
+  "explanations": {
+    "classical_logreg": {
+      "method": "shap_kernel_explainer",
+      "importances": {
+        "pc_0": 0.011483613306701146,
+        "pc_1": 0.03433426539666716,
+        "pc_2": 0.1185932752919987,
+        "pc_3": 0.048512870996407255
+      }
+    }
+  }
+}

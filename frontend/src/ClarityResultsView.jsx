@@ -17,7 +17,6 @@ export default function ClarityResultsView({
   const [activeResultsTab, setActiveResultsTab] = useState("overview"); // "overview" | "circuit" | "xai"
 
   const isHeart = activeDisease === "heart_disease";
-  const isCancer = activeDisease === "breast_cancer";
   const isMalnutrition = activeDisease === "child_malnutrition";
   const isDiabetes = activeDisease === "diabetes";
 
@@ -53,16 +52,15 @@ export default function ClarityResultsView({
   const isDeadbandSave = hScore >= 0.42 && hScore <= 0.58 && isOpposingSave;
   const isHighDivergenceSave = (delta >= 0.45 && isOpposingSave) || isDeadbandSave || isCaseInconclusive;
 
-  let outcome = "Negative";
-  if (isCaseInconclusive || isHighDivergenceSave) {
-    outcome = "Inconclusive";
-  } else if (cPred === 1 && qPred === 1) {
-    outcome = "Positive";
-  } else if (cPred === 0 && qPred === 0) {
-    outcome = "Negative";
-  } else {
-    outcome = hScore >= 0.50 ? "Positive" : "Negative";
-  }
+  const outcome = isCaseInconclusive || isHighDivergenceSave
+    ? "Inconclusive"
+    : cPred === 1 && qPred === 1
+    ? "Positive"
+    : cPred === 0 && qPred === 0
+    ? "Negative"
+    : hScore >= 0.50
+    ? "Positive"
+    : "Negative";
 
   // Clinical Bayesian boundary: Classical with 13-30 dimensions [3%, 96%]; 4-qubit Quantum NISQ validator [4%, 84%]
   const cPct = Math.max(3, Math.min(96, Math.round(cProb * 100)));

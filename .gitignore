@@ -30,3 +30,7 @@ yarn-error.log*
 Thumbs.db
 frontend/src/*backup*
 frontend/src/*pre_redesign*
+archive/
+frontend/archive/
+scratch/
+models_saved/

@@ -5,32 +5,83 @@ const crypto = require("crypto");
 const DB_FILE = path.join(__dirname, "data", "quantumdx_db.json");
 
 // Robust PBKDF2 Password Hashing (FIPS-compliant, zero external dependencies)
-function hashPassword(password) {
+const PBKDF2_ROUNDS = 100000;
+const LEGACY_ROUNDS = 1000;
+const TOKEN_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || "quantumdx-clinical-sec-key-2026-v1";
+const TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function hashPassword(password, rounds = PBKDF2_ROUNDS) {
   const salt = crypto.randomBytes(16).toString("hex");
-  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
-  return `${salt}:${hash}`;
+  const hash = crypto.pbkdf2Sync(password, salt, rounds, 64, "sha512").toString("hex");
+  return `pbkdf2:${rounds}:${salt}:${hash}`;
 }
 
 function verifyPassword(password, storedHash) {
-  if (!storedHash || !storedHash.includes(":")) return false;
-  const [salt, originalHash] = storedHash.split(":");
-  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
-  return hash === originalHash;
+  if (!storedHash) return false;
+  // Handle modern format: pbkdf2:rounds:salt:hash
+  if (storedHash.startsWith("pbkdf2:")) {
+    const parts = storedHash.split(":");
+    if (parts.length !== 4) return false;
+    const rounds = parseInt(parts[1], 10) || PBKDF2_ROUNDS;
+    const salt = parts[2];
+    const originalHash = parts[3];
+    const hash = crypto.pbkdf2Sync(password, salt, rounds, 64, "sha512").toString("hex");
+    try {
+      return crypto.timingSafeEqual(Buffer.from(hash, "hex"), Buffer.from(originalHash, "hex"));
+    } catch {
+      return hash === originalHash;
+    }
+  }
+  // Handle legacy format: salt:hash (1000 rounds)
+  if (storedHash.includes(":")) {
+    const [salt, originalHash] = storedHash.split(":");
+    const hash = crypto.pbkdf2Sync(password, salt, LEGACY_ROUNDS, 64, "sha512").toString("hex");
+    try {
+      return crypto.timingSafeEqual(Buffer.from(hash, "hex"), Buffer.from(originalHash, "hex"));
+    } catch {
+      return hash === originalHash;
+    }
+  }
+  return false;
 }
 
-// Generate simple secure session tokens
+// Generate cryptographically signed HMAC-SHA256 session tokens with expiration
+function signData(dataStr) {
+  return crypto.createHmac("sha256", TOKEN_SECRET).update(dataStr).digest("base64url");
+}
+
 function generateToken(user) {
+  const now = Date.now();
   const payload = {
     userId: user.id,
     email: user.email,
     role: user.role,
-    issuedAt: Date.now(),
+    issuedAt: now,
+    exp: now + TOKEN_EXPIRY_MS,
   };
-  return Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const payloadB64 = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const signature = signData(payloadB64);
+  return `${payloadB64}.${signature}`;
 }
 
 function verifyToken(token) {
+  if (!token || typeof token !== "string") return null;
   try {
+    if (token.includes(".")) {
+      const [payloadB64, signature] = token.split(".");
+      const expectedSig = signData(payloadB64);
+      const sigBuf = Buffer.from(signature);
+      const expBuf = Buffer.from(expectedSig);
+      if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+        return null;
+      }
+      const payload = JSON.parse(Buffer.from(payloadB64, "base64url").toString("utf8"));
+      if (payload.exp && Date.now() > payload.exp) {
+        return null;
+      }
+      return payload;
+    }
+    // Backward compatibility for transitional sessions:
     const payload = JSON.parse(Buffer.from(token, "base64url").toString("utf8"));
     return payload;
   } catch (err) {
@@ -268,12 +319,14 @@ const db = {
     if (!userId) {
       data.screenings = [];
     } else {
-      data.screenings = data.screenings.filter((s) => s.userId && s.userId !== userId);
+      data.screenings = data.screenings.filter((s) => s.userId !== userId);
     }
     saveDb(data);
     return true;
   },
 
+  hashPassword,
+  verifyPassword,
   generateToken,
   verifyToken,
 };
